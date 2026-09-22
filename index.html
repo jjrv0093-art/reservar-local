@@ -1,0 +1,1037 @@
+<!-- =========================
+     FIREBASE
+     ========================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+
+<!-- =========================
+     RESERVAR
+     ========================= -->
+
+<div class="header-reservar">
+  <h1>reservAR <span>tu lugar, tu momento.</span></h1>
+</div>
+
+<!-- LOGIN -->
+<section id="auth" class="auth">
+  <h2>Iniciar sesión</h2>
+
+  <label for="email">Correo</label>
+  <input id="email" type="email" placeholder="tu@correo.com" autocomplete="username">
+
+  <label for="password">Contraseña</label>
+  <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password">
+
+  <p id="loginMsg" class="error" role="alert" aria-live="polite"></p>
+
+  <button id="loginBtn" class="btn full">Entrar</button>
+
+  <p>
+    ¿No tenés cuenta?
+    <a href="#" id="goRegister" style="color:var(--rosa)">Crear cuenta</a>
+  </p>
+</section>
+
+<!-- REGISTRO -->
+<section id="register" class="auth hidden">
+  <h2>Crear cuenta</h2>
+
+  <p class="muted" style="margin-top:0;font-size:14px">
+    Vas a ser la administradora (o el administrador) de tu local.
+    Después podés crear las cuentas de tu equipo.
+  </p>
+
+  <input id="regNombre" placeholder="Nombre" autocomplete="given-name">
+  <input id="regApellido" placeholder="Apellido" autocomplete="family-name">
+  <input id="regEmail" type="email" placeholder="Correo" autocomplete="email">
+  <input id="regPass" type="password" placeholder="Contraseña" autocomplete="new-password">
+  <input id="regPass2" type="password" placeholder="Repetir contraseña" autocomplete="new-password">
+
+  <label class="check" style="margin-bottom:4px">
+    <input id="regTerminos" type="checkbox">
+    Acepto los términos y condiciones
+  </label>
+
+  <details>
+    <summary>Ver términos y condiciones</summary>
+    <p>
+      [Borrador. Reemplazar por el texto definitivo, revisado por un abogado,
+      antes de lanzar.]
+    </p>
+  </details>
+
+  <p id="regMsg" class="error" role="alert" aria-live="polite"></p>
+
+  <button id="registerBtn" class="btn full">Registrarme</button>
+
+  <p>
+    ¿Ya tenés cuenta?
+    <a href="#" id="goLogin" style="color:var(--rosa)">Iniciar sesión</a>
+  </p>
+</section>
+
+<!-- APP -->
+<section id="app" class="hidden">
+
+  <div class="topbar">
+    <div class="logo">reservAR</div>
+
+    <div class="tabs">
+      <button class="tab active" data-screen="dashboard">Inicio</button>
+      <button class="tab" data-screen="reservas">Reservas</button>
+      <button class="tab" data-screen="calendario">Calendario</button>
+      <button class="tab" data-screen="clientes">Clientes</button>
+
+      <button class="tab" data-screen="servicios" data-admin="1">
+        Servicios
+      </button>
+
+      <button class="tab" data-screen="estadisticas" data-admin="1">
+        Estadísticas
+      </button>
+
+      <button class="tab" data-screen="facturacion" data-admin="1">
+        Facturación
+      </button>
+
+      <button class="tab" data-screen="movimientos" data-admin="1">
+        Movimientos
+      </button>
+
+      <button class="tab" data-screen="ajustes" data-admin="1">
+        Ajustes
+      </button>
+    </div>
+
+    <div class="right">
+      <span id="rolPill" class="pill rol"></span>
+      <span id="estadoPill" class="pill off">Reservas online: pausadas</span>
+
+      <button id="btnToggleEstado" class="btn small">
+        Activar
+      </button>
+
+      <button id="btnLogout" class="btn small ghost">
+        Salir
+      </button>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div id="planAviso" class="aviso hidden" role="status"></div>
+
+    <!-- INICIO -->
+    <section id="dashboard" class="screen active stack">
+
+      <div class="card">
+        <h2>Panel</h2>
+        <p class="muted" id="saludo">Administrá tu negocio.</p>
+
+        <div class="row" style="margin-bottom:12px">
+          <button id="btnNuevaReserva" class="btn">
+            + Nueva reserva
+          </button>
+
+          <button id="btnIrReservas" class="btn ghost">
+            Ver reservas
+          </button>
+        </div>
+
+        <div id="kpis" class="kpis"></div>
+      </div>
+
+      <div class="card">
+        <h3>Turnos de hoy</h3>
+        <ul id="turnosHoy" class="list"></ul>
+      </div>
+
+      <div id="adminPanel" class="stack">
+
+        <div class="card">
+          <h3>Ingresos por usuario</h3>
+          <div id="revenueByUser"></div>
+        </div>
+
+        <!-- MEMBRESÍA -->
+        <div class="card membership-card">
+
+          <h3>Mi membresía</h3>
+
+          <div class="membership-status">
+            <div>
+              <div class="meta">PLAN ACTUAL</div>
+              <strong id="membershipPlan">Sin plan</strong>
+            </div>
+
+            <div>
+              <div class="meta">ESTADO</div>
+              <strong id="membershipStatus">
+                🔴 Sin membresía
+              </strong>
+            </div>
+          </div>
+
+          <p id="planUso" class="muted"></p>
+
+          <div class="row" style="margin-bottom:12px">
+            <button class="btn plan" data-plan="basico">
+              Básico
+            </button>
+
+            <button class="btn plan" data-plan="medio">
+              Medio
+            </button>
+
+            <button class="btn plan" data-plan="premium">
+              Premium
+            </button>
+          </div>
+
+          <label for="metodoPago">
+            Método de pago
+          </label>
+
+          <select id="metodoPago">
+            <option value="">Elegí un método</option>
+            <option value="mercadopago">Mercado Pago</option>
+            <option value="uala">Ualá</option>
+            <option value="tarjeta">Tarjeta de crédito o débito</option>
+            <option value="transferencia">Transferencia</option>
+          </select>
+
+          <div class="row" style="margin-top:12px">
+
+            <button id="btnPagarPlan" class="btn">
+              Contratar / cambiar plan
+            </button>
+
+            <button
+              id="btnRenovarPlan"
+              class="btn ghost"
+              style="display:none">
+              Renovar 30 días
+            </button>
+
+            <button
+              id="btnCancelarPlan"
+              class="btn ghost"
+              style="display:none">
+              Cancelar membresía
+            </button>
+
+            <button
+              id="btnReactivarPlan"
+              class="btn ghost"
+              style="display:none">
+              Reactivar membresía
+            </button>
+
+          </div>
+
+          <p id="planMsg" class="note"></p>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RESERVAS -->
+    <section id="reservas" class="screen stack">
+
+      <div class="card">
+
+        <h3 id="tituloReserva">Nueva reserva</h3>
+
+        <form id="reservaForm" class="formgrid">
+
+          <input type="hidden" id="editId">
+
+          <div>
+            <label for="rCliente">Cliente</label>
+            <input
+              id="rCliente"
+              placeholder="Nombre del cliente"
+              required>
+          </div>
+
+          <div>
+            <label for="rServicioSelect">Servicio</label>
+
+            <select id="rServicioSelect"></select>
+
+            <input
+              id="rServicioCustom"
+              class="hidden"
+              placeholder="Nombre del servicio"
+              style="margin-top:8px">
+          </div>
+
+          <div>
+            <label for="rPrecio">Precio ($)</label>
+
+            <input
+              id="rPrecio"
+              type="number"
+              min="0"
+              step="1"
+              placeholder="0">
+
+            <div id="senaInfo" class="hint"></div>
+          </div>
+
+          <div>
+            <label for="rDur">
+              Duración (minutos)
+            </label>
+
+            <input
+              id="rDur"
+              type="number"
+              min="5"
+              step="5"
+              value="60">
+          </div>
+
+          <div>
+            <label for="rFechaHora">
+              Fecha y hora
+            </label>
+
+            <input
+              id="rFechaHora"
+              type="datetime-local"
+              required>
+          </div>
+
+          <div>
+            <label for="rEstado">Estado</label>
+
+            <select id="rEstado">
+              <option value="pendiente">Pendiente</option>
+              <option value="confirmada" selected>Confirmada</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="rOrigen">Origen</label>
+
+            <select id="rOrigen">
+              <option value="local">Local</option>
+              <option value="cliente">Cliente</option>
+            </select>
+          </div>
+
+          <div id="cobroInfo" class="full"></div>
+
+          <div class="full">
+            <label for="rComentario">
+              Comentario
+            </label>
+
+            <textarea
+              id="rComentario"
+              placeholder="Notas de la reserva (opcional)">
+            </textarea>
+          </div>
+
+          <div class="full row">
+
+            <button
+              id="btnSubmitReserva"
+              type="submit"
+              class="btn">
+              Guardar reserva
+            </button>
+
+            <button
+              id="btnCancelarEdicion"
+              type="button"
+              class="btn ghost hidden">
+              Cancelar edición
+            </button>
+
+          </div>
+
+        </form>
+      </div>
+
+      <div class="card">
+
+        <h3>Reservas</h3>
+
+        <div class="row" style="margin-bottom:12px">
+
+          <div>
+            <label for="filtroFecha">Fecha</label>
+            <input id="filtroFecha" type="date">
+          </div>
+
+          <div>
+            <label for="filtroEstado">Estado</label>
+
+            <select id="filtroEstado">
+              <option value="todas">Todas</option>
+              <option value="pendiente">Pendientes</option>
+              <option value="confirmada">Confirmadas</option>
+              <option value="cancelada">Canceladas</option>
+            </select>
+          </div>
+
+          <div style="align-self:flex-end" class="row">
+
+            <button id="btnFiltrar" class="btn small">
+              Filtrar
+            </button>
+
+            <button
+              id="btnLimpiarFiltro"
+              class="btn small ghost">
+              Limpiar
+            </button>
+
+          </div>
+
+        </div>
+
+        <ul id="listaReservas" class="list"></ul>
+
+        <p
+          id="listaVacia"
+          class="empty"
+          style="display:none">
+          No hay reservas con esos filtros.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- CALENDARIO -->
+    <section id="calendario" class="screen">
+
+      <div class="card">
+
+        <div class="cal-head">
+
+          <button
+            id="calPrev"
+            class="btn small ghost"
+            aria-label="Mes anterior">
+            ‹
+          </button>
+
+          <h3 id="calTitulo"></h3>
+
+          <button
+            id="calNext"
+            class="btn small ghost"
+            aria-label="Mes siguiente">
+            ›
+          </button>
+
+        </div>
+
+        <div id="calendar" class="cal-grid"></div>
+
+        <p
+          class="muted"
+          style="font-size:13px;margin-bottom:0">
+          Tocá un día para ver sus reservas.
+        </p>
+
+      </div>
+    </section>
+
+    <!-- CLIENTES -->
+    <section id="clientes" class="screen">
+
+      <div class="card">
+
+        <h3>Clientes frecuentes</h3>
+
+        <ul
+          id="clientesFrecuentes"
+          class="list">
+        </ul>
+
+      </div>
+    </section>
+
+    <!-- SERVICIOS -->
+    <section id="servicios" class="screen">
+
+      <div class="card">
+
+        <h3>Servicios</h3>
+
+        <div
+          class="formgrid"
+          style="margin-bottom:12px">
+
+          <div>
+            <label for="svcName">Nombre</label>
+            <input
+              id="svcName"
+              placeholder="Ej: Corte de pelo">
+          </div>
+
+          <div>
+            <label for="svcPrice">Precio ($)</label>
+            <input
+              id="svcPrice"
+              type="number"
+              min="1"
+              placeholder="5000">
+          </div>
+
+          <div>
+            <label for="svcDur">
+              Duración (minutos)
+            </label>
+
+            <input
+              id="svcDur"
+              type="number"
+              min="5"
+              step="5"
+              value="60">
+          </div>
+
+        </div>
+
+        <button
+          id="btnAddService"
+          class="btn"
+          style="margin-bottom:16px">
+          Agregar servicio
+        </button>
+
+        <ul
+          id="serviceList"
+          class="list">
+        </ul>
+
+      </div>
+    </section>
+
+    <!-- ESTADÍSTICAS -->
+    <section id="estadisticas" class="screen">
+
+      <div class="card">
+
+        <h3>Ranking de servicios</h3>
+
+        <div id="rankingServicios"></div>
+
+      </div>
+    </section>
+
+    <!-- FACTURACIÓN -->
+    <section id="facturacion" class="screen">
+
+      <div class="card">
+
+        <h3>Facturación</h3>
+
+        <div
+          class="row"
+          style="margin-bottom:12px">
+
+          <div>
+            <label for="factMes">Mes</label>
+            <input id="factMes" type="month">
+          </div>
+
+          <div style="align-self:flex-end">
+            <button
+              id="btnCSV"
+              class="btn small ghost">
+              Descargar CSV
+            </button>
+          </div>
+
+        </div>
+
+        <p class="total" id="factTotal"></p>
+
+        <ul
+          id="facturacionLista"
+          class="list">
+        </ul>
+
+      </div>
+    </section>
+
+    <!-- MOVIMIENTOS -->
+    <section id="movimientos" class="screen">
+
+      <div class="card">
+
+        <h3>Movimientos del equipo</h3>
+
+        <div
+          style="max-width:320px;margin-bottom:12px">
+
+          <label for="logUser">Persona</label>
+
+          <select id="logUser"></select>
+
+        </div>
+
+        <ul
+          id="logList"
+          class="list">
+        </ul>
+
+      </div>
+    </section>
+
+    <!-- AJUSTES -->
+    <section id="ajustes" class="screen stack">
+
+      <div class="card">
+
+        <h3>Datos del local</h3>
+
+        <div class="formgrid">
+
+          <div>
+            <label for="cfgEmail">
+              Email de contacto
+            </label>
+            <input id="cfgEmail" type="email">
+          </div>
+
+          <div>
+            <label for="cfgTel">
+              Teléfono
+            </label>
+            <input id="cfgTel" type="tel">
+          </div>
+
+          <div class="full">
+            <label for="cfgDireccion">
+              Dirección
+            </label>
+            <input id="cfgDireccion">
+          </div>
+
+          <div>
+            <label for="cfgApertura">
+              Apertura
+            </label>
+            <input id="cfgApertura" type="time">
+          </div>
+
+          <div>
+            <label for="cfgCierre">
+              Cierre
+            </label>
+            <input id="cfgCierre" type="time">
+          </div>
+
+          <label
+            class="check"
+            style="align-self:flex-end">
+            <input id="cfgDNI" type="checkbox">
+            Pedir DNI al reservar
+          </label>
+
+        </div>
+
+        <div
+          class="row"
+          style="margin-top:12px">
+
+          <button
+            id="btnGuardarCfg"
+            class="btn">
+            Guardar cambios
+          </button>
+
+          <span
+            id="cfgMsg"
+            class="note">
+          </span>
+
+        </div>
+      </div>
+
+      <!-- NOTIFICACIONES -->
+      <div class="card">
+
+        <h3>Notificaciones</h3>
+
+        <p
+          class="muted"
+          style="margin-top:0;font-size:14px">
+          Guardá las preferencias del local. La entrega automática de
+          emails y WhatsApp se conectará posteriormente mediante el
+          servicio de notificaciones.
+        </p>
+
+        <div class="formgrid">
+
+          <label class="check">
+            <input id="cfgEmailConfirm" type="checkbox">
+            Confirmación de reserva por email
+          </label>
+
+          <label class="check">
+            <input id="cfgEmailReminder" type="checkbox">
+            Recordatorio por email
+          </label>
+
+          <label class="check">
+            <input id="cfgWhatsAppReminder" type="checkbox">
+            Recordatorio por WhatsApp
+          </label>
+
+          <div>
+            <label for="cfgReminderMinutes">
+              Recordatorio antes del turno
+            </label>
+
+            <select id="cfgReminderMinutes">
+              <option value="15">15 minutos</option>
+              <option value="30">30 minutos</option>
+              <option value="60">1 hora</option>
+              <option value="120">2 horas</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div
+          class="row"
+          style="margin-top:12px">
+
+          <button
+            id="btnGuardarNotificaciones"
+            class="btn">
+            Guardar notificaciones
+          </button>
+
+          <span
+            id="notificacionesMsg"
+            class="note">
+          </span>
+
+        </div>
+
+      </div>
+
+      <!-- COBROS -->
+      <div class="card">
+
+        <h3>Cobros y seña</h3>
+
+        <p
+          class="muted"
+          style="margin-top:0;font-size:14px">
+          El cliente te paga la seña por transferencia, directo a tu
+          cuenta. Estos datos se le muestran al reservar.
+        </p>
+
+        <div class="formgrid">
+
+          <div>
+            <label for="cfgSenaTipo">
+              Seña
+            </label>
+
+            <select id="cfgSenaTipo">
+              <option value="ninguna">
+                Sin seña
+              </option>
+
+              <option value="porcentaje">
+                Porcentaje del precio
+              </option>
+
+              <option value="fijo">
+                Monto fijo ($)
+              </option>
+            </select>
+          </div>
+
+          <div id="cfgSenaValorBox">
+
+            <label
+              for="cfgSenaValor"
+              id="cfgSenaLabel">
+              Valor de la seña
+            </label>
+
+            <input
+              id="cfgSenaValor"
+              type="number"
+              min="1"
+              step="1">
+
+          </div>
+
+          <div>
+            <label for="cobTitular">
+              Titular de la cuenta
+            </label>
+
+            <input
+              id="cobTitular"
+              placeholder="Nombre y apellido o razón social"
+              autocomplete="off">
+          </div>
+
+          <div>
+            <label for="cobBanco">
+              Banco o billetera
+            </label>
+
+            <input
+              id="cobBanco"
+              placeholder="Ej: Banco Nación, Ualá, Mercado Pago"
+              autocomplete="off">
+          </div>
+
+          <div>
+            <label for="cobAlias">Alias</label>
+
+            <input
+              id="cobAlias"
+              placeholder="tu.alias.mp"
+              autocomplete="off"
+              autocapitalize="none">
+          </div>
+
+          <div>
+            <label for="cobCBU">
+              CBU o CVU (22 números)
+            </label>
+
+            <input
+              id="cobCBU"
+              inputmode="numeric"
+              placeholder="0000000000000000000000"
+              autocomplete="off">
+          </div>
+
+          <div class="full">
+
+            <label for="cobInstr">
+              Instrucciones para el cliente
+            </label>
+
+            <textarea
+              id="cobInstr"
+              placeholder="Ej: Enviá el comprobante por WhatsApp al 11 1234 5678 para confirmar tu turno.">
+            </textarea>
+
+          </div>
+
+          <div class="full">
+
+            <label for="cfgPolitica">
+              Política de cancelación y seña
+            </label>
+
+            <textarea
+              id="cfgPolitica"
+              placeholder="Ej: La seña no se devuelve si cancelás con menos de 24 horas de anticipación.">
+            </textarea>
+
+          </div>
+
+        </div>
+
+        <h4 style="margin:16px 0 8px">
+          Así lo va a ver el cliente
+        </h4>
+
+        <div
+          id="cobroPreview"
+          class="item"
+          style="display:block">
+        </div>
+
+        <div
+          class="row"
+          style="margin-top:12px">
+
+          <button
+            id="btnGuardarCobros"
+            class="btn">
+            Guardar cobros
+          </button>
+
+          <span
+            id="cobroMsg"
+            class="note">
+          </span>
+
+        </div>
+
+      </div>
+
+      <!-- COPIA -->
+      <div class="card">
+
+        <h3>Copia de seguridad</h3>
+
+        <p
+          class="muted"
+          style="margin-top:0;font-size:14px">
+          Esta copia sirve como respaldo manual. Las contraseñas no se
+          incluyen.
+        </p>
+
+        <div class="row">
+
+          <button
+            id="btnBackup"
+            class="btn">
+            Descargar copia
+          </button>
+
+          <button
+            id="btnRestore"
+            class="btn ghost">
+            Restaurar copia
+          </button>
+
+          <input
+            id="fileRestore"
+            type="file"
+            accept="application/json,.json"
+            class="hidden">
+
+        </div>
+
+        <p id="backupMsg" class="note"></p>
+
+      </div>
+
+      <!-- EQUIPO -->
+      <div class="card" id="userMgmt">
+
+        <h3>Equipo</h3>
+
+        <p
+          id="usoUsuarios"
+          class="muted"
+          style="margin-top:0">
+        </p>
+
+        <div
+          class="formgrid"
+          style="margin-bottom:12px">
+
+          <div>
+            <label for="newUserName">
+              Nombre
+            </label>
+
+            <input id="newUserName">
+          </div>
+
+          <div>
+            <label for="newUserEmail">
+              Correo
+            </label>
+
+            <input
+              id="newUserEmail"
+              type="email">
+          </div>
+
+          <div>
+            <label for="newUserPass">
+              Contraseña temporal
+            </label>
+
+            <input
+              id="newUserPass"
+              type="password">
+          </div>
+
+          <div>
+
+            <label for="newUserRole">
+              Rol
+            </label>
+
+            <select id="newUserRole">
+              <option value="empleado">
+                Empleado/a
+              </option>
+
+              <option value="local_admin">
+                Administrador/a
+              </option>
+            </select>
+
+          </div>
+
+        </div>
+
+        <button
+          id="btnAddUser"
+          class="btn"
+          style="margin-bottom:16px">
+          Agregar usuario
+        </button>
+
+        <ul
+          id="userList"
+          class="list">
+        </ul>
+
+      </div>
+
+    </section>
+
+  </div>
+</section>
+
+<!-- MODAL -->
+<div
+  id="modal"
+  class="modal hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modalMsg">
+
+  <div class="modal-box">
+
+    <p id="modalMsg"></p>
+
+    <div
+      class="row"
+      style="justify-content:flex-end">
+
+      <button
+        id="modalCancel"
+        class="btn ghost">
+        Cancelar
+      </button>
+
+      <button
+        id="modalOk"
+        class="btn">
+        Aceptar
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<div
+  id="toast"
+  class="toast hidden"
+  role="status"
+  aria-live="polite">
+</div>
