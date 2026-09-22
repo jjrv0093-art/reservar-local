@@ -1,57 +1,86 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ReservAR - Panel Local vFinal Firebase</title>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ReservAR - Panel Local Completo v2026-09-22</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui, -apple-system, sans-serif}
-body{background:#f5f0ff;color:#1a1a1a}
-header{background:linear-gradient(135deg,#1a0033,#4a0080);color:white;padding:16px}
-.wrap{max-width:1100px;margin:0 auto;padding:16px}
-.tab{padding:8px 16px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);color:white;cursor:pointer;margin:3px}
-.tab.active{background:white;color:#4a0080;font-weight:800}
-.card{background:white;border-radius:18px;padding:18px;margin-top:14px;box-shadow:0 4px 16px rgba(0,0,0,0.06);border:1px solid #eee}
-.btn{padding:11px 16px;border-radius:12px;border:none;cursor:pointer;font-weight:700}
-.btn.primary{background:#7c3aed;color:white}.btn.ghost{background:#f3f0ff;color:#5b21b6}
-.item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #f0f0f0}
-.pill{background:#f3f0ff;color:#6d28d9;padding:4px 10px;border-radius:20px;font-weight:700;font-size:0.85rem}
-input{padding:12px;border-radius:10px;border:1px solid #ddd;width:100%;margin-top:6px}
-.screen{display:none}.screen.active{display:block}
-.notice{font-size:0.85rem;color:#666;margin-top:8px}
-#statusFirebase{padding:8px 12px;border-radius:10px;font-size:0.8rem;margin-top:8px;display:inline-block}
+<style>*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}body{background:#f4f0ff;color:#111}
+header{background:linear-gradient(135deg,#1a0033,#4a0080);color:#fff;padding:14px}
+.wrap{max-width:1100px;margin:0 auto;padding:14px}
+.tab{padding:8px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;margin:3px;display:inline-block}
+.tab.active{background:#fff;color:#4a0080;font-weight:800}
+.card{background:#fff;border-radius:18px;padding:18px;margin-top:12px;box-shadow:0 4px 14px rgba(0,0,0,.06);border:1px solid #eee}
+.btn{padding:11px 16px;border-radius:12px;border:none;cursor:pointer;font-weight:800}
+.btn.primary{background:#7c3aed;color:#fff}.btn.ghost{background:#f3f0ff;color:#5b21b6}
+.item{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #f0f0f0;gap:10px}
+.pill{background:#f3f0ff;color:#6d28d9;padding:4px 10px;border-radius:20px;font-weight:700;font-size:.85rem}
+input,textarea{padding:11px;border-radius:10px;border:1px solid #ddd;width:100%;margin-top:6px}
+.screen{display:none}.screen.active{display:block}.notice{font-size:.85rem;color:#666;margin-top:8px}
+#statusFirebase{padding:7px 11px;border-radius:10px;font-size:.8rem;display:inline-block}
 .ok{background:#dcfce7;color:#166534}.err{background:#fee2e2;color:#991b1b}
-.grid{display:grid;gap:14px}.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
-.badgeOnline{padding:6px 12px;border-radius:20px;font-weight:800;font-size:0.8rem}.on{background:#dcfce7;color:#166534}.off{background:#fee2e2;color:#991b1b}
-</style>
-</head>
-<body>
-<header>
-<div class="wrap" style="padding:0">
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-<b>ReservAR · Panel Local · reservar-cb70d</b>
-<span id="badgeEstado" class="badgeOnline off">Cargando...</span>
-</div>
-<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center">
-<button class="btn primary" id="btnToggleOnline">Activar reservas online</button>
-<div id="statusFirebase" class="err">Conectando a Firebase...</div>
-</div>
-<nav style="margin-top:14px">
-<button class="tab active" data-screen="inicio">Inicio</button>
-<button class="tab" data-screen="reservas">Reservas</button>
-<button class="tab" data-screen="servicios">Servicios</button>
-<button class="tab" data-screen="calendario">Calendario</button>
-<button class="tab" data-screen="clientes">Clientes</button>
-<button class="tab" data-screen="facturacion">Facturación</button>
-</nav>
-</div>
-</header>
+.grid{display:grid;gap:12px}.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.badgeOnline{padding:6px 12px;border-radius:20px;font-weight:800;font-size:.8rem}.on{background:#dcfce7;color:#166534}.off{background:#fee2e2;color:#991b1b}
+.horRow{display:grid;grid-template-columns:60px 1fr 1fr 70px;gap:6px;align-items:center;margin-top:6px}
+@media(max-width:600px){.horRow{grid-template-columns:50px 1fr 1fr 60px;font-size:.9rem}}
+</style></head><body>
+<header><div class="wrap" style="padding:0">
+<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><div><b>ReservAR</b> · Panel Local<br><small id="nombreHeader" style="opacity:.8">Mi Barbería</small> <small style="opacity:.6">· cb70d · v22-09-2026</small></div><span id="badgeEstado" class="badgeOnline off">Cargando...</span></div>
+<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><button class="btn primary" id="btnToggleOnline">Activar reservas online</button><div id="statusFirebase" class="err">Conectando...</div></div>
+<nav style="margin-top:12px">
+<button class="tab active" data-screen="inicio">Inicio</button><button class="tab" data-screen="reservas">Reservas</button><button class="tab" data-screen="servicios">Servicios</button><button class="tab" data-screen="calendario">Calendario</button><button class="tab" data-screen="clientes">Clientes</button><button class="tab" data-screen="config">Configuración</button><button class="tab" data-screen="facturacion">Facturación</button>
+</nav></div></header>
 <main class="wrap">
-<section id="inicio" class="screen active">
-<div class="grid cols-3">
-<div class="card"><h3>Reservas hoy</h3><div class="item"><span>Total</span><span class="pill" id="kHoy">0</span></div><p class="notice">Tiempo real desde Firebase</p></div>
-<div class="card"><h3>Ingresos mes</h3><div class="item"><span>Estimado</span><span class="pill" id="kIngresos">$0</span></div></div>
-<div class="card"><h3>Estado y Link</h3><p>Online:
+<section id="inicio" class="screen active"><div class="grid cols-3">
+<div class="card"><h3>Hoy</h3><div class="item"><span>Reservas</span><span class="pill" id="kHoy">0</span></div><div class="item"><span>Confirmadas</span><span class="pill" id="kConf">0</span></div></div>
+<div class="card"><h3>Mes</h3><div class="item"><span>Ingresos est.</span><span class="pill" id="kIngresos">$0</span></div><div class="item"><span>Clientes</span><span class="pill" id="kClientes">0</span></div></div>
+<div class="card"><h3>Estado</h3><p>Reservas: <b id="lblOnline">-</b></p><p>Servicios: <b id="lblServCount">0</b></p><p style="margin-top:8px">Link clientes:</p><a id="linkClientes" href="reservar.html" target="_blank" style="color:#7c3aed;font-weight:800;word-break:break-all"></a><button class="btn ghost" id="btnCopiarLink" style="margin-top:8px;padding:6px 10px;font-size:.8rem">Copiar link</button></div>
+</div><div class="card"><h3>Próximas</h3><div id="proximasInicio"></div></div></section>
+<section id="reservas" class="screen"><div class="card"><h2>Reservas - Tiempo real</h2><div id="listaReservas"></div><button class="btn ghost" id="btnReservaPrueba" style="margin-top:12px">+ Reserva prueba</button></div></section>
+<section id="servicios" class="screen"><div class="card"><h2>Servicios - Firebase OK</h2>
+<div class="grid cols-2" style="margin-top:12px"><div><label>Nombre</label><input id="sNombre" placeholder="Corte + Barba"></div><div><label>Precio ARS</label><input id="sPrecio" type="number" placeholder="8000"></div><div><label>Duración min</label><input id="sDur" type="number" placeholder="30"></div><div style="display:flex;align-items:end"><button class="btn primary" id="btnAddServ" style="width:100%">Agregar servicio</button></div></div><div id="listaServicios" style="margin-top:14px"></div></div></section>
+<section id="calendario" class="screen"><div class="card"><h2>Calendario</h2><div id="calGrid"></div></div></section>
+<section id="clientes" class="screen"><div class="card"><h2>Clientes</h2><div id="listaClientes"></div></div></section>
+<section id="config" class="screen"><div class="card"><h2>Configuración del local - RESTAURADO</h2>
+<div class="grid cols-2" style="margin-top:12px"><div><label>Nombre del local</label><input id="cfgNombre" placeholder="Mi Barbería"></div><div><label>WhatsApp</label><input id="cfgWhats" placeholder="5491122334455"></div><div><label>Dirección</label><input id="cfgDir" placeholder="Av. Siempre Viva 123"></div><div><label>Instagram</label><input id="cfgInsta" placeholder="@mibarberia"></div><div style="grid-column:1/-1"><label>Descripción</label><textarea id="cfgDesc" placeholder="Barbería clásica..."></textarea></div></div>
+<h3 style="margin-top:16px">Horarios</h3>
+<div id="horariosBox">
+<div class="horRow"><b>Lun</b><input id="h-lun-a" type="time" value="09:00"><input id="h-lun-c" type="time" value="20:00"><label><input type="checkbox" id="h-lun-off"> Cer</label></div>
+<div class="horRow"><b>Mar</b><input id="h-mar-a" type="time" value="09:00"><input id="h-mar-c" type="time" value="20:00"><label><input type="checkbox" id="h-mar-off"> Cer</label></div>
+<div class="horRow"><b>Mié</b><input id="h-mie-a" type="time" value="09:00"><input id="h-mie-c" type="time" value="20:00"><label><input type="checkbox" id="h-mie-off"> Cer</label></div>
+<div class="horRow"><b>Jue</b><input id="h-jue-a" type="time" value="09:00"><input id="h-jue-c" type="time" value="20:00"><label><input type="checkbox" id="h-jue-off"> Cer</label></div>
+<div class="horRow"><b>Vie</b><input id="h-vie-a" type="time" value="09:00"><input id="h-vie-c" type="time" value="20:00"><label><input type="checkbox" id="h-vie-off"> Cer</label></div>
+<div class="horRow"><b>Sáb</b><input id="h-sab-a" type="time" value="09:00"><input id="h-sab-c" type="time" value="18:00"><label><input type="checkbox" id="h-sab-off"> Cer</label></div>
+<div class="horRow"><b>Dom</b><input id="h-dom-a" type="time" value="10:00"><input id="h-dom-c" type="time" value="14:00"><label><input type="checkbox" id="h-dom-off" checked> Cer</label></div>
+</div>
+<button class="btn primary" id="btnGuardarCfg" style="margin-top:16px;width:100%">Guardar configuración en Firebase</button>
+<p id="cfgOk" style="display:none;color:green;font-weight:800;margin-top:8px">✓ Guardado</p></div></section>
+<section id="facturacion" class="screen"><div class="card"><h2>Facturación</h2><div class="item"><span>Total mes</span><span class="pill" id="kFactTotal">$0</span></div><p class="notice">Plan Básico</p></div></section>
+</main>
+<script>
+const firebaseConfig={apiKey:"AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",authDomain:"reservar-cb70d.firebaseapp.com",projectId:"reservar-cb70d",storageBucket:"reservar-cb70d.firebasestorage.app",messagingSenderId:"630908928696",appId:"1:630908928696:web:5e89f5f2b1cc2b240e6a4d",measurementId:"G-2HMNZ69E4G"};
+firebase.initializeApp(firebaseConfig);const db=firebase.firestore();firebase.auth().signInAnonymously();
+const LOCAL_ID="demo_local_001";let state=JSON.parse(localStorage.getItem("reservar_vFinal")||'{"servicios":[],"reservas":[],"online":false,"config":{"nombre":"Mi Barbería"}}');
+const $=id=>document.getElementById(id);const save=()=>localStorage.setItem("reservar_vFinal",JSON.stringify(state));
+function fbStatus(ok,msg){const e=$("statusFirebase");e.className=ok?"ok":"err";e.textContent=msg}
+firebase.auth().onAuthStateChanged(()=>{fbStatus(true,"Firebase ✓");initRT()});
+function initRT(){
+ db.doc("locales/"+LOCAL_ID).onSnapshot(d=>{if(d.exists){const data=d.data();state.online=data.online||false;if(data.config){state.config={...state.config,...data.config};$("cfgNombre").value=state.config.nombre||"";$("cfgWhats").value=state.config.whatsapp||"";$("cfgDir").value=state.config.dir||"";$("cfgInsta").value=state.config.insta||"";$("cfgDesc").value=state.config.desc||"";$("nombreHeader").textContent=state.config.nombre||"Mi Barbería";if(data.horarios){Object.keys(data.horarios).forEach(k=>{try{$("h-"+k+"-a").value=data.horarios[k].a;$("h-"+k+"-c").value=data.horarios[k].c;$("h-"+k+"-off").checked=data.horarios[k].off}catch{}})}}save();renderOn()}});
+ db.collection("locales").doc(LOCAL_ID).collection("servicios").onSnapshot(s=>{state.servicios=[];s.forEach(d=>state.servicios.push({id:d.id,...d.data()}));save();renderServ();renderIni()});
+ db.collection("locales").doc(LOCAL_ID).collection("reservas").orderBy("creado","desc").limit(100).onSnapshot(s=>{state.reservas=[];s.forEach(d=>state.reservas.push({id:d.id,...d.data()}));save();renderRes();renderCli();renderIni();renderCal()});
+}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(b.dataset.screen).classList.add("active")});
+function renderOn(){$("badgeEstado").textContent=state.online?"ONLINE":"OFFLINE";$("badgeEstado").className="badgeOnline "+(state.online?"on":"off");$("lblOnline").textContent=state.online?"Activas":"Pausadas";$("btnToggleOnline").textContent=state.online?"Pausar reservas":"Activar reservas online";const base=location.href.replace("index.html","").split("?")[0];$("linkClientes").textContent=base.replace("index.html","")+"reservar.html";$("linkClientes").href="reservar.html"}
+function renderIni(){$("kHoy").textContent=state.reservas.length;$("kConf").textContent=state.reservas.length;let t=0;state.reservas.forEach(r=>t+=parseInt(r.precio||0));$("kIngresos").textContent="$"+t;$("kFactTotal").textContent="$"+t;$("kClientes").textContent=new Set(state.reservas.map(r=>r.tel)).size;$("lblServCount").textContent=state.servicios.length;renderOn();const c=$("proximasInicio");c.innerHTML="";state.reservas.slice(0,5).forEach(r=>c.innerHTML+=`<div class=item><span>${r.fecha||""} ${r.hora||""} - <b>${r.cliente||""}</b></span><span class=pill>${r.servicioNombre||""}</span></div>`);if(!state.reservas.length)c.innerHTML="<p class=notice>Sin reservas</p>"}
+function renderServ(){const c=$("listaServicios");if(!state.servicios.length){c.innerHTML="<p class=notice>No hay servicios</p>";return}c.innerHTML="";state.servicios.forEach(s=>c.innerHTML+=`<div class=item><span><b>${s.nombre}</b> - $${s.precio} (${s.duracion}min)</span><button class="btn ghost" style="padding:6px 10px" onclick="delServ('${s.id}')">Borrar</button></div>`)}
+window.delServ=async id=>{if(confirm("Borrar?")){try{await db.collection("locales").doc(LOCAL_ID).collection("servicios").doc(id).delete()}catch{}}};
+function renderRes(){const c=$("listaReservas");if(!state.reservas.length){c.innerHTML="<p class=notice>Sin reservas</p>";return}c.innerHTML="";state.reservas.forEach(r=>c.innerHTML+=`<div class=item><span><b>${r.cliente||""}</b> - ${r.servicioNombre||""}<br><small>${r.fecha||""} ${r.hora||""} - ${r.tel||""}</small></span><span class=pill>$${r.precio||""}</span></div>`)}
+function renderCli(){const m={};state.reservas.forEach(r=>{const k=r.tel||r.cliente;if(k)m[k]=r});const c=$("listaClientes"),a=Object.values(m);if(!a.length){c.innerHTML="<p class=notice>Clientes acá</p>";return}c.innerHTML="";a.forEach(r=>c.innerHTML+=`<div class=item><span>${r.cliente} - ${r.tel}</span><span class=pill>${r.fecha||""}</span></div>`)}
+function renderCal(){const c=$("calGrid");c.innerHTML="";state.reservas.slice(0,20).forEach(r=>c.innerHTML+=`<div class=item><span>${r.fecha} ${r.hora}</span><span>${r.cliente} - ${r.servicioNombre}</span></div>`)}
+renderIni();renderServ();renderRes();renderCli();renderCal();
+$("btnAddServ").onclick=async function(){const n=$("sNombre").value.trim(),p=$("sPrecio").value.trim(),d=$("sDur").value.trim()||"30";if(!n||!p){alert("Nombre y precio");return}const o={nombre:n,precio:p,duracion:d,creado:firebase.firestore.FieldValue.serverTimestamp()};this.textContent="Guardando...";this.disabled=true;try{await db.collection("locales").doc(LOCAL_ID).collection("servicios").add(o);$("sNombre").value="";$("sPrecio").value="";$("sDur").value="";fbStatus(true,"Servicio guardado ✓")}catch(e){fbStatus(false,e.message)}this.textContent="Agregar servicio";this.disabled=false};
+$("btnToggleOnline").onclick=async function(){const nu=!state.online;this.textContent="Cambiando...";try{await db.doc("locales/"+LOCAL_ID).set({online:nu,updated:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});state.online=nu;save();renderOn();fbStatus(true,nu?"Activadas ✓":"Pausadas")}catch(e){}this.textContent=state.online?"Pausar reservas":"Activar reservas online"};
+$("btnReservaPrueba").onclick=async()=>{const r={cliente:"Cliente Prueba",tel:"1122334455",servicioNombre:state.servicios[0]?.nombre||"Corte",precio:state.servicios[0]?.precio||"8000",fecha:new Date().toISOString().split("T")[0],hora:"16:00",creado:firebase.firestore.FieldValue.serverTimestamp()};try{await db.collection("locales").doc(LOCAL_ID).collection("reservas").add(r)}catch{}};
+$("btnGuardarCfg").onclick=async function(){const cfg={nombre:$("cfgNombre").value.trim()||"Mi Barbería",whatsapp:$("cfgWhats").value.trim(),dir:$("cfgDir").value.trim(),insta:$("cfgInsta").value.trim(),desc:$("cfgDesc").value.trim()};const hor={};["lun","mar","mie","jue","vie","sab","dom"].forEach(k=>{hor[k]={a:$("h-"+k+"-a").value,c:$("h-"+k+"-c").value,off:$("h-"+k+"-off").checked}});this.textContent="Guardando...";try{await db.doc("locales/"+LOCAL_ID).set({config:cfg,horarios:hor,updated:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});state.config=cfg;save();$("nombreHeader").textContent=cfg.nombre;$("cfgOk").style.display="block";setTimeout(()=>$("cfgOk").style.display="none",3000);fbStatus(true,"Config guardada ✓")}catch(e){alert(e.message)}this.textContent="Guardar configuración en Firebase"};
+$("btnCopiarLink").onclick=()=>{navigator.clipboard.writeText($("linkClientes").textContent).then(()=>alert("Link copiado!"))};
+</script>
+</body>
+</html>
