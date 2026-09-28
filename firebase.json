@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "reservar-cb70d",
     "public": ".",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }
