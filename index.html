@@ -1839,7 +1839,7 @@ $$('.tab').forEach(t=>{
   t.addEventListener('click',()=>{
     $$('.tab').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
-    const id=t.dataset.go;
+    const id=t.dataset.go || t.dataset.screen;
     goScreen(id);
     if(id==='reservas'){
       $('cardNuevaReserva').classList.remove('hidden');
