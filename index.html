@@ -1855,7 +1855,7 @@ $$('.tab').forEach(t=>{
 goScreen('dashboard');
 
 // RESERVAS PAUSADAS
-safe('togglePausa','click',async()=>{
+safe('btnToggleEstado','click',async()=>{
   const uid=auth.currentUser.uid;
   try{
     const cDoc=await db.collection('config').doc(uid).get();
