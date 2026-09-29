@@ -781,6 +781,7 @@ const apM=minutosDesdeHora(ap);
 const ciM=minutosDesdeHora(ci);
 if(mins<apM||mins>=ciM){
 return {ok:false,msg:`Local abre ${ap} a ${ci}. Elegiste ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`}
+}
 const dur=Number($('rDur').value||60);
 const finMins=mins+dur;
 if(finMins>ciM){
