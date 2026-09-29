@@ -1,587 +1,108 @@
 <!DOCTYPE html>
-<html lang='es'>
-<head>
-<meta charset='UTF-8'>
-<meta name='viewport' content='width=device-width,initial-scale=1.0'>
-<title>reservAR tu lugar, tu momento.</title>
-<style>
-:root{--stroke:#ffffff26}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui;color:#fff;background:linear-gradient(160deg,#6a11cb,#7b1fa2 40%,#3a0f6e 70%,#0a0933);background-attachment:fixed}
-.hidden{display:none!important}
-.wrap{max-width:1100px;margin:0 auto;padding:16px}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-@media(max-width:700px){.formgrid{grid-template-columns:1fr}}
-.topbar{position:sticky;top:0;z-index:20;display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:rgba(31,7,54,.98);border-bottom:1px solid var(--stroke)}
-.topbar-main{display:flex;justify-content:space-between;align-items:center;width:100%}
-.logo{font-weight:900;font-size:18px}
-.right{display:flex;gap:6px;align-items:center}
-.tabs{display:flex;gap:10px;overflow-x:auto;width:100%;padding:6px 2px 8px;flex-wrap:nowrap}
-.tabs::-webkit-scrollbar{display:none}
-.tab{border:1px solid var(--stroke);background:#ffffff12;color:#fff;padding:12px 20px;border-radius:999px;cursor:pointer;font-weight:700;white-space:nowrap;font-size:14px;min-height:44px;display:flex;align-items:center;flex:0 0 auto}
-.tab.active{background:#fff;color:#3a0f6e}
-.btn{background:#a855f7;border:none;color:#fff;padding:.6rem .9rem;border-radius:10px;cursor:pointer;font-weight:700}
-.btn.ghost{background:transparent;border:1px solid var(--stroke)}
-.btn.full{width:100%}
-.btn.small{padding:.35rem .6rem;font-size:12px}
-.btn:disabled{opacity:.35;pointer-events:none}
-.auth{max-width:420px;margin:30px auto;background:#ffffff12;border:1px solid var(--stroke);border-radius:14px;padding:16px}
-.auth input{width:100%;padding:.6rem .7rem;border-radius:10px;border:1px solid #ffffff22;background:#ffffff08;color:#fff;margin-bottom:8px}
-.screen{display:none}
-.screen.active{display:block}
-.card{background:#ffffff12;border:1px solid var(--stroke);border-radius:16px;padding:16px;margin-bottom:12px}
-.list{list-style:none;margin:0;padding:0}
-.item{display:flex;justify-content:space-between;gap:8px;padding:10px;border:1px solid var(--stroke);border-radius:12px;background:#ffffff0f;margin-bottom:8px}
-input,select,textarea{width:100%;padding:.6rem .7rem;border-radius:10px;border:1px solid #ffffff22;background:#ffffff08;color:#fff}
-.pill{padding:6px 10px;border-radius:999px;border:1px solid var(--stroke);background:#ffffff18;font-size:12px}
-.hint{font-size:12px;color:#fde68a}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1f0736;border:1px solid #ffffff33;padding:10px 16px;border-radius:12px;z-index:9999}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
-.aviso{padding:12px;border-radius:12px;margin-bottom:12px;border:1px solid #fca5a5;background:#ef444422}
-#btnSoporte{position:fixed;right:18px;bottom:18px;z-index:999;width:56px;height:56px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#a855f7,#ff5ab3);box-shadow:0 8px 24px #0006;font-size:24px;color:#fff}
-#panelSoporte{position:fixed;right:18px;bottom:88px;z-index:1000;width:330px;max-width:92vw;background:#1f0736;border:1px solid #ffffff44;border-radius:16px;padding:14px;box-shadow:0 12px 32px #000a}
-.preview{width:100%;max-width:280px;height:180px;object-fit:cover;object-position:center;border-radius:16px;border:1px solid #ffffff33;margin-top:8px;display:block}
-input[type=file]{padding:10px;background:#ffffff14;border:2px dashed #a855f7;cursor:pointer;border-radius:12px}
-input[type=file]::file-selector-button{background:linear-gradient(135deg,#a855f7,#ff5ab3);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-weight:800;margin-right:12px;cursor:pointer}
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>reservAR ADM</title>
+<style>:root{--stroke:#ffffff20}*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui;color:#fff;background:linear-gradient(160deg,#6a11cb,#7b1fa2,#3a0f6e,#0a0933);background-attachment:fixed}
+.hidden{display:none!important}.screen{display:none}.screen.active{display:block}
+.wrap{max-width:1200px;margin:0 auto;padding:16px}.topbar{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:rgba(20,8,45,.9);border-bottom:1px solid var(--stroke)}
+.brand{font-weight:900}.tabs{display:flex;gap:8px;overflow-x:auto;padding:10px 2px}
+.tab{border:1px solid var(--stroke);background:#ffffff12;color:#e9e0ff;padding:10px 18px;border-radius:999px;cursor:pointer;font-weight:700;font-size:14px;white-space:nowrap}
+.tab.active{background:#fff;color:#3a0f6e}.btn{background:#a855f7;border:none;color:#fff;padding:.6rem .95rem;border-radius:12px;cursor:pointer;font-weight:800;font-size:14px}
+.btn.ghost{background:transparent;border:1px solid var(--stroke)}.btn.small{padding:.4rem .7rem;font-size:12px}.btn.full{width:100%}
+.card{background:#ffffff14;border:1px solid var(--stroke);border-radius:20px;padding:18px;margin-bottom:14px}
+.pill{padding:7px 12px;border-radius:999px;border:1px solid var(--stroke);background:#ffffff18;font-size:12px;font-weight:700}
+input,select,textarea{width:100%;padding:.65rem .8rem;border-radius:12px;border:1px solid #ffffff22;background:#1a1033cc;color:#fff}
+label{font-size:12px;color:#d9ccff;margin-bottom:6px;display:block}
+.list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.item{padding:12px;border:1px solid var(--stroke);border-radius:14px;background:#ffffff0f;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#fff;color:#111;padding:12px 18px;border-radius:999px;font-weight:900;z-index:99}
 </style>
-<script src='https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js'></script>
-<script src='https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js'></script>
-<script src='https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js'></script>
-<script src='https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js'></script>
-</head>
-<body>
-<div style="padding:12px 20px"><h1 style="margin:0;font-size:18px">reservAR <span style="font-weight:300;font-size:14px;color:#cfc9e6">tu lugar, tu momento.</span></h1></div>
-<section id="auth" class="auth">
-<h2>Iniciar sesion</h2>
-<input id="email" type="email" placeholder="tu@correo.com">
-<input id="password" type="password" placeholder="Contrasena">
-<p id="loginMsg" style="color:#fca5a5;min-height:18px"></p>
-<button id="loginBtn" class="btn full">Entrar</button>
-<p style="text-align:center"><a href="#" id="goForgot" style="color:#cfc9e6;font-size:13px">Olvidaste tu contrasena?</a></p>
-<p>No tenes cuenta? <a href="#" id="goRegister" style="color:#ff5ab3">Crear cuenta</a></p>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+</head><body>
+<section id="auth" style="max-width:400px;margin:60px auto;background:#ffffff12;border:1px solid var(--stroke);border-radius:20px;padding:20px">
+<div class="brand" style="font-size:22px">reservAR ADM</div>
+<div style="color:#d9ccff;font-size:12px;margin-bottom:14px">ADM TRAZABLE</div>
+<input id="email" value="jjrv.0093@gmail.com"><input id="password" type="password" placeholder="Contraseña" style="margin-top:8px">
+<p id="err" style="color:#fca5a5;min-height:18px"></p><button id="loginBtn" class="btn full">Entrar</button>
 </section>
-<section id="register" class="auth hidden">
-<h2>Crear cuenta</h2>
-<input id="regNombre" placeholder="Nombre">
-<input id="regApellido" placeholder="Apellido">
-<input id="regEmail" type="email" placeholder="Correo">
-<input id="regPass" type="password" placeholder="Contrasena">
-<input id="regPass2" type="password" placeholder="Repetir">
-<label style="font-size:13px"><input id="regTerminos" type="checkbox" style="width:auto"> Acepto terminos</label>
-<p id="regMsg" style="color:#fca5a5"></p>
-<button id="registerBtn" class="btn full">Registrarme</button>
-<p><a href="#" id="goLogin" style="color:#ff5ab3">Iniciar sesion</a></p>
-</section>
-<section id="forgot" class="auth hidden">
-<h2>Recuperar contrasena</h2>
-<input id="forgotEmail" type="email" placeholder="tu correo">
-<p id="forgotMsg" style="color:#fca5a5"></p>
-<p id="forgotOk" style="color:#86efac"></p>
-<button id="forgotBtn" class="btn full">Enviar link</button>
-<p><a href="#" id="goBackLogin" style="color:#ff5ab3">Volver</a></p>
-</section>
-<section id="app" class="hidden">
-<div class="topbar">
-<div class="topbar-main">
-<div class="logo">reservAR</div>
-<div class="right"><span id="estadoPill" class="pill">Pausadas</span><button id="btnToggleEstado" class="btn small">Activar</button><button id="btnLogout" class="btn small ghost">Salir</button></div>
+<section id="app" class="hidden"><div class="topbar"><div class="brand">reservAR ADM</div><div style="display:flex;gap:8px"><span class="pill">Trazabilidad ON</span><button id="logout" class="btn small ghost">Salir</button></div></div>
+<div class="wrap"><div class="tabs">
+<button class="tab active" data-s="dash">Inicio</button>
+<button class="tab" data-s="pagos" style="background:#facc15;color:#000">💸 Pagos</button>
+<button class="tab" data-s="planes">Locales</button>
+<button class="tab" data-s="soporte">Soporte</button>
+<button class="tab" data-s="users">Usuarios</button>
+<button class="tab" data-s="tarifas">Tarifas</button>
+<button class="tab" data-s="ajustes">Ajustes</button>
 </div>
-<div class="tabs">
-<button class="tab active" data-screen="dashboard">Inicio</button>
-<button class="tab" data-screen="reservas">Reservas</button>
-<button class="tab" data-screen="calendario">Calendario</button>
-<button class="tab" data-screen="clientes">Clientes</button>
-<button class="tab" data-screen="servicios">Servicios</button>
-<button class="tab" data-screen="estadisticas">Estadisticas</button>
-<button class="tab" data-screen="facturacion">Facturacion</button>
-<button class="tab" data-screen="ajustes">Ajustes</button>
-<button class="tab" data-screen="soporte">Soporte</button>
-</div>
-</div>
-<div class="wrap">
-<div id="planAviso" class="aviso hidden"></div>
-<div id="trialAviso" class="aviso hidden" style="background:#a855f722;border-color:#a855f7"></div>
-<div id="graciaAviso" class="aviso hidden" style="background:#f59e0b22;border-color:#f59e0b"></div>
-</div>
-<div class="wrap">
-<section id="dashboard" class="screen active">
-<div class="card">
-<h2 id="saludo">Panel</h2>
-<div class="row"><button id="btnNuevaReserva" class="btn">+ Nueva reserva</button><button id="btnIrReservas" class="btn ghost">Ver reservas</button></div>
-<div id="kpis" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
-</div>
-<div class="card"><h3>Turnos de hoy</h3><ul id="turnosHoy" class="list"></ul></div>
-<div class="card">
-<h3>Mi membresia</h3>
-<div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px">
-<div><div style="font-size:11px;color:#cfc9e6">PLAN ACTUAL</div><strong id="membershipPlan">Sin plan</strong></div>
-<div><div style="font-size:11px;color:#cfc9e6">ESTADO</div><strong id="membershipStatus">Sin membresia</strong></div>
-<div><div style="font-size:11px;color:#cfc9e6">VENCE</div><strong id="membershipVence">-</strong></div>
-</div>
-<p id="planUso" class="hint"></p>
-<div class="row" style="margin:12px 0">
-<button class="btn small plan" data-plan="basico">Basico 100/mes $5000</button>
-<button class="btn small plan" data-plan="medio">Medio 300/mes $9000</button>
-<button class="btn small plan" data-plan="premium">Premium Ilim $15000</button>
-</div>
-<div class="formgrid"><div><label>Metodo de pago</label><select id="metodoPago"><option value="">Elegi</option><option value="mercadopago">Mercado Pago</option><option value="uala">Uala</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select></div></div>
-<div class="row" style="margin-top:12px"><button id="btnPagarPlan" class="btn">Contratar / Cambiar plan</button><button id="btnRenovarPlan" class="btn ghost hidden">Renovar 30 dias</button><button id="btnCancelarPlan" class="btn ghost hidden">Cancelar membresia</button><button id="btnReactivarPlan" class="btn ghost hidden">Reactivar</button></div>
-<p id="planMsg" style="color:#86efac"></p>
-</div>
-</section>
-<section id="reservas" class="screen">
-<div id="cardNuevaReserva" class="card">
-<h3 id="tituloReserva">Nueva reserva</h3>
-<form id="reservaForm" class="formgrid">
-<div><label>Cliente *</label><input id="rCliente" required></div>
-<div><label>WhatsApp</label><input id="rWhats" placeholder="11 1234 5678"></div>
-<div><label>Servicio</label><select id="rServicioSelect"></select><input id="rServicioCustom" class="hidden" placeholder="Otro"></div>
-<div><label>Precio $</label><input id="rPrecio" type="number"><div id="senaInfo" class="hint"></div></div>
-<div><label>Duracion min</label><input id="rDur" type="number" value="60"></div>
-<div><label>Fecha y hora</label><input id="rFechaHora" type="datetime-local" required></div>
-<div><label>Estado</label><select id="rEstado"><option value="pendiente">Pendiente</option><option value="confirmada" selected>Confirmada</option><option value="cancelada">Cancelada</option><option value="pendiente_sena">Pendiente seña</option></select></div>
-<div><label>Origen</label><select id="rOrigen"><option value="local">Local</option><option value="cliente">Cliente</option></select></div>
-<div class="full"><label>Comentario</label><textarea id="rComentario"></textarea></div>
-<div class="full row"><button type="submit" class="btn" id="btnGuardarRes">Guardar</button><button id="btnCancelarEdicion" type="button" class="btn ghost hidden">Cancelar edicion</button><button id="btnVerListaDesdeForm" type="button" class="btn ghost">Ver reservas</button></div>
-</form>
-<p id="validacionMsg" style="color:#fca5a5;font-size:13px;margin-top:8px"></p>
-</div>
-<div id="cardListaReservas" class="card hidden">
-<h3>Reservas - Lista</h3>
-<div class="row" style="margin-bottom:8px"><button id="btnNuevaDesdeLista" class="btn small">+ Nueva reserva</button></div>
-<div class="row">
-<input id="filtroFecha" type="date" style="width:auto">
-<select id="filtroEstado" style="width:auto"><option value="todas">Todas</option><option value="confirmada">Confirmadas</option><option value="pendiente">Pendientes</option><option value="pendiente_sena">Pendiente seña</option><option value="cancelada">Canceladas</option></select>
-<button id="btnFiltrar" class="btn small">Filtrar</button><button id="btnLimpiarFiltro" class="btn small ghost">Limpiar</button><button id="btnCSV" class="btn small ghost">CSV</button>
-</div>
-<ul id="listaReservas" class="list"></ul>
-</div>
-</section>
-<section id="calendario" class="screen">
-<div class="card">
-<div style="display:flex;justify-content:space-between"><button id="calPrev" class="btn small ghost"><</button><h3 id="calTitulo"></h3><button id="calNext" class="btn small ghost">></button></div>
-<div id="calendar" class="cal-grid"></div>
-</div>
-</section>
-<section id="clientes" class="screen">
-<div class="card"><h3>Clientes frecuentes</h3><ul id="clientesFrecuentes" class="list"></ul></div>
-</section>
-<section id="servicios" class="screen">
-<div class="card">
-<h3>Servicios</h3>
-<div class="formgrid">
-<div><input id="svcName" placeholder="Nombre *"></div>
-<div><input id="svcPrice" type="number" placeholder="Precio *"></div>
-<div><input id="svcDur" type="number" value="60"></div>
-<div class="full"><label>Foto servicio</label><input id="svcFotoFile" type="file" accept="image/*"><img id="svcFotoPreview" class="preview hidden"></div>
-</div>
-<button id="btnAddService" class="btn" style="margin-top:8px">Agregar servicio</button>
-<ul id="serviceList" class="list"></ul>
-</div>
-</section>
-<section id="estadisticas" class="screen">
-<div class="card"><h3>Ranking de servicios</h3><div id="rankingServicios"></div></div>
-</section>
-<section id="facturacion" class="screen">
-<div class="card">
-<h3>Facturacion</h3>
-<div class="row"><input id="factMes" type="month" style="width:auto"></div>
-<p id="factTotal" style="font-weight:800"></p>
-<ul id="facturacionLista" class="list"></ul>
-</div>
-</section>
-<section id="ajustes" class="screen">
-<div class="card">
-<h3>Datos del local</h3>
-<div class="formgrid">
-<div><label>Nombre del local</label><input id="cfgLocalNombre" placeholder="Mi local"></div>
-<div><label>Email de contacto</label><input id="cfgEmail"></div>
-<div><label>Telefono</label><input id="cfgTel"></div>
-<div><label>Direccion</label><input id="cfgDireccion"></div>
-<div><label>Apertura</label><input id="cfgApertura" type="time"></div>
-<div><label>Cierre</label><input id="cfgCierre" type="time"></div>
-<div class="full"><label>Foto del local</label><input id="cfgFotoFile" type="file" accept="image/*"><input id="cfgFoto" type="hidden"><img id="cfgFotoPreview" class="preview hidden"><div id="cfgFotoURL" class="hint"></div></div>
-<div><label>Dias de anticipacion</label><input id="cfgDiasAnticipacion" type="number" value="30"></div>
-<div><label>Visible en buscador</label><select id="cfgVisible"><option value="true">Si - Visible</option><option value="false">No - Oculto</option></select></div>
-</div>
-<div class="row" style="margin-top:10px"><button id="btnGuardarCfg" class="btn">Guardar datos del local</button><span id="cfgMsg" style="color:#86efac"></span></div>
-</div>
-<div class="card">
-<h3>Cobros y seña</h3>
-<div class="formgrid">
-<div><label>Pedir seña?</label><select id="cfgSenaActiva"><option value="false">No</option><option value="true">Si</option></select></div>
-<div><label>Seña desde cuantos dias</label><input id="cfgSenaDesdeDias" type="number" value="3"></div>
-<div><label>Tipo seña</label><select id="cfgSenaTipo"><option value="ninguna">Sin seña</option><option value="porcentaje" selected>Porcentaje</option><option value="fijo">Fijo $</option></select></div>
-<div><label>Valor seña</label><input id="cfgSenaValor" type="number" value="30"></div>
-<div><label>Pedir DNI al cliente?</label><select id="cfgPideDni"><option value="false">No - Opcional</option><option value="true">Si - Obligatorio</option></select></div>
-<div><label>Titular</label><input id="cobTitular"></div>
-<div><label>Banco</label><input id="cobBanco"></div>
-<div><label>Alias</label><input id="cobAlias"></div>
-<div><label>CBU</label><input id="cobCBU"></div>
-<div class="full"><label>Instrucciones para seña</label><textarea id="cobInstr"></textarea></div>
-<div class="full"><label>Politica</label><textarea id="cfgPolitica"></textarea></div>
-</div>
-<div id="cobroPreview" class="item" style="display:block;margin-top:10px"></div>
-<div class="row" style="margin-top:10px"><button id="btnGuardarCobros" class="btn">Guardar cobros y seña</button><span id="cobroMsg" style="color:#86efac"></span></div>
-</div>
-<div class="card">
-<h3>Equipo</h3>
-<div class="formgrid"><div><input id="newUserName" placeholder="Nombre"></div><div><input id="newUserEmail" type="email" placeholder="Email empleado"></div><div><input id="newUserPass" type="password" placeholder="Pass temporal"></div></div>
-<button id="btnAddUser" class="btn">Agregar empleado</button>
-<p id="userMsg" style="color:#86efac"></p>
-</div>
-<div class="card"><div class="row"><button id="btnBackup" class="btn">Backup JSON</button><button id="btnRestore" class="btn ghost">Restaurar</button><input id="fileRestore" type="file" class="hidden"></div></div>
-</section>
-<section id="soporte" class="screen">
-<div class="card"><h3>Soporte</h3><ul id="listaSoporte" class="list"></ul><div class="row"><button id="btnBorrarSoporte" class="btn small ghost">Borrar todos leidos</button></div></div>
-</section>
-</div>
-</section>
-<button id="btnSoporte">💬</button>
-<div id="panelSoporte" class="hidden">
-<h4>Soporte reservAR</h4>
-<select id="sopTipo" style="margin-bottom:8px"><option value="error">Error</option><option value="queja">Queja</option><option value="sugerencia">Sugerencia</option></select>
-<textarea id="sopMsg" placeholder="Que paso?" style="margin-bottom:8px"></textarea>
-<input id="sopEmail" placeholder="Tu email (opcional)" style="margin-bottom:8px">
-<button id="btnEnviarSoporte" class="btn full">Enviar</button>
-<p id="sopStatus" style="font-size:12px;color:#86efac"></p>
-<button id="btnCerrarSoporte" class="btn small ghost full" style="margin-top:6px">Cerrar</button>
-</div>
-<div id="toast" class="toast hidden"></div>
+<div id="dash" class="screen active"><div class="card"><h3 id="sal">Hola ADMI</h3><div id="kpis" style="display:flex;gap:8px;flex-wrap:wrap"></div><p style="font-size:11px;color:#d9ccff">Toca Total / Activos / Vencidos</p></div><div class="card"><h3>30 dias unica vez</h3><div id="resumen"></div></div></div>
+<div id="pagos" class="screen"><div class="card" style="border:2px solid #facc15"><h3>💸 Solicitudes Pendientes</h3>
+<button id="btnReloadPagos" class="btn small ghost" style="margin-top:8px">Recargar</button>
+<ul id="pagosList" class="list" style="margin-top:12px"></ul></div></div>
+<div id="planes" class="screen"><div class="card"><div style="display:flex;gap:8px"><input id="bus" placeholder="Buscar por nombre, email, fecha, hora..."><button id="reload" class="btn small ghost">Recargar</button><button class="btn small ghost" onclick="filtrarKpi('todos')">Todos</button></div>
+<div id="grid" style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px"></div></div></div>
 <script>
-const firebaseConfig={apiKey:"AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",authDomain:"reservar-cb70d.firebaseapp.com",projectId:"reservar-cb70d",storageBucket:"reservar-cb70d.firebasestorage.app",messagingSenderId:"630908928696",appId:"1:630908928696:web:5e89f5f2b1cc2b240e6a4d"};
-firebase.initializeApp(firebaseConfig);
-let secondaryApp;try{secondaryApp=firebase.initializeApp(firebaseConfig,"secondary")}catch(e){secondaryApp=firebase.app("secondary")}
-const auth=firebase.auth();const db=firebase.firestore();const storage=firebase.storage();const auth2=secondaryApp.auth();
-document.addEventListener('DOMContentLoaded',()=>{
-const $=id=>document.getElementById(id);
-const $$=s=>Array.from(document.querySelectorAll(s));
-const safe=(id,ev,fn)=>{const el=document.getElementById(id);if(el) el.addEventListener(ev,fn)};
-const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3000)};
-let editId=null;let calDate=new Date();let allReservas=[];
-let cfg={senaTipo:'porcentaje',senaValor:30,senaActiva:false,senaDesdeDias:3,pideDni:false,plan:'',planEstado:'sin',planVence:null,trialVence:null,diasAnticipacion:30,foto:'',visible:true,apertura:'',cierre:''};
-let bloqueoPorPlan=false;let tempLocalFotoFile=null;let tempSvcFotoFile=null;
-safe('cfgFotoFile','change',e=>{const f=e.target.files[0];if(!f) return;tempLocalFotoFile=f;$('cfgFotoPreview').src=URL.createObjectURL(f);$('cfgFotoPreview').classList.remove('hidden');$('cfgFotoURL').textContent=f.name;});
-safe('svcFotoFile','change',e=>{const f=e.target.files[0];if(!f) return;tempSvcFotoFile=f;$('svcFotoPreview').src=URL.createObjectURL(f);$('svcFotoPreview').classList.remove('hidden');});
-safe('btnSoporte','click',()=>{$('panelSoporte').classList.toggle('hidden')});
-safe('btnCerrarSoporte','click',()=>{$('panelSoporte').classList.add('hidden')});
-safe('btnEnviarSoporte','click',async()=>{const tipo=$('sopTipo').value;const msg=$('sopMsg').value.trim();const email=$('sopEmail').value.trim();if(!msg){$('sopStatus').textContent='Escribi el mensaje';return}try{await db.collection('soporte').add({tipo,msg,email,uid:auth.currentUser?auth.currentUser.uid:'anonimo',fecha:firebase.firestore.FieldValue.serverTimestamp(),ts:Date.now()});$('sopStatus').textContent='Enviado!';$('sopMsg').value='';setTimeout(()=>{$('panelSoporte').classList.add('hidden');$('sopStatus').textContent='';},1500);toast('Soporte enviado');}catch(e){$('sopStatus').textContent='Error: '+e.message}});
-async function cargarSoporte(){const ul=$('listaSoporte');if(!ul) return;try{const snap=await db.collection('soporte').where('uid','==',auth.currentUser.uid).get();ul.innerHTML='';if(snap.empty){ul.innerHTML='<li class="item">Sin mensajes</li>';return}snap.forEach(d=>{const s=d.data();const li=document.createElement('li');li.className='item';li.style.flexDirection='column';li.innerHTML=`<div><b>${s.tipo}</b><div style="font-size:12px">${s.msg}</div><div style="font-size:11px;color:#cfc9e6">${s.email||''}</div></div>`;ul.appendChild(li);});}catch(e){ul.innerHTML='<li class="item">Error cargando soporte</li>'}}
-safe('btnBorrarSoporte','click',async()=>{if(!confirm('Borrar todos?')) return;try{const snap=await db.collection('soporte').where('uid','==',auth.currentUser.uid).get();for(const doc of snap.docs){await doc.ref.delete();}cargarSoporte();toast('Borrados');}catch(e){toast(e.message)}});
-  function minutosDesdeHora(hhmm){if(!hhmm) return null;const parts=hhmm.split(':');const h=Number(parts[0]);const m=Number(parts[1]);return h*60+m;}
-function haySuperposicion(nuevaFechaHora,nuevaDur,idExcluir){const inicioNuevo=new Date(nuevaFechaHora).getTime();const finNuevo=inicioNuevo+nuevaDur*60000;for(const r of allReservas){if(idExcluir&&r.id===idExcluir) continue;if(r.estado==='cancelada') continue;if(!r.fechaHora) continue;const inicioExist=new Date(r.fechaHora).getTime();const finExist=inicioExist+(Number(r.duracion||60)*60000);if(inicioNuevo<finExist&&finNuevo>inicioExist){return r}}return null;}
-function validarAperturaCierre(fechaHoraStr){const ap=$('cfgApertura')?.value||cfg.apertura;const ci=$('cfgCierre')?.value||cfg.cierre;if(!ap||!ci) return {ok:true};const d=new Date(fechaHoraStr);const mins=d.getHours()*60+d.getMinutes();const apM=minutosDesdeHora(ap);const ciM=minutosDesdeHora(ci);if(mins<apM||mins>=ciM){return {ok:false,msg:`Local abre ${ap} a ${ci}. Elegiste ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`}}const dur=Number($('rDur').value||60);const finMins=mins+dur;if(finMins>ciM){return {ok:false,msg:`Termina ${Math.floor(finMins/60)}:${String(finMins%60).padStart(2,'0')} y cierra a ${ci}`}}return {ok:true};}
-function validarPasado(fechaHoraStr){const ahora=new Date();const elegida
-  =new Date(fechaHoraStr);if(elegida.getTime()<ahora.getTime()){return {ok:false,msg:'No podes reservar en el pasado'}}return {ok:true};}
-safe('goRegister','click',e=>{e.preventDefault();$('auth').classList.add('hidden');$('register').classList.remove('hidden');$('forgot').classList.add('hidden');});
-safe('goLogin','click',e=>{e.preventDefault();$('auth').classList.remove('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');});
-safe('goForgot','click',e=>{e.preventDefault();$('forgot').classList.remove('hidden');$('auth').classList.add('hidden');$('register').classList.add('hidden');});
-safe('goBackLogin','click',e=>{e.preventDefault();$('forgot').classList.add('hidden');$('auth').classList.remove('hidden');});
-safe('loginBtn','click',async()=>{const email=$('email').value.trim();const pass=$('password').value;if(!email||!pass){$('loginMsg').textContent='Completa todo';return}try{await auth.signInWithEmailAndPassword(email,pass);}catch(e){$('loginMsg').textContent=e.message}});
-safe('registerBtn','click',async()=>{const nom=$('regNombre').value.trim();const ape=$('regApellido').value.trim();const email=$('regEmail').value.trim();const pass=$('regPass').value;const pass2=$('regPass2').value;const term=$('regTerminos').checked;if(!nom||!ape||!email||!pass){$('regMsg').textContent='Completa todo';return}if(pass!==pass2){$('regMsg').textContent='No coinciden';return}if(!term){$('regMsg').textContent='Acepta terminos';return}try{const cred=await auth.createUserWithEmailAndPassword(email,pass);await db.collection('users').doc(cred.user.uid).set({nombre:nom,apellido:ape,email,rol:'admin',creado:firebase.firestore.FieldValue.serverTimestamp()});const ahora=new Date();const trialVence=new Date();trialVence.setDate(ahora.getDate()+7);await db.collection('config').doc(cred.user.uid).set({plan:'medio',planEstado:'trial',planActivo:true,visible:true,senaTipo:'porcentaje',senaValor:30,senaActiva:false,senaDesdeDias:3,pideDni:false,diasAnticipacion:30,foto:'',trialInicio:ahora,trialVence:trialVence,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});toast('Cuenta creada');}catch(e){$('regMsg').textContent=e.message}});
-safe('forgotBtn','click',async()=>{const email=$('forgotEmail').value.trim();if(!email){$('forgotMsg').textContent='Pone tu correo';return}try{await auth.sendPasswordResetEmail(email);$('forgotOk').textContent='Mail enviado! Revisa spam';$('forgotMsg').textContent='';}catch(e){$('forgotMsg').textContent=e.message}});
-safe('btnLogout','click',()=>auth.signOut());
-auth.onAuthStateChanged(async user=>{if(!user){$('auth').classList.remove('hidden');$('app').classList.add('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');return}$('auth').classList.add('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');$('app').classList.remove('hidden');await cargarTodo();});
-function fmtMoney(n){return '$'+Number(n||0).toLocaleString('es-AR')}
-function fmtFecha(iso){if(!iso) return '';const d=new Date(iso);return d.toLocaleDateString('es-AR')+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}  
-function senaTexto(precio){if(cfg.senaTipo==='ninguna'||cfg.senaActiva===false) return 'Sin seña';if(cfg.senaTipo==='fijo') return 'Seña $'+cfg.senaValor;const v=Math.round(precio*cfg.senaValor/100);return 'Seña '+cfg.senaValor+'% = $'+v}
-  async function cargarTodo(){
-const uid=auth.currentUser.uid;
-try{
-const cDoc=await db.collection('config').doc(uid).get();
-if(cDoc.exists){
-const d=cDoc.data();
-cfg={...cfg,...d};
-$('cfgLocalNombre').value=d.localNombre||'';
-$('cfgEmail').value=d.email||'';
-$('cfgTel').value=d.telefono||'';
-$('cfgDireccion').value=d.direccion||'';
-$('cfgApertura').value=d.apertura||'';
-$('cfgCierre').value=d.cierre||'';
-$('cfgFoto').value=d.foto||'';
-$('cfgDiasAnticipacion').value=d.diasAnticipacion||30;
-$('cfgVisible').value=d.visible!==undefined?String(d.visible):'true';
-$('cfgSenaTipo').value=d.senaTipo||'porcentaje';
-$('cfgSenaValor').value=d.senaValor||30;
-$('cfgSenaActiva').value=d.senaActiva!==undefined?String(d.senaActiva):'false';
-$('cfgSenaDesdeDias').value=d.senaDesdeDias||3;
-$('cfgPideDni').value=d.pideDni!==undefined?String(d.pideDni):'false';
-$('cobTitular').value=d.cobTitular||'';
-$('cobBanco').value=d.cobBanco||'';
-$('cobAlias').value=d.cobAlias||'';
-$('cobCBU').value=d.cobCBU||'';
-$('cobInstr').value=d.cobInstr||'';
-$('cfgPolitica').value=d.politica||'';
-$('estadoPill').textContent=d.reservasPausadas?'Pausadas':'Activas';
-if(d.foto){
-$('cfgFotoPreview').src=d.foto;
-$('cfgFotoPreview').classList.remove('hidden');
-$('cfgFotoURL').textContent=d.foto;
-}
-}
-}catch(e){}
-await cargarPlanVisual();
-await cargarReservas();
-await cargarServicios();
-await cargarClientes();
-await cargarSoporte();
-await cargarFacturacionMes(new Date().toISOString().slice(0,7));
-await cargarEstadisticas();
-renderCalendar();
-checkTrialYGracia();
-}
-async function cargarPlanVisual(){
-const uid=auth.currentUser.uid;
-const cDoc=await db.collection('config').doc(uid).get();
-if(!cDoc.exists) return;
-const d=cDoc.data();
-const plan=d.plan||'';
-const estado=d.planEstado||'sin';
-const vence=d.planVence?(d.planVence.toDate?d.planVence.toDate():new Date(d.planVence)):null;
-const trialV=d.trialVence?(d.trialVence.toDate?d.trialVence.toDate():new Date(d.trialVence)):null;
-$('membershipPlan').textContent=plan||'Sin plan';
-$('membershipStatus').textContent=estado;
-$('membershipVence').textContent=vence?vence.toLocaleDateString('es-AR'):(trialV?trialV.toLocaleDateString('es-AR'):'-');
-const ahora=new Date();
-if(estado==='trial'&&trialV){
-const dias=Math.ceil((trialV-ahora)/86400000);
-$('trialAviso').classList.remove('hidden');
-$('trialAviso').textContent='TRIAL: te quedan '+dias+' dias gratis en plan '+plan;
-}else{$('trialAviso').classList.add('hidden');}
-if(estado==='gracia'&&vence){
-const dias=Math.ceil((vence-ahora)/86400000);
-$('graciaAviso').classList.remove('hidden');
-$('graciaAviso').textContent='GRACIA: tu plan vencio, tenes '+dias+' dias para renovar';
-}else{$('graciaAviso').classList.add('hidden');}
-if(estado==='sin'||estado==='cancelado'||estado==='vencido'){
-$('planAviso').classList.remove('hidden');
-$('planAviso').textContent='Sin membresia activa';
-bloqueoPorPlan=true;
-}else{
-$('planAviso').classList.add('hidden');
-bloqueoPorPlan=false;
-}
-if(estado==='activo'||estado==='trial'||estado==='gracia'){
-$('btnCancelarPlan').classList.remove('hidden');
-$('btnRenovarPlan').classList.remove('hidden');
-}
-if(estado==='cancelado'){
-$('btnReactivarPlan').classList.remove('hidden');
-}
-const inicioMes=new Date();
-inicioMes.setDate(1);
-inicioMes.setHours(0,0,0,0);
-const snap=await db.collection('reservas').where('uid','==',uid).where('ts','>=',inicioMes.getTime()).get();
-const usadas=snap.size;
-let limite=0;
-if(plan==='basico') limite=100;
-if(plan==='medio') limite=300;
-if(plan==='premium') limite=999999;
-if(limite){
-$('planUso').textContent=usadas+' / '+ (limite>10000?'ilimitadas':limite)+' usadas';
-if(usadas>=limite){
-bloqueoPorPlan=true;
-$('planAviso').classList.remove('hidden');
-$('planAviso').textContent='Limite alcanzado ('+usadas+'/'+limite+')';
-}
-}
-}
-function checkTrialYGracia(){
-const uid=auth.currentUser.uid;
-db.collection('config').doc(uid).get().then(doc=>{
-if(!doc.exists) return;
-const d=doc.data();
-const ahora=new Date();
-if(d.planEstado==='trial'&&d.trialVence){
-const tv=d.trialVence.toDate?d.trialVence.toDate():new Date(d.trialVence);
-if(ahora>tv){
-db.collection('config').doc(uid).update({planEstado:'vencido',planActivo:false});
-toast('Trial vencido');
-cargarPlanVisual();
-}
-}
-if(d.planEstado==='gracia'&&d.planVence){
-const pv=d.planVence.toDate?d.planVence.toDate():new Date(d.planVence);
-if(ahora>pv){
-db.collection('config').doc(uid).update({planEstado:'vencido',planActivo:false});
-toast('Gracia vencida');
-cargarPlanVisual();
-}
-}
-if(d.planEstado==='activo'&&d.planVence){
-const pv=d.planVence.toDate?d.planVence.toDate():new Date(d.planVence);
-if(ahora>pv){
-const gracia=new Date();
-gracia.setDate(pv.getDate()+5);
-db.collection('config').doc(uid).update({planEstado:'gracia',planVence:gracia});
-toast('Plan vencido - 5 dias gracia');
-cargarPlanVisual();
-}
-}
-});
-}
-async function cargarReservas(){
-const uid=auth.currentUser.uid;
-const q=await db.collection('reservas').where('uid','==',uid).orderBy('ts','desc').limit(200).get();
-allReservas=[];
-q.forEach(doc=>{allReservas.push({id:doc.id,...doc.data()});});
-renderReservas(allReservas);
-renderCalendar();
-renderTurnosHoy();
-}
-  function renderReservas(list){
-const ul=$('listaReservas');
-if(!ul) return;
-ul.innerHTML='';
-if(list.length===0){ul.innerHTML='<li class="item">Sin reservas</li>';return}
-list.forEach(r=>{
-const li=document.createElement('li');
-li.className='item';
-li.style.flexDirection='column';
-const dur=r.duracion||r.dur||60;
-const senaTxt=r.sena?' Seña $'+r.sena:'';
-const precio=r.precio?' $'+r.precio:'';
-const cli=r.cliente||r.nombre||'Cliente';
-const estado=r.estado||'confirmada';
-const hora=r.fechaHora||r.fecha||'';
-const color=estado==='cancelada'?'#fca5a5':estado==='pendiente'?'#fde68a':estado==='pendiente_sena'?'#fb923c':'#86efac';
-li.innerHTML=`<div style="width:100%"><div style="display:flex;justify-content:space-between"><div><b>${cli}</b> - ${r.servicio||''}<div style="font-size:12px;color:#cfc9e6">${fmtFecha(hora)} - ${dur}min${precio}${senaTxt} <span style="color:${color}"> ${estado}</span> ${r.whats?' - WA: '+r.whats:''}</div>${r.comentario?'<div style="font-size:11px">'+r.comentario+'</div>':''}</div><div class="row">${estado==='pendiente_sena'?'<button class="btn small" data-aprobar="'+r.id+'">Aprobar seña</button><button class="btn small ghost" data-rechazar="'+r.id+'">Rechazar</button>':''}<button class="btn small ghost" data-editar="${r.id}">Editar</button><button class="btn small ghost" data-borrar="${r.id}">X</button></div></div></div>`;
-ul.appendChild(li);
-});
-ul.querySelectorAll('[data-editar]').forEach(b=>{b.addEventListener('click',()=>{const r=allReservas.find(x=>x.id===b.dataset.editar);if(!r) return;editarReserva(r);});});
-ul.querySelectorAll('[data-borrar]').forEach(b=>{b.addEventListener('click',async()=>{if(!confirm('Borrar?')) return;await db.collection('reservas').doc(b.dataset.borrar).delete();cargarReservas();});});
-ul.querySelectorAll('[data-aprobar]').forEach(b=>{b.addEventListener('click',async()=>{await db.collection('reservas').doc(b.dataset.aprobar).update({estado:'confirmada'});toast('Seña aprobada');cargarReservas();});});
-ul.querySelectorAll('[data-rechazar]').forEach(b=>{b.addEventListener('click',async()=>{await db.collection('reservas').doc(b.dataset.rechazar).update({estado:'cancelada'});toast('Rechazada');cargarReservas();});});
-}
-function renderTurnosHoy(){
-const ul=$('turnosHoy');
-if(!ul) return;
-const hoy=new Date().toISOString().slice(0,10);
-const todays=allReservas.filter(r=>{const fh=r.fechaHora||'';return fh.startsWith(hoy)&&r.estado!=='cancelada'}).sort((a,b)=>(a.fechaHora||'').localeCompare(b.fechaHora||''));
-ul.innerHTML='';
-if(todays.length===0){ul.innerHTML='<li class="item">Sin turnos hoy</li>';return}
-todays.forEach(r=>{
-const li=document.createElement('li');
-li.className='item';
-const hora=(r.fechaHora||'').slice(11,16);
-li.innerHTML=`<div><b>${hora}</b> - ${r.cliente||r.nombre} - ${r.servicio||''}</div><div style="font-size:12px">${r.whats||''}</div>`;
-ul.appendChild(li);
-});
-$('kpis').innerHTML=`<span class="pill">Hoy: ${todays.length}</span><span class="pill">Total: ${allReservas.length}</span><span class="pill">Confirmadas: ${allReservas.filter(x=>x.estado==='confirmada').length}</span>`;
-}
-function editarReserva(r){
-$('rCliente').value=r.cliente||r.nombre||'';
-$('rWhats').value=r.whats||'';
-$('rServicioSelect').value=r.servicio||'';
-if(r.servicio&&!$('rServicioSelect').querySelector(`option[value="${r.servicio}"]`)){
-$('rServicioCustom').classList.remove('hidden');
-$('rServicioCustom').value=r.servicio;
-$('rServicioSelect').value='__custom';
-}
-$('rPrecio').value=r.precio||'';
-$('rDur').value=r.duracion||60;
-$('rFechaHora').value=r.fechaHora||'';
-$('rEstado').value=r.estado||'confirmada';
-$('rOrigen').value=r.origen||'local';
-$('rComentario').value=r.comentario||'';
-editId=r.id;
-$('tituloReserva').textContent='Editando reserva';
-$('btnCancelarEdicion').classList.remove('hidden');
-$('cardNuevaReserva').classList.remove('hidden');
-$('cardListaReservas').classList.add('hidden');
-goScreen('reservas');
-updateSenaUI();
-}
-function updateSenaUI(){
-const precio=Number($('rPrecio').value||0);
-const t=senaTexto(precio);
-$('senaInfo').textContent=t;
-const c=$('cobroPreview');
-if(!c) return;
-c.innerHTML=`<div style="font-size:12px">${t||'Sin seña'} - Desde ${cfg.senaDesdeDias||3} dias<br>Titular: ${$('cobTitular').value||'-'} - Alias: ${$('cobAlias').value||'-'}<br>${$('cobInstr').value||''}<br>DNI: ${cfg.pideDni?'Obligatorio':'Opcional'}</div>`;
-}
-safe('reservaForm','submit',async e=>{
-e.preventDefault();
-$('validacionMsg').textContent='';
-if(bloqueoPorPlan){$('validacionMsg').textContent='Membresia vencida o limite alcanzado';toast('Bloqueado por plan');return}
-const cliente=$('rCliente').value.trim();
-const whats=$('rWhats').value.trim();
-const servSel=$('rServicioSelect').value;
-const servCustom=$('rServicioCustom').value.trim();
-const servicio=servSel==='__custom'?servCustom:servSel;
-const precio=Number($('rPrecio').value||0);
-const dur=Number($('rDur').value||60);
-const fechaHora=$('rFechaHora').value;
-const estado=$('rEstado').value;
-const origen=$('rOrigen').value;
-const comentario=$('rComentario').value.trim();
-if(!cliente||!fechaHora){$('validacionMsg').textContent='Falta cliente o fecha';return}
-const vPasado=validarPasado(fechaHora);
-if(!vPasado.ok){$('validacionMsg').textContent=vPasado.msg;toast(vPasado.msg);return}
-const vHorario=validarAperturaCierre(fechaHora);
-if(!vHorario.ok){$('validacionMsg').textContent=vHorario.msg;toast(vHorario.msg);return}
-const solapada=haySuperposicion(fechaHora,dur,editId);
-if(solapada){$('validacionMsg').textContent='Se pisa con '+solapada.cliente+' a las '+ (solapada.fechaHora||'').slice(11,16);toast('Choque de horarios');return}
-let sena=0;
-if(cfg.senaTipo==='fijo') sena=cfg.senaValor;
-else if(cfg.senaTipo==='porcentaje') sena=Math.round(precio*cfg.senaValor/100);
-const payload={uid:auth.currentUser.uid,cliente,nombre:cliente,whats,servicio,precio,duracion:dur,dur,fechaHora,fecha:fechaHora,estado,origen,comentario,sena,ts:new Date(fechaHora).getTime(),createdAt:firebase.firestore.FieldValue.serverTimestamp()};
-try{
-if(editId){
-await db.collection('reservas').doc(editId).update(payload);
-editId=null;
-$('tituloReserva').textContent='Nueva reserva';
-$('btnCancelarEdicion').classList.add('hidden');
-toast('Actualizada');
-}else{
-await db.collection('reservas').add(payload);
-toast('Creada');
-}
-$('reservaForm').reset();
-$('rDur').value=60;
-$('rEstado').value='confirmada';
-$('rServicioCustom').classList.add('hidden');
-$('senaInfo').textContent='';
-await cargarReservas();
-await cargarPlanVisual();
-}catch(err){$('validacionMsg').textContent=err.message}
-});
- safe('btnCancelarEdicion','click',()=>{editId=null;$('reservaForm').reset();$('rDur').value=60;$('tituloReserva').textContent='Nueva reserva';$('btnCancelarEdicion').classList.add('hidden');$('rServicioCustom').classList.add('hidden');});
-safe('btnVerListaDesdeForm','click',()=>{$('cardNuevaReserva').classList.add('hidden');$('cardListaReservas').classList.remove('hidden');});
-safe('btnNuevaDesdeLista','click',()=>{$('cardListaReservas').classList.add('hidden');$('cardNuevaReserva').classList.remove('hidden');});
-safe('btnNuevaReserva','click',()=>{goScreen('reservas');$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');});
-safe('btnIrReservas','click',()=>{goScreen('reservas');$('cardNuevaReserva').classList.add('hidden');$('cardListaReservas').classList.remove('hidden');});
-safe('rPrecio','input',updateSenaUI);
-safe('rServicioSelect','change',()=>{if($('rServicioSelect').value==='__custom'){$('rServicioCustom').classList.remove('hidden');}else{$('rServicioCustom').classList.add('hidden');}const opt=$('rServicioSelect').selectedOptions[0];if(opt&&opt.dataset.price){$('rPrecio').value=opt.dataset.price;$('rDur').value=opt.dataset.dur||60;updateSenaUI();}});
-safe('btnFiltrar','click',()=>{const fecha=$('filtroFecha').value;const estado=$('filtroEstado').value;let fil=allReservas;if(fecha) fil=fil.filter(r=>(r.fechaHora||'').startsWith(fecha));if(estado!=='todas') fil=fil.filter(r=>(r.estado||'')===estado);renderReservas(fil);});
-safe('btnLimpiarFiltro','click',()=>{$('filtroFecha').value='';$('filtroEstado').value='todas';renderReservas(allReservas);});
-safe('btnCSV','click',()=>{let csv='Cliente,Whats,Servicio,Precio,Duracion,Fecha,Estado,Origen,Comentario\n';allReservas.forEach(r=>{csv+=`"${r.cliente||''}","${r.whats||''}","${r.servicio||''}","${r.precio||''}","${r.duracion||''}","${r.fechaHora||''}","${r.estado||''}","${r.origen||''}","${(r.comentario||'').replace(/"/g,'""')}"\n`;});const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='reservas.csv';a.click();});
-function renderCalendar(){const grid=$('calendar');const tit=$('calTitulo');if(!grid||!tit) return;grid.innerHTML='';const y=calDate.getFullYear();const m=calDate.getMonth();tit.textContent=calDate.toLocaleDateString('es-AR',{month:'long',year:'numeric'});const first=new Date(y,m,1).getDay();const daysIn=new Date(y,m+1,0).getDate();for(let i=0;i<first;i++){const div=document.createElement('div');grid.appendChild(div);}for(let d=1;d<=daysIn;d++){const div=document.createElement('div');div.textContent=d;div.style.padding='8px';div.style.border='1px solid #ffffff22';div.style.borderRadius='8px';div.style.textAlign='center';div.style.cursor='pointer';const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const ocupadas=allReservas.filter(r=>(r.fechaHora||'').startsWith(iso)&&r.estado!=='cancelada').length;if(ocupadas>0){div.style.background=ocupadas>=3?'#ef4444':ocupadas>=2?'#f59e0b':'#a855f7';}const hoyIso=new Date().toISOString().slice(0,10);if(iso===hoyIso) div.style.border='2px solid #ff5ab3';div.addEventListener('click',()=>{$('filtroFecha').value=iso;goScreen('reservas');$('cardNuevaReserva').classList.add('hidden');$('cardListaReservas').classList.remove('hidden');const fil=allReservas.filter(r=>(r.fechaHora||'').startsWith(iso));renderReservas(fil);});grid.appendChild(div);}}
-safe('calPrev','click',()=>{calDate.setMonth(calDate.getMonth()-1);renderCalendar();});
-safe('calNext','click',()=>{calDate.setMonth(calDate.getMonth()+1);renderCalendar();});
-async function cargarClientes(){const ul=$('clientesFrecuentes');if(!ul) return;const map={};allReservas.forEach(r=>{const k=(r.cliente||r.nombre||'').toLowerCase();if(!k) return;if(!map[k]) map[k]={nombre:r.cliente||r.nombre,count:0,whats:r.whats||'',ult:r.fechaHora};map[k].count++;if(r.fechaHora>map[k].ult) map[k].ult=r.fechaHora;});const arr=Object.values(map).sort((a,b)=>b.count-a.count).slice(0,20);ul.innerHTML='';if(arr.length===0){ul.innerHTML='<li class="item">Sin clientes</li>';return}arr.forEach(c=>{const li=document.createElement('li');li.className='item';li.innerHTML=`<div><b>${c.nombre}</b> - ${c.count} visitas<div style="font-size:12px">${c.whats} - Ult: ${fmtFecha(c.ult)}</div></div>`;ul.appendChild(li);});}
-async function cargarServicios(){const uid=auth.currentUser.uid;const snap=await db.collection('servicios').where('uid','==',uid).get();const ul=$('serviceList');const sel=$('rServicioSelect');if(!ul||!sel) return;ul.innerHTML='';sel.innerHTML='<option value="">Elegi servicio</option>';if(snap.empty){ul.innerHTML='<li class="item">Sin servicios</li>';}snap.forEach(doc=>{const s=doc.data();const li=document.createElement('li');li.className='item';li.style.alignItems='center';li.innerHTML=`<div style="display:flex;gap:10px;align-items:center"><img src="${s.foto||''}" style="width:60px;height:60px;border-radius:10px;object-fit:cover;object-position:center;background:#ffffff12;border:1px solid #ffffff22" onerror="this.style.display='none'"><div><b>${s.nombre}</b> - $${s.precio} - ${s.duracion}min</div></div><button class="btn small ghost" data-del-svc="${doc.id}">X</button>`;ul.appendChild(li);const opt=document.createElement('option');opt.value=s.nombre;opt.textContent=s.nombre+' - $'+s.precio;opt.dataset.price=s.precio;opt.dataset.dur=s.duracion;sel.appendChild(opt);});const customOpt=document.createElement('option');customOpt.value='__custom';customOpt.textContent='Otro (escribir)';sel.appendChild(customOpt);ul.querySelectorAll('[data-del-svc]').forEach(b=>{b.addEventListener('click',async()=>{await db.collection('servicios').doc(b.dataset.delSvc).delete();cargarServicios();});});}
-safe('btnAddService','click',async()=>{const nombre=$('svcName').value.trim();const precio=Number($('svcPrice').value||0);const dur=Number($('svcDur').value||60);if(!nombre||!precio){toast('Completa nombre y precio');return}$('btnAddService').textContent='Subiendo...';$('btnAddService').disabled=true;try{let fotoURL='';if(tempSvcFotoFile){const uid=auth.currentUser.uid;const ref=storage.ref().child(`locales/${uid}/servicios/${Date.now()}_${tempSvcFotoFile.name}`);await ref.put(tempSvcFotoFile);fotoURL=await ref.getDownloadURL();}await db.collection('servicios').add({uid:auth.currentUser.uid,nombre,precio,duracion:dur,foto:fotoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()});$('svcName').value='';$('svcPrice').value='';$('svcDur').value=60;$('svcFotoFile').value='';$('svcFotoPreview').classList.add('hidden');tempSvcFotoFile=null;toast('Servicio guardado');cargarServicios();}catch(e){toast(e.message)}finally{$('btnAddService').textContent='Agregar servicio';$('btnAddService').disabled=false;}});
-async function cargarEstadisticas(){const cont=$('rankingServicios');if(!cont) return;const map={};allReservas.forEach(r=>{if(r.estado==='cancelada') return;const k=r.servicio||'Sin servicio';if(!map[k]) map[k]=0;map[k]++;});const arr=Object.entries(map).sort((a,b)=>b[1]-a[1]);cont.innerHTML='';if(arr.length===0){cont.innerHTML='<div class="item">Sin datos</div>';return}arr.forEach(([nombre,cant])=>{const div=document.createElement('div');div.className='item';div.innerHTML=`<b>${nombre}</b> - ${cant} reservas`;cont.appendChild(div);});}
-async function cargarFacturacionMes(mes){const uid=auth.currentUser.uid;const ul=$('facturacionLista');const totalEl=$('factTotal');if(!ul||!totalEl) return;if(!mes) mes=new Date().toISOString().slice(0,7);const inicio=new Date(mes+'-01T00:00:00').getTime();const finMes=new Date(mes+'-01T00:00:00');finMes.setMonth(finMes.getMonth()+1);const fin=finMes.getTime();try{const snap=await db.collection('reservas').where('uid','==',uid).where('ts','>=',inicio).where('ts','<',fin).get();let total=0;ul.innerHTML='';snap.forEach(doc=>{const r=doc.data();if(r.estado==='cancelada') return;total+=Number(r.precio||0);const li=document.createElement('li');li.className='item';li.innerHTML=`<div>${fmtFecha(r.fechaHora)} - ${r.cliente} - ${r.servicio}</div><div>$${r.precio||0}</div>`;ul.appendChild(li);});totalEl.textContent='Total '+mes+': $'+total.toLocaleString('es-AR');}catch(e){totalEl.textContent='Error: '+e.message;}}
-safe('factMes','change',()=>{cargarFacturacionMes($('factMes').value);});
-safe('btnGuardarCfg','click',async()=>{const uid=auth.currentUser.uid;$('btnGuardarCfg').textContent='Guardando...';$('btnGuardarCfg').disabled=true;try{let fotoURL=$('cfgFoto').value.trim();if(tempLocalFotoFile){toast('Subiendo foto...');const ref=storage.ref().child(`locales/${uid}/foto_${Date.now()}_${tempLocalFotoFile.name}`);await ref.put(tempLocalFotoFile);fotoURL=await ref.getDownloadURL();$('cfgFoto').value=fotoURL;}await db.collection('config').doc(uid).set({localNombre:$('cfgLocalNombre').value.trim(),email:$('cfgEmail').value.trim(),telefono:$('cfgTel').value.trim(),direccion:$('cfgDireccion').value.trim(),apertura:$('cfgApertura').value,cierre:$('cfgCierre').value,foto:fotoURL,diasAnticipacion:Number($('cfgDiasAnticipacion').value||30),visible:$('cfgVisible').value==='true',horarioApertura:$('cfgApertura').value,horarioCierre:$('cfgCierre').value},{merge:true});cfg.foto=fotoURL;if(fotoURL){$('cfgFotoPreview').src=fotoURL;$('cfgFotoPreview').classList.remove('hidden');$('cfgFotoURL').textContent=fotoURL;}$('cfgMsg').textContent='Guardado!';setTimeout(()=>$('cfgMsg').textContent='',2000);toast('Datos guardados');tempLocalFotoFile=null;}catch(e){toast(e.message)}finally{$('btnGuardarCfg').textContent='Guardar datos del local';$('btnGuardarCfg').disabled=false;}});
-safe('btnGuardarCobros','click',async()=>{const uid=auth.currentUser.uid;try{await db.collection('config').doc(uid).set({senaTipo:$('cfgSenaTipo').value,senaValor:Number($('cfgSenaValor').value||0),senaActiva:$('cfgSenaActiva').value==='true',pideSena:$('cfgSenaActiva').value==='true',senaDesdeDias:Number($('cfgSenaDesdeDias').value||3),pideDni:$('cfgPideDni').value==='true',cobTitular:$('cobTitular').value.trim(),cobBanco:$('cobBanco').value.trim(),cobAlias:$('cobAlias').value.trim(),cobCBU:$('cobCBU').value.trim(),cobInstr:$('cobInstr').value.trim(),politica:$('cfgPolitica').value.trim()},{merge:true});cfg.senaTipo=$('cfgSenaTipo').value;cfg.senaValor=Number($('cfgSenaValor').value||0);cfg.senaActiva=$('cfgSenaActiva').value==='true';cfg.senaDesdeDias=Number($('cfgSenaDesdeDias').value||3);cfg.pideDni=$('cfgPideDni').value==='true';$('cobroMsg').textContent='Guardado!';updateSenaUI();setTimeout(()=>$('cobroMsg').textContent='',2000);toast('Cobros guardados');}catch(e){toast(e.message)}});
-safe('btnAddUser','click',async()=>{const nombre=$('newUserName').value.trim();const email=$('newUserEmail').value.trim();const pass=$('newUserPass').value;if(!email||!pass){$('userMsg').textContent='Falta email o pass';return}try{const cred=await auth2.createUserWithEmailAndPassword(email,pass);await db.collection('users').doc(cred.user.uid).set({nombre,apellido:'',email,rol:'empleado',ownerUid:auth.currentUser.uid,creado:firebase.firestore.FieldValue.serverTimestamp()});await auth2.signOut();$('userMsg').textContent='Empleado creado';$('newUserName').value='';$('newUserEmail').value='';$('newUserPass').value='';toast('Empleado ok');}catch(e){$('userMsg').textContent=e.message}});
-safe('btnBackup','click',()=>{const data={reservas:allReservas,config:cfg,fecha:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-reservar-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('Backup descargado');});
-safe('btnRestore','click',()=>{$('fileRestore').click();});
-safe('fileRestore','change',async e=>{const file=e.target.files[0];if(!file) return;try{const text=await file.text();const data=JSON.parse(text);if(!data.reservas||!Array.isArray(data.reservas)){toast('Backup invalido');return}if(!confirm('Restaurar '+data.reservas.length+' reservas?')) return;for(const r of data.reservas){const nr={...r};delete nr.id;nr.uid=auth.currentUser.uid;nr.restoredAt=firebase.firestore.FieldValue.serverTimestamp();await db.collection('reservas').add(nr);}toast('Restaurado '+data.reservas.length);cargarReservas();}catch(err){toast('Error: '+err.message)}});
-safe('btnPagarPlan','click',async()=>{const uid=auth.currentUser.uid;let sel='';$$('.plan').forEach(x=>{if(x.classList.contains('selected')) sel=x.dataset.plan;});if(!sel) sel='medio';try{const ahora=new Date();const vence=new Date();vence.setDate(ahora.getDate()+30);await db.collection('config').doc(uid).set({plan:sel,planEstado:'activo',planActivo:true,planVence:vence,visible:true,planActualizado:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});toast('Plan '+sel+' activado 30 dias');await cargarPlanVisual();}catch(e){toast(e.message)}});
-$$('.plan').forEach(b=>{b.addEventListener('click',()=>{$$('.plan').forEach(x=>{x.classList.remove('selected');x.style.border='1px solid #ffffff20'});b.classList.add('selected');b.style.border='2px solid #ff5ab3';});});
-safe('btnCancelarPlan','click',async()=>{if(!confirm('Cancelar? Vas a gracia 5 dias')) return;const uid=auth.currentUser.uid;try{const cDoc=await db.collection('config').doc(uid).get();const venceActual=cDoc.data()?.planVence?.toDate?cDoc.data().planVence.toDate():new Date();const gracia=new Date();gracia.setDate(venceActual.getDate()+5);await db.collection('config').doc(uid).set({planEstado:'gracia',planVence:gracia},{merge:true});toast('Gracia 5 dias');cargarPlanVisual();}catch(e){toast(e.message)}});
-safe('btnReactivarPlan','click',async()=>{const uid=auth.currentUser.uid;try{const ahora=new Date();const vence=new Date();vence.setDate(ahora.getDate()+30);await db.collection('config').doc(uid).set({planEstado:'activo',planActivo:true,planVence:vence},{merge:true});toast('Reactivado');cargarPlanVisual();}catch(e){toast(e.message)}});
-safe('btnRenovarPlan','click',async()=>{const uid=auth.currentUser.uid;try{const ahora=new Date();const vence=new Date();vence.setDate(ahora.getDate()+30);await db.collection('config').doc(uid).set({planEstado:'activo',planActivo:true,planVence:vence},{merge:true});toast('Renovado');cargarPlanVisual();}catch(e){toast(e.message)}});
-function goScreen(id){$$('.screen').forEach(s=>s.classList.remove('active'));const t=$(id);if(t) t.classList.add('active');}
-$$('.tab').forEach(t=>{t.addEventListener('click',()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');const id=t.dataset.screen;goScreen(id);if(id==='reservas'){$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');}if(id==='facturacion'){const mes=new Date().toISOString().slice(0,7);$('factMes').value=mes;cargarFacturacionMes(mes);}});});
-goScreen('dashboard');
-safe('btnToggleEstado','click',async()=>{const uid=auth.currentUser.uid;try{const cDoc=await db.collection('config').doc(uid).get();const paus=cDoc.exists?!!cDoc.data().reservasPausadas:false;await db.collection('config').doc(uid).set({reservasPausadas:!paus},{merge:true});$('estadoPill').textContent=!paus?'Pausadas':'Activas';toast(!paus?'Pausadas':'Activas');}catch(e){toast(e.message)}});
-});
+const firebaseConfig={apiKey:"AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",authDomain:"reservar-cb70d.firebaseapp.com",projectId:"reservar-cb70d",storageBucket:"reservar-cb70d.firebasestorage.app",messagingSenderId:"630908928696",appId:"1:630908928696:web:5e89f5f2b2cc2b240e6a4d"};
+firebase.initializeApp(firebaseConfig);const auth=firebase.auth();const db=firebase.firestore();
+const $=id=>document.getElementById(id);const toast=m=>{const t=$('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2500);};
+$('loginBtn').onclick=async()=>{const e=$('email').value.trim(),p=$('password').value.trim();$('err').textContent='Conectando...';try{await auth.signInWithEmailAndPassword(e,p);}catch(er){$('err').textContent=er.message;}};
+$('logout').onclick=()=>auth.signOut();
+document.querySelectorAll('.tab').forEach(t=>{t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(t.dataset.s).classList.add('active');if(t.dataset.s==='planes')renderLocalesFiltrados();if(t.dataset.s==='pagos')loadPagos();if(t.dataset.s==='soporte')loadSoporte('todos');if(t.dataset.s==='users')loadUsers();};});
+let all=[],cfg={horasPlan:48},selectedUid=null,filtroKpiActual='todos';
+auth.onAuthStateChanged(async u=>{if(!u){$('auth').classList.remove('hidden');$('app').classList.add('hidden');return;}if(u.email.toLowerCase()!=='jjrv.0093@gmail.com'){toast('No sos ADMI');await auth.signOut();return;}
+$('auth').classList.add('hidden');$('app').classList.remove('hidden');$('sal').textContent='Hola ADMI '+u.email;
+try{const c=await db.collection('config').doc('adm').get();if(c.exists){cfg=c.data();$('horasPlan').value=cfg.horasPlan||48;}
+const cob=await db.collection('config').doc('cobros').get();if(cob.exists){const x=cob.data();$('jonaAlias').value=x.alias||'';$('jonaCbu').value=x.cbu||'';$('jonaTitular').value=x.titular||'';$('jonaWsp').value=x.whatsapp||x.wsp||'';$('jonaInstr').value=x.instrucciones||'';}
+}catch(e){}load();loadPagos();});
+function estaActivo(l){if(l.planActivo===false)return false;if(l.visible===false)return false;if(!l.planVence)return true;let v=null;try{if(l.planVence.toDate)v=l.planVence.toDate();else if(l.planVence.seconds)v=new Date(l.planVence.seconds*1000);else v=new Date(l.planVence);}catch(e){}if(!v||isNaN(v.getTime()))return true;return (new Date()-v)/36e5<=(cfg.horasPlan||48);}
+function fmtVence(l){if(!l)return '-';const pv=l.planVence||l;if(!pv)return '-';try{if(pv.toDate)return pv.toDate().toLocaleDateString('es-AR');if(pv.seconds)return new Date(pv.seconds*1000).toLocaleDateString('es-AR');const d=new Date(pv);if(isNaN(d.getTime()))return '-';return d.toLocaleDateString('es-AR');}catch(e){return '-';}}
+async function load(){try{const s=await db.collection('config').get();all=s.docs.filter(d=>!['cobros','planes','adm','branding'].includes(d.id)).map(d=>({id:d.id,...d.data()}));const activos=all.filter(estaActivo).length;$('kpis').innerHTML=`<span class="pill click" onclick="filtrarKpi('todos')">Total ${all.length}</span><span class="pill click" onclick="filtrarKpi('activos')" style="background:#22c55e33">Activos ${activos}</span><span class="pill click" onclick="filtrarKpi('vencidos')" style="background:#ef444433">Vencidos ${all.length-activos}</span>`;$('resumen').innerHTML=`<span class="pill">Gracia ${cfg.horasPlan||48}hs</span>`;renderLocalesFiltrados();}catch(e){toast(e.message);}}
+ <script>
+window.filtrarKpi=(tipo)=>{filtroKpiActual=tipo;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelector('[data-s="planes"]').classList.add('active');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$('planes').classList.add('active');renderLocalesFiltrados();};
+function renderLocalesFiltrados(){let lista=[...all];if(filtroKpiActual==='activos')lista=all.filter(estaActivo);if(filtroKpiActual==='vencidos')lista=all.filter(l=>!estaActivo(l));const g=$('grid');if(!g)return;g.innerHTML='';if(!lista.length){g.innerHTML=`<div class="card">Sin locales en ${filtroKpiActual}</div>`;return;}
+lista.forEach(l=>{let vence=fmtVence(l);const a=estaActivo(l);const d=document.createElement('div');d.className='card';d.innerHTML=`<div style="display:flex;justify-content:space-between"><b>${l.nombre||l.localNombre||'Local'}</b><span class="pill" style="background:${a?'#22c55e33':'#ef444433'}">${a?'ACTIVO':'VENCIDO'}</span></div><div style="font-size:12px;color:#cfc9e6;margin:8px 0">${l.email||''} - ${l.plan||''}</div><div style="font-size:12px">Vence: ${vence} - ${l.telefono||''}</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"><button class="btn small" onclick="activar48('${l.id}')">48hs</button><button class="btn small ghost" onclick="darPromo('${l.id}',7)">+7</button><button class="btn small ghost" onclick="darPromo('${l.id}',30)">+30</button><button class="btn small ghost" style="background:#fff;color:#000" onclick="darCustom('${l.id}')">+N</button><button class="btn small ghost" onclick="verFicha('${l.id}')">Ver ficha trazable</button></div>`;g.appendChild(d);});}
+async function loadPagos(){const ul=$('pagosList');ul.innerHTML='<li class="item">Cargando...</li>';try{const snap=await db.collection('solicitudes').where('estado','==','pendiente').limit(100).get();if(snap.empty){ul.innerHTML='<li class="item">No hay pagos ✅</li>';return;}ul.innerHTML='';snap.forEach(doc=>{const x=doc.data();const li=document.createElement('li');li.className='item';li.style.flexDirection='column';li.style.alignItems='flex-start';li.innerHTML=`<div style="width:100%;display:flex;justify-content:space-between"><b>${x.nombreLocal||'Local'}</b><span class="pill" style="background:#facc15;color:#000">${x.plan||''} $${x.precio||''}</span></div><div style="font-size:11px;color:#cfc9e6;margin:6px 0">UID:${x.uid||''} - ${x.email||''} - ${x.fecha||''} ${x.hora||''} - ${x.comprobante||''}</div><div style="display:flex;gap:6px"><button class="btn small" style="background:#22c55e" onclick="aprobarPago('${doc.id}','${x.uid}','${x.plan}')">Aprobar 30d</button><button class="btn small ghost" onclick="rechazarPago('${doc.id}','${x.uid}')">Rechazar</button></div>`;ul.appendChild(li);});}catch(e){$('pagosList').innerHTML='<li class="item">Error: '+e.message+'</li>';}}
+$('btnReloadPagos').onclick=loadPagos;
+window.aprobarPago=async(solicId,uid,plan)=>{if(!confirm('Aprobar 30d?'))return;const vence=new Date();vence.setDate(vence.getDate()+30);await db.collection('config').doc(uid).set({plan:plan,planActivo:true,visible:true,planVence:firebase.firestore.Timestamp.fromDate(vence),plan_estado:'aprobado',trialUsado:true},{merge:true});await db.collection('solicitudes').doc(solicId).update({estado:'aprobado',aprobado_en:firebase.firestore.FieldValue.serverTimestamp()});toast('Aprobado');loadPagos();load();};
+window.rechazarPago=async(solicId,uid)=>{if(!confirm('Rechazar?'))return;await db.collection('config').doc(uid).set({planActivo:false,visible:false,plan_estado:'rechazado'},{merge:true});await db.collection('solicitudes').doc(solicId).update({estado:'rechazado'});toast('Rechazado');loadPagos();load();};
+window.activar48=async id=>{const vence=new Date();vence.setHours(vence.getHours()+48);await db.collection('config').doc(id).set({planVence:firebase.firestore.Timestamp.fromDate(vence),planActivo:true,visible:true},{merge:true});toast('48hs');load();};
+window.darPromo=async(id,dias)=>{const motivo=prompt(`Dar ${dias} dias - Motivo:`,dias==30?'Gentileza':'Promo');if(motivo===null)return;const hasta=new Date();hasta.setDate(hasta.getDate()+dias);await db.collection('config').doc(id).set({planVence:firebase.firestore.Timestamp.fromDate(hasta),planActivo:true,visible:true,promoGratis:true,promoHasta:hasta.toLocaleDateString('es-AR'),promoMotivo:motivo,trialUsado:true},{merge:true});toast(`Promo ${dias}d`);load();};
+window.darCustom=async(id)=>{const inp=prompt('Cuantos dias? Ej: 60');if(inp===null)return;const dias=Number(inp);if(isNaN(dias)||dias<=0){toast('Invalido');return;}const motivo=prompt(`Motivo ${dias}d:`, 'Custom');if(motivo===null)return;const hasta=new Date();hasta.setDate(hasta.getDate()+dias);await db.collection('config').doc(id).set({planVence:firebase.firestore.Timestamp.fromDate(hasta),planActivo:true,visible:true,promoGratis:true,promoHasta:hasta.toLocaleDateString('es-AR'),promoMotivo:motivo,trialUsado:true},{merge:true});toast(`Custom ${dias}d`);load();};
 </script>
-</body>
-</html> 
+  <div id="soporte" class="screen"><div class="card"><h3>Soporte LOCAL vs CLIENTE - TRAZABLE</h3>
+<p style="font-size:11px;color:#d9ccff">Muestra: horario, nombre local, cliente, idReserva, captura</p>
+<div style="display:flex;gap:6px;margin-bottom:10px">
+<button class="btn small ghost" onclick="loadSoporte('todos')">Todos</button>
+<button class="btn small ghost" onclick="loadSoporte('local')">Solo Locales</button>
+<button class="btn small ghost" onclick="loadSoporte('cliente')">Solo Clientes</button>
+<input id="busSoporte" placeholder="Buscar por fecha, hora, nombre local, cliente, ID..." style="max-width:300px">
+</div><ul id="sList" class="list"></ul></div></div>
+<div id="users" class="screen"><div class="card"><h3>Usuarios</h3><div style="display:flex;gap:8px;margin-bottom:12px"><input id="busUsers" placeholder="Buscar usuario..."><button id="reloadUsers" class="btn small ghost">Recargar</button></div><ul id="uList" class="list"></ul></div></div>
+<div id="tarifas" class="screen"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+<div class="card"><b>Básico</b><label>Nombre</label><input id="pBaseNombre" value="Básico"><label>Limite/mes</label><input id="pBaseLim" type="number" value="100"><label>Precio $</label><input id="pBasePrecio" type="number" value="5000"></div>
+<div class="card"><b>Medio</b><label>Nombre</label><input id="pMedioNombre" value="Medio"><label>Limite</label><input id="pMedioLim" type="number" value="300"><label>Precio $</label><input id="pMedioPrecio" type="number" value="9000"></div>
+<div class="card"><b>Premium</b><label>Nombre</label><input id="pPremNombre" value="Premium"><label>Limite</label><input id="pPremLim" type="number" value="999999"><label>Precio $</label><input id="pPremPrecio" type="number" value="15000"></div></div>
+<div class="card"><button id="btnGuardarTarifas" class="btn">Guardar tarifas</button><span id="tarifaMsg" style="color:#86efac;margin-left:8px"></span></div></div>
+<script>
+async function loadSoporte(filtro='todos'){const ul=$('sList');ul.innerHTML='<li class="item">Cargando...</li>';try{let q=db.collection('soporte').orderBy('ts','desc').limit(100);if(filtro!=='todos'){q=db.collection('soporte').where('origen','==',filtro).orderBy('ts','desc').limit(100);}const s=await q.get();if(s.empty){ul.innerHTML='<li class="item">Sin mensajes - LOCAL y CLIENTE deben enviar origen + captura</li>';return;}ul.innerHTML='';s.forEach(d=>{const x=d.data();const esLocal=x.origen==='local';const color=esLocal?'#a855f7':'#22c55e';const label=esLocal?'🟣 LOCAL':'🟢 CLIENTE';const img=x.imagen?`<br><img src="${x.imagen}" style="max-width:220px;border-radius:12px;margin-top:6px;border:1px solid #fff3">`:'';const fechaHora=(x.fechaHora||(x.fecha?x.fecha+' '+x.hora:''))||'';const li=document.createElement('li');li.className='item';li.style.borderLeft=`4px solid ${color}`;li.style.flexDirection='column';li.style.alignItems='flex-start';li.innerHTML=`<div style="width:100%"><div style="display:flex;gap:6px;flex-wrap:wrap"><b style="color:${color}">${label}</b><span class="pill">${x.tipo||'queja'}</span><span class="pill">${fechaHora}</span><span class="pill">ID:${d.id.slice(0,6)}</span></div><div style="margin-top:6px;font-size:13px"><b>Local:</b> ${x.nombreLocal||x.nombre||'-'} (${x.uidLocal||x.uid||''})<br><b>Cliente:</b> ${x.nombreCliente||x.clienteNombre||x.email||''}<br><b>Reserva:</b> ${x.idReserva||'-'} - ${x.fecha||''} ${x.hora||''}</div><div style="font-size:12px;margin-top:6px;background:#0003;padding:8px;border-radius:10px">${x.mensaje||x.msg||''}${img}</div><div style="font-size:10px;color:#cfc9e6;margin-top:4px">Captura: ${x.imagen?'SI':'NO'} - Origen:${x.origen||'viejo sin origen'}</div></div><div style="display:flex;gap:6px;margin-top:8px"><button class="btn small ghost" onclick="verFicha('${x.uidLocal||x.uid||''}')">Ver local</button><button class="btn small ghost" onclick="delSoporte('${d.id}')">Borrar</button></div>`;ul.appendChild(li);});}catch(e){ul.innerHTML='<li class="item">Error: '+e.message+' - Crea indice ts desc + origen</li>';}}
+window.delSoporte=async id=>{if(confirm('Borrar?')){await db.collection('soporte').doc(id).delete();toast('Borrado');loadSoporte('todos');}};
+$('busSoporte').oninput=e=>{const q=e.target.value.toLowerCase();$('sList').querySelectorAll('li').forEach(li=>{li.style.display=li.textContent.toLowerCase().includes(q)?'flex':'none';});};
+async function loadUsers(){const ul=$('uList');ul.innerHTML='<li class="item">Cargando...</li>';try{let snap=await db.collection('users').limit(200).get();if(snap.empty)snap=await db.collection('config').limit(200).get();ul.innerHTML='';snap.forEach(d=>{if(['cobros','planes','adm','branding'].includes(d.id))return;const x=d.data();const cfgData=all.find(a=>a.id==d.id)||{};const activo=estaActivo(cfgData);const vence=fmtVence(cfgData);const li=document.createElement('li');li.className='item';li.innerHTML=`<div><b>${x.nombre||cfgData.nombre||d.id.slice(0,10)}</b><div style="font-size:12px;color:#cfc9e6">${x.email||cfgData.email||''} - ${cfgData.plan||'-'} - ${activo?'ACTIVO':'VENCIDO'} - ${vence}</div></div><div style="display:flex;gap:6px"><button class="btn small ghost" onclick="verFicha('${d.id}')">Ver trazable</button><button class="btn small ghost" onclick="bloquear('${d.id}')">Bloq</button></div>`;ul.appendChild(li);});}catch(e){$('uList').innerHTML='<li class="item">'+e.message+'</li>';}}
+$('reloadUsers').onclick=loadUsers;$('reload').onclick=load;
+</script>
+  <div id="ajustes" class="screen"><div class="card" style="border:2px solid #facc15"><h3>💸 MIS DATOS DE COBRO</h3><label>Alias</label><input id="jonaAlias"><label>CBU</label><input id="jonaCbu"><label>Titular</label><input id="jonaTitular"><label>WhatsApp</label><input id="jonaWsp"><label>Instrucciones</label><textarea id="jonaInstr"></textarea><button id="btnGuardarCobrosJona" class="btn" style="margin-top:10px">Guardar mis datos</button><span id="msgCobrosJona" style="color:#86efac"></span></div><div class="card"><h3>Horas de gracia</h3><input id="horasPlan" type="number" value="48" style="max-width:200px"><button id="btnGuardarHoras" class="btn small" style="margin-top:8px">Guardar</button><span id="ajMsg" style="color:#86efac"></span></div></div></div></section>
+<div id="userModal" style="position:fixed;inset:0;background:#0009;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px" class="hidden"><div class="card" style="max-width:520px;width:100%;background:#1a1033"><h3 id="modalTitle">Ficha trazable</h3><div id="modalBody" style="font-size:13px;line-height:1.6"></div><div id="modalReservas" style="max-height:200px;overflow:auto;margin-top:10px"></div><div style="display:flex;gap:8px;margin-top:14px"><button id="modalClose" class="btn ghost">Cerrar</button><button id="modalBloq" class="btn small ghost">Bloquear</button></div></div></div><div id="toast" class="toast hidden"></div>
+<script>
+window.verFicha=async id=>{if(!id){toast('Sin UID');return;}const doc=await db.collection('config').doc(id).get();const uDoc=await db.collection('users').doc(id).get();const c=doc.exists?doc.data():{};const u=uDoc.exists?uDoc.data():{};selectedUid=id;$('modalTitle').textContent=c.nombre||c.localNombre||u.nombre||u.email||c.email||id;$('modalBody').innerHTML=`<b>Email:</b> ${c.email||u.email||'-'}<br><b>Plan:</b> ${c.plan||'-'}<br><b>Activo:</b> ${c.planActivo?'Si':'No'}<br><b>Vence:</b> ${fmtVence(c)}<br><b>Trial:</b> ${c.trialUsado?'Usado':'No'}<br><b>Promo:</b> ${c.promoMotivo||'-'} hasta ${c.promoHasta||'-'}<br><b>Tel:</b> ${c.telefono||u.telefono||'-'}<br><b>UID:</b> ${id}<br><b>Visible:</b> ${c.visible?'Si':'No'}<br><b>Direccion:</b> ${c.direccion||'-'}<br><b>Alias Cobro:</b> ${c.cobAlias||'-'}<br>`;$('userModal').classList.remove('hidden');try{const res=await db.collection('reservas').where('uid','==',id).orderBy('ts','desc').limit(20).get();let h='<b>Ultimos movimientos por horario/nombre/ID:</b><br>';if(res.empty)h+='<div style="font-size:11px;color:#cfc9e6">Sin reservas - LOCAL aun no guarda uid</div>';else{res.forEach(r=>{const x=r.data();h+=`<div style="font-size:11px;padding:6px;border:1px solid #fff2;border-radius:8px;margin-top:4px">${x.fecha||x.fechaHora||''} ${x.hora||''} - ${x.cliente||x.nombre||x.clienteNombre||''} - ${x.servicio||''} - $${x.precio||0} - ${x.estado||''} - ID:${r.id.slice(0,6)} - sena:${x.senaMonto||x.sena||0} - comp:${x.comprobante||'-'}</div>`;});}$('modalReservas').innerHTML=h;}catch(e){$('modalReservas').innerHTML='Error reservas: '+e.message;}};
+$('modalClose').onclick=()=>{$('userModal').classList.add('hidden');};$('modalBloq').onclick=()=>{if(selectedUid){$('userModal').classList.add('hidden');bloquear(selectedUid);}};
+window.bloquear=async id=>{if(!confirm('Bloquear?'))return;await db.collection('config').doc(id).set({planActivo:false,visible:false},{merge:true});toast('Bloqueado');load();loadUsers();};
+$('bus').oninput=e=>{const q=e.target.value.toLowerCase();if(q.trim()===''){filtroKpiActual='todos';renderLocalesFiltrados();return;}const f=all.filter(l=>(l.nombre||l.localNombre||'').toLowerCase().includes(q)||(l.email||'').toLowerCase().includes(q)||(l.telefono||'').toLowerCase().includes(q));const g=$('grid');g.innerHTML='';f.forEach(l=>{const d=document.createElement('div');d.className='card';d.innerHTML=`<b>${l.nombre||l.localNombre||'Local'}</b><div style="margin-top:8px"><button class="btn small" onclick="activar48('${l.id}')">48hs</button> <button class="btn small ghost" onclick="verFicha('${l.id}')">Ver trazable</button></div>`;g.appendChild(d);});};
+$('busUsers').oninput=e=>{const q=e.target.value.toLowerCase();$('uList').querySelectorAll('li').forEach(li=>{li.style.display=li.textContent.toLowerCase().includes(q)?'flex':'none';});};
+$('btnGuardarTarifas').onclick=async()=>{const data={base:{nombre:$('pBaseNombre').value,limite:Number($('pBaseLim').value),precio:Number($('pBasePrecio').value)},medio:{nombre:$('pMedioNombre').value,limite:Number($('pMedioLim').value),precio:Number($('pMedioPrecio').value)},premium:{nombre:$('pPremNombre').value,limite:Number($('pPremLim').value),precio:Number($('pPremPrecio').value)},updated:firebase.firestore.FieldValue.serverTimestamp()};await db.collection('config').doc('planes').set(data,{merge:true});$('tarifaMsg').textContent='Guardado';toast('Tarifas');};
+$('btnGuardarHoras').onclick=async()=>{const h=Number($('horasPlan').value)||48;await db.collection('config').doc('adm').set({horasPlan:h},{merge:true});cfg.horasPlan=h;$('ajMsg').textContent='Guardado';load();};
+$('btnGuardarCobrosJona').onclick=async()=>{await db.collection('config').doc('cobros').set({alias:$('jonaAlias').value.trim(),cbu:$('jonaCbu').value.trim(),titular:$('jonaTitular').value.trim(),whatsapp:$('jonaWsp').value.trim(),instrucciones:$('jonaInstr').value.trim(),actualizado:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});$('msgCobrosJona').textContent='Guardado';toast('Cobros');};
+</script></body></html>
+  
