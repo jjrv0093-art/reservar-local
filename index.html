@@ -509,47 +509,89 @@ safe('forgotBtn','click',async()=>{
   const email=$('forgotEmail').value.trim();
   if(!email){
     $('forgotMsg').textContent='Pone tu correo';return
-  }
-  try{
-    await auth.sendPasswordResetEmail(email);
-    $('forgotOk').textContent='Mail enviado! Revisa spam';
-    $('forgotMsg').textContent='';
-  }catch(e){
-    $('forgotMsg').textContent=e.message
-  }
-});
-
-safe('btnLogout','click',()=>auth.signOut());
-
-auth.onAuthStateChanged(async user=>{
-  if(!user){
-    $('auth').classList.remove('hidden');
-    $('app').classList.add('hidden');
-    $('register').classList.add('hidden');
-    $('forgot').classList.add('hidden');
-    return
-  }
-  $('auth').classList.add('hidden');
-  $('register').classList.add('hidden');
-  $('forgot').classList.add('hidden');
-  $('app').classList.remove('hidden');
-  await cargarTodo();
-});
-
-function fmtMoney(n){
-  return '$'+Number(n||0).toLocaleString('es-AR')
-}
-function fmtFecha(iso){
-  if(!iso) return '';
-  const d=new Date(iso);
-  return d.toLocaleDateString('es-AR')+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})
-}
-function senaTexto(precio){
-  if(cfg.senaTipo==='ninguna' || cfg.senaActiva===false) return 'Sin sena';
-  if(cfg.senaTipo==='fijo') return 'Sena $'+cfg.senaValor;
-  const v=Math.round(precio*cfg.senaValor/100);
-  return 'Sena '+cfg.senaValor+'% = $'+v
-}
+          </div>
+          <div>
+            <label>Estado</label>
+            <select id="rEstado">
+              <option value="pendiente">Pendiente</option>
+              <option value="confirmada" selected>Confirmada</option>
+              <option value="cancelada">Cancelada</option>
+              <option value="pendiente_sena">Pendiente sena</option>
+            </select>
+          </div>
+          <div>
+            <label>Origen</label>
+            <select id="rOrigen">
+              <option value="local">Local</option>
+              <option value="cliente">Cliente</option>
+            </select>
+          </div>
+          <div class="full">
+            <label>Comentario</label>
+            <textarea id="rComentario"></textarea>
+          </div>
+          <div class="full row">
+            <button type="submit" class="btn" id="btnGuardarRes">Guardar</button>
+            <button id="btnCancelarEdicion" type="button" class="btn ghost hidden">Cancelar edicion</button>
+            <button id="btnVerListaDesdeForm" type="button" class="btn ghost">Ver reservas</button>
+          </div>
+        </form>
+        <p id="validacionMsg" style="color:#fca5a5;font-size:13px;margin-top:8px"></p>
+      </div>
+      <div id="cardListaReservas" class="card hidden">
+        <h3>Reservas - Lista</h3>
+        <div class="row" style="margin-bottom:8px">
+          <button id="btnNuevaDesdeLista" class="btn small">+ Nueva reserva</button>
+        </div>
+        <div class="row">
+          <input id="filtroFecha" type="date" style="width:auto">
+          <select id="filtroEstado" style="width:auto">
+            <option value="todas">Todas</option>
+            <option value="confirmada">Confirmadas</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="pendiente_sena">Pendiente sena</option>
+            <option value="cancelada">Canceladas</option>
+          </select>
+          <button id="btnFiltrar" class="btn small">Filtrar</button>
+          <button id="btnLimpiarFiltro" class="btn small ghost">Limpiar</button>
+          <button id="btnCSV" class="btn small ghost">CSV</button>
+        </div>
+        <ul id="listaReservas" class="list"></ul>
+      </div>
+    </section>
+    <section id="calendario" class="screen">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between">
+          <button id="calPrev" class="btn small ghost"><</button>
+          <h3 id="calTitulo"></h3>
+          <button id="calNext" class="btn small ghost">></button>
+        </div>
+        <div id="calendar" class="cal-grid"></div>
+      </div>
+    </section>
+    <section id="clientes" class="screen">
+      <div class="card">
+        <h3>Clientes frecuentes</h3>
+        <ul id="clientesFrecuentes" class="list"></ul>
+      </div>
+    </section>
+    <section id="servicios" class="screen">
+      <div class="card">
+        <h3>Servicios</h3>
+        <div class="formgrid">
+          <div><input id="svcName" placeholder="Nombre *"></div>
+          <div><input id="svcPrice" type="number" placeholder="Precio *"></div>
+          <div><input id="svcDur" type="number" value="60"></div>
+          <div class="full">
+            <label>Foto servicio</label>
+            <input id="svcFotoFile" type="file" accept="image/*">
+            <img id="svcFotoPreview" class="preview hidden">
+          </div>
+        </div>
+        <button id="btnAddService" class="btn" style="margin-top:8px">Agregar servicio</button>
+        <ul id="serviceList" class="list"></ul>
+      </div>
+    </section>
         <section id="estadisticas" class="screen">
       <div class="card">
         <h3>Ranking de servicios</h3>
