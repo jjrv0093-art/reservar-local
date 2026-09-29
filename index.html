@@ -230,3 +230,216 @@ const firebaseConfig={apiKey:"AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",authDomai
 firebase.initializeApp(firebaseConfig);
 let secondaryApp;try{secondaryApp=firebase.initializeApp(firebaseConfig,"secondary")}catch(e){secondaryApp=firebase.app("secondary")}
 const auth=firebase.auth();const db=firebase.firestore();const storage=firebase.storage();const auth2=secondaryApp.auth();
+document.addEventListener('DOMContentLoaded',()=>{
+const $=id=>document.getElementById(id);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const safe=(id,ev,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener(ev,fn)};
+const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3000)};
+let editId=null;let calDate=new Date();let allReservas=[];
+let cfg={senaTipo:'porcentaje',senaValor:30,senaActiva:false,senaDesdeDias:3,pideDni:false,plan:'',planEstado:'sin',planVence:null,trialInicio:null,trialVence:null,diasAnticipacion:30,foto:'',visible:true,apertura:'',cierre:''};
+let planSeleccionado='';let bloqueoPorPlan=false;
+let tempLocalFotoFile=null;let tempSvcFotoFile=null;
+safe('cfgFotoFile','change',e=>{const f=e.target.files[0];if(!f)return;tempLocalFotoFile=f;$('cfgFotoPreview').src=URL.createObjectURL(f);$('cfgFotoPreview').classList.remove('hidden');$('cfgFotoURL').textContent='Lista: '+f.name;});
+safe('svcFotoFile','change',e=>{const f=e.target.files[0];if(!f)return;tempSvcFotoFile=f;$('svcFotoPreview').src=URL.createObjectURL(f);$('svcFotoPreview').classList.remove('hidden');});
+safe('btnSoporte','click',()=>{$('panelSoporte').classList.toggle('hidden')});
+safe('btnCerrarSoporte','click',()=>{$('panelSoporte').classList.add('hidden')});
+safe('btnEnviarSoporte','click',async()=>{const tipo=$('sopTipo').value;const msg=$('sopMsg').value.trim();const email=$('sopEmail').value.trim();if(!msg){$('sopStatus').textContent='Escribi el mensaje';return}try{await db.collection('soporte').add({tipo,msg,email,uid:auth.currentUser?auth.currentUser.uid:'anonimo',fecha:firebase.firestore.FieldValue.serverTimestamp(),ts:Date.now()});$('sopStatus').textContent='Enviado! Gracias Jona lo revisa';$('sopMsg').value='';setTimeout(()=>{$('panelSoporte').classList.add('hidden');$('sopStatus').textContent='';},1500);toast('Soporte enviado');}catch(e){$('sopStatus').textContent='Error: '+e.message}});
+async function cargarSoporte(){const ul=$('listaSoporte');if(!ul)return;try{const snap=await db.collection('soporte').where('uid','==',auth.currentUser.uid).get();ul.innerHTML='';if(snap.empty){ul.innerHTML='<li class="item">Sin mensajes</li>';return}snap.forEach(d=>{const s=d.data();const li=document.createElement('li');li.className='item';li.style.flexDirection='column';li.innerHTML=`<div><b>${s.tipo}</b><div style="font-size:12px">${s.msg}</div><div style="font-size:11px;color:#cfc9e6">${s.email||''}</div></div>`;ul.appendChild(li);});}catch(e){ul.innerHTML='<li class="item">Error cargando soporte</li>'}}
+safe('btnBorrarSoporte','click',async()=>{if(!confirm('Borrar todos los mensajes de soporte?'))return;try{const snap=await db.collection('soporte').where('uid','==',auth.currentUser.uid).get();for(const doc of snap.docs){await doc.ref.delete();}cargarSoporte();toast('Borrados');}catch(e){toast(e.message)}});
+function minutosDesdeHora(hhmm){if(!hhmm)return null;const [h,m]=hhmm.split(':').map(Number);return h*60+m;}
+function haySuperposicion(nuevaFechaHora,nuevaDur,idExcluir){const inicioNuevo=new Date(nuevaFechaHora).getTime();const finNuevo=inicioNuevo+nuevaDur*60000;for(const r of allReservas){if(idExcluir && r.id===idExcluir)continue;if(r.estado==='cancelada')continue;if(!r.fechaHora)continue;const inicioExist=new Date(r.fechaHora).getTime();const finExist=inicioExist+(Number(r.duracion||60)*60000);if(inicioNuevo < finExist && finNuevo > inicioExist){return r}}return null;}
+function validarAperturaCierre(fechaHoraStr){const ap=$('cfgApertura')?.value || cfg.apertura;const ci=$('cfgCierre')?.value || cfg.cierre;if(!ap ||!ci)return {ok:true};const d=new Date(fechaHoraStr);const mins=d.getHours()*60+d.getMinutes();const apM=minutosDesdeHora(ap);const ciM=minutosDesdeHora(ci);if(mins < apM || mins >= ciM){return {ok:false,msg:`Local abre ${ap} a ${ci}. Elegiste ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`}}const dur=Number($('rDur').value||60);const finMins=mins+dur;if(finMins > ciM){return {ok:false,msg:`Reserva termina ${Math.floor(finMins/60)}:${String(finMins%60).padStart(2,'0')} y cierra a ${ci}. Acorta duracion`}}return {ok:true};}
+function validarPasado(fechaHoraStr){const ahora=new Date();const elegida=new Date(fechaHoraStr);if(elegida < ahora){return {ok:false,msg:'No podes reservar en el pasado'}}return {ok:true};}
+safe('goRegister','click',e=>{e.preventDefault();$('auth').classList.add('hidden');$('register').classList.remove('hidden');$('forgot').classList.add('hidden');});
+safe('goLogin','click',e=>{e.preventDefault();$('auth').classList.remove('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');});
+safe('goForgot','click',e=>{e.preventDefault();$('forgot').classList.remove('hidden');$('auth').classList.add('hidden');$('register').classList.add('hidden');});
+safe('goBackLogin','click',e=>{e.preventDefault();$('forgot').classList.add('hidden');$('auth').classList.remove('hidden');});
+safe('loginBtn','click',async()=>{const email=$('email').value.trim();const pass=$('password').value;if(!email||!pass){$('loginMsg').textContent='Completa todo';return}try{await auth.signInWithEmailAndPassword(email,pass);}catch(e){$('loginMsg').textContent=e.message}});
+safe('registerBtn','click',async()=>{const nom=$('regNombre').value.trim();const ape=$('regApellido').value.trim();const email=$('regEmail').value.trim();const pass=$('regPass').value;const pass2=$('regPass2').value;const term=$('regTerminos').checked;if(!nom||!ape||!email||!pass){$('regMsg').textContent='Completa todo';return}if(pass!==pass2){$('regMsg').textContent='No coinciden';return}if(!term){$('regMsg').textContent='Acepta terminos';return}try{const cred=await auth.createUserWithEmailAndPassword(email,pass);await db.collection('users').doc(cred.user.uid).set({nombre:nom,apellido:ape,email,rol:'admin',creado:firebase.firestore.FieldValue.serverTimestamp()});const ahora=new Date();const trialVence=new Date();trialVence.setDate(ahora.getDate()+7);await db.collection('config').doc(cred.user.uid).set({plan:'medio',planEstado:'trial',planActivo:true,visible:true,senaTipo:'porcentaje',senaValor:30,senaActiva:false,senaDesdeDias:3,pideDni:false,diasAnticipacion:30,foto:'',trialInicio:ahora,trialVence:trialVence,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});toast('Cuenta creada con 7 dias gratis');}catch(e){$('regMsg').textContent=e.message}});
+safe('forgotBtn','click',async()=>{const email=$('forgotEmail').value.trim();if(!email){$('forgotMsg').textContent='Pone tu correo';return}try{await auth.sendPasswordResetEmail(email);$('forgotOk').textContent='Mail enviado! Revisa spam';$('forgotMsg').textContent='';}catch(e){$('forgotMsg').textContent=e.message}});
+safe('btnLogout','click',()=>auth.signOut());
+auth.onAuthStateChanged(async user=>{if(!user){$('auth').classList.remove('hidden');$('app').classList.add('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');return}$('auth').classList.add('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');$('app').classList.remove('hidden');await cargarTodo();});
+function fmtMoney(n){return '$'+Number(n||0).toLocaleString('es-AR')}
+function fmtFecha(iso){if(!iso)return '';const d=new Date(iso);return d.toLocaleDateString('es-AR')+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}
+function senaTexto(precio){if(cfg.senaTipo==='ninguna' || cfg.senaActiva===false || cfg.senaActiva==='false')return 'Sin seña';if(cfg.senaTipo==='fijo')return 'Seña $'+cfg.senaValor;const v=Math.round(precio*cfg.senaValor/100);return 'Seña '+cfg.senaValor+'% = $'+v}
+  async function cargarTodo(){
+const uid=auth.currentUser.uid;
+try{
+const cDoc=await db.collection('config').doc(uid).get();
+if(cDoc.exists){
+const d=cDoc.data();
+cfg={...cfg,...d};
+$('cfgLocalNombre').value=d.localNombre||'';
+$('cfgEmail').value=d.email||'';
+$('cfgTel').value=d.telefono||'';
+$('cfgDireccion').value=d.direccion||'';
+$('cfgApertura').value=d.apertura||'';
+$('cfgCierre').value=d.cierre||'';
+$('cfgFoto').value=d.foto||'';
+$('cfgDiasAnticipacion').value=d.diasAnticipacion||30;
+$('cfgVisible').value=d.visible!==undefined?String(d.visible):'true';
+$('cfgSenaTipo').value=d.senaTipo||'porcentaje';
+$('cfgSenaValor').value=d.senaValor||30;
+$('cfgSenaActiva').value=d.senaActiva!==undefined?String(d.senaActiva):'false';
+$('cfgSenaDesdeDias').value=d.senaDesdeDias||3;
+$('cfgPideDni').value=d.pideDni!==undefined?String(d.pideDni):'false';
+$('cobTitular').value=d.cobTitular||'';
+$('cobBanco').value=d.cobBanco||'';
+$('cobAlias').value=d.cobAlias||'';
+$('cobCBU').value=d.cobCBU||'';
+$('cobInstr').value=d.cobInstr||'';
+$('cfgPolitica').value=d.politica||'';
+$('estadoPill').textContent=d.reservasPausadas?'Pausadas':'Activas';
+if(d.foto){$('cfgFotoPreview').src=d.foto;$('cfgFotoPreview').classList.remove('hidden');$('cfgFotoURL').textContent=d.foto;}
+}
+}catch(e){}
+await cargarPlanVisual();await cargarReservas();await cargarServicios();await cargarClientes();await cargarSoporte();await cargarFacturacionMes(new Date().toISOString().slice(0,7));await cargarEstadisticas();renderCalendar();checkTrialYGracia();
+}
+async function cargarPlanVisual(){
+const uid=auth.currentUser.uid;
+const cDoc=await db.collection('config').doc(uid).get();
+if(!cDoc.exists)return;
+const d=cDoc.data();
+const plan=d.plan||'';const estado=d.planEstado||'sin';
+const vence=d.planVence? (d.planVence.toDate? d.planVence.toDate() : new Date(d.planVence)) : null;
+const trialV=d.trialVence? (d.trialVence.toDate? d.trialVence.toDate() : new Date(d.trialVence)) : null;
+$('membershipPlan').textContent=plan||'Sin plan';$('membershipStatus').textContent=estado;$('membershipVence').textContent=vence? vence.toLocaleDateString('es-AR') : (trialV? trialV.toLocaleDateString('es-AR') : '-');
+const ahora=new Date();
+if(estado==='trial' && trialV){const dias=Math.ceil((trialV-ahora)/86400000);$('trialAviso').classList.remove('hidden');$('trialAviso').textContent='TRIAL: te quedan '+dias+' dias gratis en plan '+plan;}else{$('trialAviso').classList.add('hidden');}
+if(estado==='gracia' && vence){const dias=Math.ceil((vence-ahora)/86400000);$('graciaAviso').classList.remove('hidden');$('graciaAviso').textContent='GRACIA: tu plan vencio, tenes '+dias+' dias para renovar';}else{$('graciaAviso').classList.add('hidden');}
+if(estado==='sin' || estado==='cancelado' || estado==='vencido'){$('planAviso').classList.remove('hidden');$('planAviso').textContent='Sin membresia activa - solo podes ver';bloqueoPorPlan=true;}else{$('planAviso').classList.add('hidden');bloqueoPorPlan=false;}
+if(estado==='activo' || estado==='trial' || estado==='gracia'){$('btnCancelarPlan').classList.remove('hidden');$('btnRenovarPlan').classList.remove('hidden');}
+if(estado==='cancelado'){$('btnReactivarPlan').classList.remove('hidden');}
+const inicioMes=new Date();inicioMes.setDate(1);inicioMes.setHours(0,0,0,0);
+const snap=await db.collection('reservas').where('uid','==',uid).where('ts','>=',inicioMes.getTime()).get();
+const usadas=snap.size;let limite=0;if(plan==='basico')limite=100;if(plan==='medio')limite=300;if(plan==='premium')limite=999999;
+if(limite){$('planUso').textContent=usadas+' / '+ (limite>10000?'ilimitadas':limite)+' usadas este mes';if(usadas>=limite){bloqueoPorPlan=true;$('planAviso').classList.remove('hidden');$('planAviso').textContent='Limite alcanzado ('+usadas+'/'+limite+') - renova a premium';}}
+}
+function checkTrialYGracia(){
+const uid=auth.currentUser.uid;
+db.collection('config').doc(uid).get().then(doc=>{
+if(!doc.exists)return;const d=doc.data();const ahora=new Date();
+if(d.planEstado==='trial' && d.trialVence){const tv=d.trialVence.toDate? d.trialVence.toDate() : new Date(d.trialVence);if(ahora>tv){db.collection('config').doc(uid).update({planEstado:'vencido',planActivo:false});toast('Trial vencido - contrata plan');cargarPlanVisual();}}
+if(d.planEstado==='gracia' && d.planVence){const pv=d.planVence.toDate? d.planVence.toDate() : new Date(d.planVence);if(ahora>pv){db.collection('config').doc(uid).update({planEstado:'vencido',planActivo:false});toast('Periodo de gracia vencido');cargarPlanVisual();}}
+if(d.planEstado==='activo' && d.planVence){const pv=d.planVence.toDate? d.planVence.toDate() : new Date(d.planVence);if(ahora>pv){const gracia=new Date();gracia.setDate(pv.getDate()+5);db.collection('config').doc(uid).update({planEstado:'gracia',planVence:gracia});toast('Plan vencido - 5 dias de gracia');cargarPlanVisual();}}
+});
+}
+async function cargarReservas(){
+const uid=auth.currentUser.uid;
+const q=await db.collection('reservas').where('uid','==',uid).orderBy('ts','desc').limit(200).get();
+allReservas=[];q.forEach(doc=>{allReservas.push({id:doc.id,...doc.data()});});
+renderReservas(allReservas);renderCalendar();renderTurnosHoy();
+}
+function renderReservas(list){
+const ul=$('listaReservas');if(!ul)return;ul.innerHTML='';
+if(list.length===0){ul.innerHTML='<li class="item">Sin reservas</li>';return}
+list.forEach(r=>{
+const li=document.createElement('li');li.className='item';li.style.flexDirection='column';
+const dur=r.duracion||r.dur||60;const sena=r.sena? ' Seña $'+r.sena : '';const precio=r.precio? ' $'+r.precio : '';const cli=r.cliente||r.nombre||'Cliente';const estado=r.estado||'confirmada';const hora=r.fechaHora||r.fecha||'';const color=estado==='cancelada'?'#fca5a5':estado==='pendiente'?'#fde68a':estado==='pendiente_sena'?'#fb923c':'#86efac';const dniTxt=r.dni? ' DNI:'+r.dni : '';const compTxt=r.comprobante? '<div style="font-size:11px;color:#fde68a">Comp: '+r.comprobante+'</div>' : '';
+li.innerHTML=`<div style="width:100%"><div style="display:flex;justify-content:space-between"><div><b>${cli}</b> - ${r.servicio||''}<div style="font-size:12px;color:#cfc9e6">${fmtFecha(hora)} - ${dur}min${precio}${sena}<span style="color:${color}"> ${estado}</span>${r.whats?' - WA: '+r.whats:''} ${dniTxt}</div>${r.comentario?'<div style="font-size:11px">'+r.comentario+'</div>':''}${compTxt}</div><div class="row">${estado==='pendiente_sena'?'<button class="btn small" data-aprobar="'+r.id+'">Aprobar seña</button><button class="btn small ghost" data-rechazar="'+r.id+'">Rechazar</button>':''}<button class="btn small ghost" data-editar="${r.id}">Editar</button><button class="btn small ghost" data-borrar="${r.id}">X</button></div></div></div>`;
+ul.appendChild(li);
+});
+ul.querySelectorAll('[data-editar]').forEach(b=>{b.addEventListener('click',()=>{const r=allReservas.find(x=>x.id===b.dataset.editar);if(!r)return;editarReserva(r);});});
+ul.querySelectorAll('[data-borrar]').forEach(b=>{b.addEventListener('click',async()=>{if(!confirm('Borrar?'))return;await db.collection('reservas').doc(b.dataset.borrar).delete();cargarReservas();});});
+ul.querySelectorAll('[data-aprobar]').forEach(b=>{b.addEventListener('click',async()=>{if(!confirm('Aprobar seña y confirmar reserva?'))return;await db.collection('reservas').doc(b.dataset.aprobar).update({estado:'confirmada'});toast('Seña aprobada');cargarReservas();});});
+ul.querySelectorAll('[data-rechazar]').forEach(b=>{b.addEventListener('click',async()=>{if(!confirm('Rechazar reserva con seña?'))return;await db.collection('reservas').doc(b.dataset.rechazar).update({estado:'cancelada'});toast('Reserva rechazada');cargarReservas();});});
+}
+function renderTurnosHoy(){
+const ul=$('turnosHoy');if(!ul)return;const hoy=new Date().toISOString().slice(0,10);
+const todays=allReservas.filter(r=>{const fh=r.fechaHora||'';return fh.startsWith(hoy) && r.estado!=='cancelada'}).sort((a,b)=> (a.fechaHora||'').localeCompare(b.fechaHora||''));ul.innerHTML='';
+if(todays.length===0){ul.innerHTML='<li class="item">Sin turnos hoy</li>';return}
+todays.forEach(r=>{const li=document.createElement('li');li.className='item';const hora=(r.fechaHora||'').slice(11,16);li.innerHTML=`<div><b>${hora}</b> - ${r.cliente||r.nombre} - ${r.servicio||''}</div><div style="font-size:12px">${r.whats||''}</div>`;ul.appendChild(li);});
+$('kpis').innerHTML=`<span class="pill">Hoy: ${todays.length}</span><span class="pill">Total: ${allReservas.length}</span><span class="pill">Confirmadas: ${allReservas.filter(x=>x.estado==='confirmada').length}</span><span class="pill">Seña pendiente: ${allReservas.filter(x=>x.estado==='pendiente_sena').length}</span>`;
+}
+function editarReserva(r){
+$('rCliente').value=r.cliente||r.nombre||'';$('rWhats').value=r.whats||'';$('rServicioSelect').value=r.servicio||'';if(r.servicio &&!$('rServicioSelect').querySelector(`option[value="${r.servicio}"]`)){$('rServicioCustom').classList.remove('hidden');$('rServicioCustom').value=r.servicio;$('rServicioSelect').value='__custom';}
+$('rPrecio').value=r.precio||'';$('rDur').value=r.duracion||60;$('rFechaHora').value=r.fechaHora||'';$('rEstado').value=r.estado||'confirmada';$('rOrigen').value=r.origen||'local';$('rComentario').value=r.comentario||'';editId=r.id;$('tituloReserva').textContent='Editando reserva';$('btnCancelarEdicion').classList.remove('hidden');$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');goScreen('reservas');updateSenaUI();
+}
+function updateSenaUI(){
+const precio=Number($('rPrecio').value||0);const t=senaTexto(precio);$('senaInfo').textContent=t;
+const c=$('cobroPreview');if(!c)return;c.innerHTML=`<div style="font-size:12px">${t||'Sin seña'} - Desde ${cfg.senaDesdeDias||3} dias<br>Titular: ${$('cobTitular').value||'-'} - Alias: ${$('cobAlias').value||'-'}<br>${$('cobInstr').value||''}<br>DNI cliente: ${cfg.pideDni?'Obligatorio':'Opcional'}</div>`;
+}
+  safe('reservaForm','submit',async e=>{
+e.preventDefault();$('validacionMsg').textContent='';
+if(bloqueoPorPlan){$('validacionMsg').textContent='Membresia vencida o limite alcanzado - no podes crear';toast('Bloqueado por plan');return}
+const cliente=$('rCliente').value.trim();const whats=$('rWhats').value.trim();const servSel=$('rServicioSelect').value;const servCustom=$('rServicioCustom').value.trim();const servicio=servSel==='__custom'?servCustom:servSel;
+const precio=Number($('rPrecio').value||0);const dur=Number($('rDur').value||60);const fechaHora=$('rFechaHora').value;const estado=$('rEstado').value;const origen=$('rOrigen').value;const comentario=$('rComentario').value.trim();
+if(!cliente||!fechaHora){$('validacionMsg').textContent='Falta cliente o fecha';return}
+const vPasado=validarPasado(fechaHora);if(!vPasado.ok){$('validacionMsg').textContent=vPasado.msg;toast(vPasado.msg);return}
+const vHorario=validarAperturaCierre(fechaHora);if(!vHorario.ok){$('validacionMsg').textContent=vHorario.msg;toast(vHorario.msg);return}
+const solapada=haySuperposicion(fechaHora,dur,editId);if(solapada){$('validacionMsg').textContent='Se pisa con '+solapada.cliente+' a las '+ (solapada.fechaHora||'').slice(11,16);toast('Choque de horarios!');return}
+let sena=0;if(cfg.senaTipo==='fijo')sena=cfg.senaValor;else if(cfg.senaTipo==='porcentaje')sena=Math.round(precio*cfg.senaValor/100);
+const payload={uid:auth.currentUser.uid,cliente,nombre:cliente,whats,servicio,precio,duracion:dur,dur,fechaHora,fecha:fechaHora,estado,origen,comentario,sena,ts:new Date(fechaHora).getTime(),createdAt:firebase.firestore.FieldValue.serverTimestamp()};
+try{
+if(editId){await db.collection('reservas').doc(editId).update(payload);editId=null;$('tituloReserva').textContent='Nueva reserva';$('btnCancelarEdicion').classList.add('hidden');toast('Actualizada');}else{await db.collection('reservas').add(payload);toast('Creada');}
+$('reservaForm').reset();$('rDur').value=60;$('rEstado').value='confirmada';$('rServicioCustom').classList.add('hidden');$('senaInfo').textContent='';await cargarReservas();await cargarPlanVisual();
+}catch(err){$('validacionMsg').textContent=err.message}
+});
+safe('btnCancelarEdicion','click',()=>{editId=null;$('reservaForm').reset();$('rDur').value=60;$('tituloReserva').textContent='Nueva reserva';$('btnCancelarEdicion').classList.add('hidden');$('rServicioCustom').classList.add('hidden');});
+safe('btnVerListaDesdeForm','click',()=>{$('cardNuevaReserva').classList.add('hidden');$('cardListaReservas').classList.remove('hidden');});
+safe('btnNuevaDesdeLista','click',()=>{$('cardListaReservas').classList.add('hidden');$('cardNuevaReserva').classList.remove('hidden');});
+safe('btnNuevaReserva','click',()=>{goScreen('reservas');$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');});
+safe('btnIrReservas','click',()=>{goScreen('reservas');$('cardNuevaReserva').classList.add('hidden');$('cardListaReservas').classList.remove('hidden');});
+safe('rPrecio','input',updateSenaUI);
+safe('rServicioSelect','change',()=>{if($('rServicioSelect').value==='__custom'){$('rServicioCustom').classList.remove('hidden');}else{$('rServicioCustom').classList.add('hidden');}const opt=$('rServicioSelect').selectedOptions[0];if(opt && opt.dataset.price){$('rPrecio').value=opt.dataset.price;$('rDur').value=opt.dataset.dur||60;updateSenaUI();}});
+safe('btnFiltrar','click',()=>{const fecha=$('filtroFecha').value;const estado=$('filtroEstado').value;let fil=allReservas;if(fecha)fil=fil.filter(r=> (r.fechaHora||'').startsWith(fecha));if(estado!=='todas')fil=fil.filter(r=> (r.estado||'')===estado);renderReservas(fil);});
+safe('btnLimpiarFiltro','click',()=>{$('filtroFecha').value='';$('filtroEstado').value='todas';renderReservas(allReservas);});
+safe('btnCSV','click',()=>{let csv='Cliente,Whats,DNI,Servicio,Precio,Duracion,Fecha,Estado,Origen,Comentario,Comprobante\n';allReservas.forEach(r=>{csv+=`"${r.cliente||''}","${r.whats||''}","${r.dni||''}","${r.servicio||''}","${r.precio||''}","${r.duracion||''}","${r.fechaHora||''}","${r.estado||''}","${r.origen||''}","${(r.comentario||'').replace(/"/g,'""')}","${r.comprobante||''}"\n`;});const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='reservas.csv';a.click();});
+function renderCalendar(){
+const grid=$('calendar');const tit=$('calTitulo');if(!grid||!tit)return;grid.innerHTML='';const y=calDate.getFullYear();const m=calDate.getMonth();tit.textContent=calDate.toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+const first=new Date(y,m,1).getDay();const daysIn=new Date(y,m+1,0).getDate();for(let i=0;i<first;i++){const div=document.createElement('div');div.className='cal-day empty';grid.appendChild(div);}
+for(let d=1;d<=daysIn;d++){const div=document.createElement('div');div.className='cal-day';div.textContent=d;const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const ocupadas=allReservas.filter(r=> (r.fechaHora||'').startsWith(iso) && r.estado!=='cancelada').length;if(ocupadas>0){div.style.background=ocupadas>=3?'#ef4444':ocupadas>=2?'#f59e0b':'#a855f7';div.style.color='white';}const hoyIso=new Date().toISOString().slice(0,10);if(iso===hoyIso)div.style.border='2px solid #ff5ab3';div.addEventListener('click',()=>{$('filtroFecha').value=iso;goScreen('reservas');$('cardNuevaReserva').classList.add('hidden');$('cardListaReservas').classList.remove('hidden');const fil=allReservas.filter(r=> (r.fechaHora||'').startsWith(iso));renderReservas(fil);});grid.appendChild(div);}}
+safe('calPrev','click',()=>{calDate.setMonth(calDate.getMonth()-1);renderCalendar();});
+safe('calNext','click',()=>{calDate.setMonth(calDate.getMonth()+1);renderCalendar();});
+async function cargarClientes(){
+const ul=$('clientesFrecuentes');if(!ul)return;const map={};allReservas.forEach(r=>{const k=(r.cliente||r.nombre||'').toLowerCase();if(!k)return;if(!map[k])map[k]={nombre:r.cliente||r.nombre,count:0,whats:r.whats||'',ult:r.fechaHora};map[k].count++;if(r.fechaHora>map[k].ult)map[k].ult=r.fechaHora;});
+const arr=Object.values(map).sort((a,b)=>b.count-a.count).slice(0,20);ul.innerHTML='';if(arr.length===0){ul.innerHTML='<li class="item">Sin clientes</li>';return}
+arr.forEach(c=>{const li=document.createElement('li');li.className='item';li.innerHTML=`<div><b>${c.nombre}</b> - ${c.count} visitas<div style="font-size:12px">${c.whats} - Ult: ${fmtFecha(c.ult)}</div></div>`;ul.appendChild(li);});
+}
+async function cargarServicios(){
+const uid=auth.currentUser.uid;const snap=await db.collection('servicios').where('uid','==',uid).get();const ul=$('serviceList');const sel=$('rServicioSelect');if(!ul||!sel)return;ul.innerHTML='';sel.innerHTML='<option value="">Elegi servicio</option>';
+if(snap.empty){ul.innerHTML='<li class="item">Sin servicios - agrega arriba</li>';}
+snap.forEach(doc=>{const s=doc.data();const li=document.createElement('li');li.className='item';li.style.alignItems='center';li.innerHTML=`<div style="display:flex;gap:10px;align-items:center"><img src="${s.foto||''}" style="width:50px;height:50px;border-radius:10px;object-fit:cover;background:#ffffff12;border:1px solid #ffffff22" onerror="this.style.display='none'"><div><b>${s.nombre}</b> - $${s.precio} - ${s.duracion}min</div></div><button class="btn small ghost" data-del-svc="${doc.id}">X</button>`;ul.appendChild(li);const opt=document.createElement('option');opt.value=s.nombre;opt.textContent=s.nombre+' - $'+s.precio;opt.dataset.price=s.precio;opt.dataset.dur=s.duracion;sel.appendChild(opt);});
+const customOpt=document.createElement('option');customOpt.value='__custom';customOpt.textContent='Otro (escribir)';sel.appendChild(customOpt);
+ul.querySelectorAll('[data-del-svc]').forEach(b=>{b.addEventListener('click',async()=>{await db.collection('servicios').doc(b.dataset.delSvc).delete();cargarServicios();});});
+}
+  safe('btnAddService','click',async()=>{
+const nombre=$('svcName').value.trim();const precio=Number($('svcPrice').value||0);const dur=Number($('svcDur').value||60);if(!nombre||!precio){toast('Completa nombre y precio');return}
+$('btnAddService').textContent='Subiendo...';$('btnAddService').disabled=true;
+try{
+let fotoURL='';if(tempSvcFotoFile){const uid=auth.currentUser.uid;const ref=storage.ref().child(`locales/${uid}/servicios/${Date.now()}_${tempSvcFotoFile.name}`);await ref.put(tempSvcFotoFile);fotoURL=await ref.getDownloadURL();}
+await db.collection('servicios').add({uid:auth.currentUser.uid,nombre,precio,duracion:dur,foto:fotoURL,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+$('svcName').value='';$('svcPrice').value='';$('svcDur').value=60;$('svcFotoFile').value='';$('svcFotoPreview').classList.add('hidden');tempSvcFotoFile=null;toast('Servicio con foto OK');cargarServicios();
+}catch(e){toast(e.message)}finally{$('btnAddService').textContent='Agregar servicio con foto';$('btnAddService').disabled=false;}
+});
+async function cargarEstadisticas(){const cont=$('rankingServicios');if(!cont)return;const map={};allReservas.forEach(r=>{if(r.estado==='cancelada')return;const k=r.servicio||'Sin servicio';if(!map[k])map[k]=0;map[k]++;});const arr=Object.entries(map).sort((a,b)=>b[1]-a[1]);cont.innerHTML='';if(arr.length===0){cont.innerHTML='<div class="item">Sin datos</div>';return}arr.forEach(([nombre,cant])=>{const div=document.createElement('div');div.className='item';div.innerHTML=`<b>${nombre}</b> - ${cant} reservas`;cont.appendChild(div);});}
+async function cargarFacturacionMes(mes){const uid=auth.currentUser.uid;const ul=$('facturacionLista');const totalEl=$('factTotal');if(!ul||!totalEl)return;if(!mes)mes=new Date().toISOString().slice(0,7);const inicio=new Date(mes+'-01T00:00:00').getTime();const finMes=new Date(mes+'-01T00:00:00');finMes.setMonth(finMes.getMonth()+1);const fin=finMes.getTime();try{const snap=await db.collection('reservas').where('uid','==',uid).where('ts','>=',inicio).where('ts','<',fin).get();let total=0;ul.innerHTML='';snap.forEach(doc=>{const r=doc.data();if(r.estado==='cancelada')return;total+=Number(r.precio||0);const li=document.createElement('li');li.className='item';li.innerHTML=`<div>${fmtFecha(r.fechaHora)} - ${r.cliente} - ${r.servicio} ${r.estado==='pendiente_sena'?'(Seña pendiente)':''}</div><div>$${r.precio||0}</div>`;ul.appendChild(li);});totalEl.textContent='Total '+mes+': $'+total.toLocaleString('es-AR');}catch(e){totalEl.textContent='Error: '+e.message;}}
+safe('factMes','change',()=>{cargarFacturacionMes($('factMes').value);});
+safe('btnGuardarCfg','click',async()=>{
+const uid=auth.currentUser.uid;$('btnGuardarCfg').textContent='Guardando...';$('btnGuardarCfg').disabled=true;
+try{
+let fotoURL=$('cfgFoto').value.trim();
+if(tempLocalFotoFile){toast('Subiendo foto local...');const ref=storage.ref().child(`locales/${uid}/foto_${Date.now()}_${tempLocalFotoFile.name}`);await ref.put(tempLocalFotoFile);fotoURL=await ref.getDownloadURL();$('cfgFoto').value=fotoURL;}
+await db.collection('config').doc(uid).set({localNombre:$('cfgLocalNombre').value.trim(),email:$('cfgEmail').value.trim(),telefono:$('cfgTel').value.trim(),direccion:$('cfgDireccion').value.trim(),apertura:$('cfgApertura').value,cierre:$('cfgCierre').value,foto:fotoURL,diasAnticipacion:Number($('cfgDiasAnticipacion').value||30),visible:$('cfgVisible').value==='true',horarioApertura:$('cfgApertura').value,horarioCierre:$('cfgCierre').value},{merge:true});
+cfg.foto=fotoURL;if(fotoURL){$('cfgFotoPreview').src=fotoURL;$('cfgFotoPreview').classList.remove('hidden');$('cfgFotoURL').textContent=fotoURL;}
+$('cfgMsg').textContent='Guardado!';setTimeout(()=>$('cfgMsg').textContent='',2000);toast('Datos + foto galeria guardados');tempLocalFotoFile=null;
+}catch(e){toast(e.message)}finally{$('btnGuardarCfg').textContent='Guardar datos del local';$('btnGuardarCfg').disabled=false;}
+});
+safe('btnGuardarCobros','click',async()=>{const uid=auth.currentUser.uid;try{await db.collection('config').doc(uid).set({senaTipo:$('cfgSenaTipo').value,senaValor:Number($('cfgSenaValor').value||0),senaActiva:$('cfgSenaActiva').value==='true',pideSena:$('cfgSenaActiva').value==='true',senaDesdeDias:Number($('cfgSenaDesdeDias').value||3),pideDni:$('cfgPideDni').value==='true',cobTitular:$('cobTitular').value.trim(),cobBanco:$('cobBanco').value.trim(),cobAlias:$('cobAlias').value.trim(),cobCBU:$('cobCBU').value.trim(),cobInstr:$('cobInstr').value.trim(),politica:$('cfgPolitica').value.trim()},{merge:true});cfg.senaTipo=$('cfgSenaTipo').value;cfg.senaValor=Number($('cfgSenaValor').value||0);cfg.senaActiva=$('cfgSenaActiva').value==='true';cfg.senaDesdeDias=Number($('cfgSenaDesdeDias').value||3);cfg.pideDni=$('cfgPideDni').value==='true';$('cobroMsg').textContent='Guardado!';updateSenaUI();setTimeout(()=>$('cobroMsg').textContent='',2000);toast('Cobros y seña guardados');}catch(e){toast(e.message)}});
+safe('btnAddUser','click',async()=>{const nombre=$('newUserName').value.trim();const email=$('newUserEmail').value.trim();const pass=$('newUserPass').value;if(!email||!pass){$('userMsg').textContent='Falta email o pass';return}try{const cred=await auth2.createUserWithEmailAndPassword(email,pass);await db.collection('users').doc(cred.user.uid).set({nombre,apellido:'',email,rol:'empleado',ownerUid:auth.currentUser.uid,creado:firebase.firestore.FieldValue.serverTimestamp()});await auth2.signOut();$('userMsg').textContent='Empleado creado sin desloguearte';$('newUserName').value='';$('newUserEmail').value='';$('newUserPass').value='';toast('Empleado ok');}catch(e){$('userMsg').textContent=e.message}});
+safe('btnBackup','click',()=>{const data={reservas:allReservas,config:cfg,fecha:new Date().toISOString()};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-reservar-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('Backup descargado');});
+safe('btnRestore','click',()=>{$('fileRestore').click();});
+safe('fileRestore','change',async e=>{const file=e.target.files[0];if(!file)return;try{const text=await file.text();const data=JSON.parse(text);if(!data.reservas||!Array.isArray(data.reservas)){toast('Backup invalido');return}if(!confirm('Restaurar '+data.reservas.length+' reservas? Se agregaran a las actuales'))return;for(const r of data.reservas){const nr={...r};delete nr.id;nr.uid=auth.currentUser.uid;nr.restoredAt=firebase.firestore.FieldValue.serverTimestamp();await db.collection('reservas').add(nr);}toast('Restaurado '+data.reservas.length);cargarReservas();}catch(err){toast('Error: '+err.message)}});
+safe('btnPagarPlan','click',async()=>{const uid=auth.currentUser.uid;const metodo=$('metodoPago').value;let sel='';$$('.plan').forEach(x=>{if(x.classList.contains('selected')) sel=x.dataset.plan;});if(!sel) sel='medio';try{const ahora=new Date();const vence=new Date();vence.setDate(ahora.getDate()+30);await db.collection('config').doc(uid).set({plan:sel,planEstado:'activo',planActivo:true,planVence:vence,visible:true,planActualizado:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});toast('Plan '+sel+' activado 30 dias');await cargarPlanVisual();await db.collection('planes_historial').add({uid,plan:sel,estado:'activo',precio: sel==='basico'?5000:sel==='medio'?9000:15000,desde:ahora,hasta:vence,metodo:metodo||'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){toast(e.message)}});
+$$('.plan').forEach(b=>{b.addEventListener('click',()=>{$$('.plan').forEach(x=>{x.classList.remove('selected');x.style.border='1px solid #ffffff20'});b.classList.add('selected');b.style.border='2px solid #ff5ab3';planSeleccionado=b.dataset.plan;});});
+safe('btnCancelarPlan','click',async()=>{if(!confirm('Seguro que queres cancelar? Vas a periodo de gracia 5 dias'))return;const uid=auth.currentUser.uid;try{const cDoc=await db.collection('config').doc(uid).get();const venceActual=cDoc.data()?.planVence?.toDate? cDoc.data().planVence.toDate() : new Date();const gracia=new Date();gracia.setDate(venceActual.getDate()+5);await db.collection('config').doc(uid).set({planEstado:'gracia',planVence:gracia},{merge:true});toast('Plan en gracia 5 dias');cargarPlanVisual();}catch(e){toast(e.message)}});
+safe('btnReactivarPlan','click',async()=>{const uid=auth.currentUser.uid;try{const ahora=new Date();const vence=new Date();vence.setDate(ahora.getDate()+30);await db.collection('config').doc(uid).set({planEstado:'activo',planActivo:true,planVence:vence},{merge:true});toast('Plan reactivado 30 dias');cargarPlanVisual();}catch(e){toast(e.message)}});
+safe('btnRenovarPlan','click',async()=>{const uid=auth.currentUser.uid;try{const ahora=new Date();const vence=new Date();vence.setDate(ahora.getDate()+30);await db.collection('config').doc(uid).set({planEstado:'activo',planActivo:true,planVence:vence},{merge:true});toast('Plan renovado 30 dias');cargarPlanVisual();}catch(e){toast(e.message)}});
+function goScreen(id){$$('.screen').forEach(s=>s.classList.remove('active'));const t=$('screen-'+id) || $(id);if(t)t.classList.add('active');}
+$$('.tab').forEach(t=>{t.addEventListener('click',()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');const id=t.dataset.go || t.dataset.screen;goScreen(id);if(id==='reservas'){$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');}if(id==='facturacion'){const mes=new Date().toISOString().slice(0,7);$('factMes').value=mes;cargarFacturacionMes(mes);}});});
+goScreen('dashboard');
+safe('btnToggleEstado','click',async()=>{const uid=auth.currentUser.uid;try{const cDoc=await db.collection('config').doc(uid).get();const paus=cDoc.exists?!!cDoc.data().reservasPausadas : false;await db.collection('config').doc(uid).set({reservasPausadas:!paus},{merge:true});$('estadoPill').textContent=!paus?'Pausadas':'Activas';toast(!paus?'Reservas pausadas':'Reservas activas');}catch(e){toast(e.message)}});
+});
+</script>
+</body>
+</html>
