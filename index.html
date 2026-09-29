@@ -371,4 +371,501 @@ input[type=file]::file-selector-button{
             <label>Fecha y hora</label>
             <input id="rFechaHora" type="datetime-local" required>
           </div>
+          function minutosDesdeHora(hhmm){
+  if(!hhmm) return null;
+  const [h,m]=hhmm.split(':').map(Number);
+  return h*60+m;
+}
+
+function haySuperposicion(nuevaFechaHora,nuevaDur,idExcluir){
+  const inicioNuevo=new Date(nuevaFechaHora).getTime();
+  const finNuevo=inicioNuevo+nuevaDur*60000;
+  for(const r of allReservas){
+    if(idExcluir && r.id===idExcluir) continue;
+    if(r.estado==='cancelada') continue;
+    if(!r.fechaHora) continue;
+    const inicioExist=new Date(r.fechaHora).getTime();
+    const finExist=inicioExist+(Number(r.duracion||60)*60000);
+    if(inicioNuevo < finExist && finNuevo > inicioExist){
+      return r
+    }
+  }
+  return null;
+}
+
+function validarAperturaCierre(fechaHoraStr){
+  const ap=$('cfgApertura')?.value || cfg.apertura;
+  const ci=$('cfgCierre')?.value || cfg.cierre;
+  if(!ap || !ci) return {ok:true};
+  const d=new Date(fechaHoraStr);
+  const mins=d.getHours()*60+d.getMinutes();
+  const apM=minutosDesdeHora(ap);
+  const ciM=minutosDesdeHora(ci);
+  if(mins < apM || mins >= ciM){
+    return {
+      ok:false,
+      msg:`Local abre ${ap} a ${ci}. Elegiste ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`
+    }
+  }
+  const dur=Number($('rDur').value||60);
+  const finMins=mins+dur;
+  if(finMins > ciM){
+    return {
+      ok:false,
+      msg:`Termina ${Math.floor(finMins/60)}:${String(finMins%60).padStart(2,'0')} y cierra a ${ci}`
+    }
+  }
+  return {ok:true};
+}
+
+function validarPasado(fechaHoraStr){
+  const ahora=new Date();
+  const elegida=new Date(fechaHoraStr);
+  if(elegida < ahora){
+    return {ok:false,msg:'No podes reservar en el pasado'}
+  }
+  return {ok:true};
+}
+
+safe('goRegister','click',e=>{
+  e.preventDefault();
+  $('auth').classList.add('hidden');
+  $('register').classList.remove('hidden');
+  $('forgot').classList.add('hidden');
+});
+safe('goLogin','click',e=>{
+  e.preventDefault();
+  $('auth').classList.remove('hidden');
+  $('register').classList.add('hidden');
+  $('forgot').classList.add('hidden');
+});
+safe('goForgot','click',e=>{
+  e.preventDefault();
+  $('forgot').classList.remove('hidden');
+  $('auth').classList.add('hidden');
+  $('register').classList.add('hidden');
+});
+safe('goBackLogin','click',e=>{
+  e.preventDefault();
+  $('forgot').classList.add('hidden');
+  $('auth').classList.remove('hidden');
+});
+
+safe('loginBtn','click',async()=>{
+  const email=$('email').value.trim();
+  const pass=$('password').value;
+  if(!email||!pass){
+    $('loginMsg').textContent='Completa todo';
+    return
+  }
+  try{
+    await auth.signInWithEmailAndPassword(email,pass);
+  }catch(e){
+    $('loginMsg').textContent=e.message
+  }
+});
+
+safe('registerBtn','click',async()=>{
+  const nom=$('regNombre').value.trim();
+  const ape=$('regApellido').value.trim();
+  const email=$('regEmail').value.trim();
+  const pass=$('regPass').value;
+  const pass2=$('regPass2').value;
+  const term=$('regTerminos').checked;
+  if(!nom||!ape||!email||!pass){
+    $('regMsg').textContent='Completa todo';return
+  }
+  if(pass!==pass2){
+    $('regMsg').textContent='No coinciden';return
+  }
+  if(!term){
+    $('regMsg').textContent='Acepta terminos';return
+  }
+  try{
+    const cred=await auth.createUserWithEmailAndPassword(email,pass);
+    await db.collection('users').doc(cred.user.uid).set({
+      nombre:nom,apellido:ape,email,rol:'admin',
+      creado:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    const ahora=new Date();
+    const trialVence=new Date();
+    trialVence.setDate(ahora.getDate()+7);
+    await db.collection('config').doc(cred.user.uid).set({
+      plan:'medio',planEstado:'trial',planActivo:true,
+      visible:true,senaTipo:'porcentaje',senaValor:30,
+      senaActiva:false,senaDesdeDias:3,pideDni:false,
+      diasAnticipacion:30,foto:'',
+      trialInicio:ahora,trialVence:trialVence,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+    toast('Cuenta creada');
+  }catch(e){
+    $('regMsg').textContent=e.message
+  }
+});
+
+safe('forgotBtn','click',async()=>{
+  const email=$('forgotEmail').value.trim();
+  if(!email){
+    $('forgotMsg').textContent='Pone tu correo';return
+  }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    $('forgotOk').textContent='Mail enviado! Revisa spam';
+    $('forgotMsg').textContent='';
+  }catch(e){
+    $('forgotMsg').textContent=e.message
+  }
+});
+
+safe('btnLogout','click',()=>auth.signOut());
+
+auth.onAuthStateChanged(async user=>{
+  if(!user){
+    $('auth').classList.remove('hidden');
+    $('app').classList.add('hidden');
+    $('register').classList.add('hidden');
+    $('forgot').classList.add('hidden');
+    return
+  }
+  $('auth').classList.add('hidden');
+  $('register').classList.add('hidden');
+  $('forgot').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  await cargarTodo();
+});
+
+function fmtMoney(n){
+  return '$'+Number(n||0).toLocaleString('es-AR')
+}
+function fmtFecha(iso){
+  if(!iso) return '';
+  const d=new Date(iso);
+  return d.toLocaleDateString('es-AR')+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})
+}
+function senaTexto(precio){
+  if(cfg.senaTipo==='ninguna' || cfg.senaActiva===false) return 'Sin sena';
+  if(cfg.senaTipo==='fijo') return 'Sena $'+cfg.senaValor;
+  const v=Math.round(precio*cfg.senaValor/100);
+  return 'Sena '+cfg.senaValor+'% = $'+v
+}
+        <section id="estadisticas" class="screen">
+      <div class="card">
+        <h3>Ranking de servicios</h3>
+        <div id="rankingServicios"></div>
+      </div>
+    </section>
+
+    <section id="facturacion" class="screen">
+      <div class="card">
+        <h3>Facturacion</h3>
+        <div class="row">
+          <input id="factMes" type="month" style="width:auto">
+        </div>
+        <p id="factTotal" style="font-weight:800"></p>
+        <ul id="facturacionLista" class="list"></ul>
+      </div>
+    </section>
+
+    <section id="ajustes" class="screen stack">
+      <div class="card">
+        <h3>Datos del local</h3>
+        <div class="formgrid">
+          <div>
+            <label>Nombre del local</label>
+            <input id="cfgLocalNombre" placeholder="Mi local">
+          </div>
+          <div>
+            <label>Email de contacto</label>
+            <input id="cfgEmail">
+          </div>
+          <div>
+            <label>Telefono</label>
+            <input id="cfgTel">
+          </div>
+          <div>
+            <label>Direccion</label>
+            <input id="cfgDireccion">
+          </div>
+          <div>
+            <label>Apertura</label>
+            <input id="cfgApertura" type="time">
+          </div>
+          <div>
+            <label>Cierre</label>
+            <input id="cfgCierre" type="time">
+          </div>
+          <div class="full">
+            <label>Foto del local</label>
+            <input id="cfgFotoFile" type="file" accept="image/*">
+            <input id="cfgFoto" type="hidden">
+            <img id="cfgFotoPreview" class="preview hidden">
+            <div id="cfgFotoURL" class="hint"></div>
+          </div>
+          <div>
+            <label>Dias de anticipacion</label>
+            <input id="cfgDiasAnticipacion" type="number" value="30">
+          </div>
+          <div>
+            <label>Visible en buscador</label>
+            <select id="cfgVisible">
+              <option value="true">Si - Visible</option>
+              <option value="false">No - Oculto</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button id="btnGuardarCfg" class="btn">Guardar datos del local</button>
+          <span id="cfgMsg" style="color:#86efac"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Cobros y sena</h3>
+        <div class="formgrid">
+          <div>
+            <label>Pedir sena?</label>
+            <select id="cfgSenaActiva">
+              <option value="false">No</option>
+              <option value="true">Si</option>
+            </select>
+          </div>
+          <div>
+            <label>Sena desde cuantos dias</label>
+            <input id="cfgSenaDesdeDias" type="number" value="3">
+          </div>
+          <div>
+            <label>Tipo sena</label>
+            <select id="cfgSenaTipo">
+              <option value="ninguna">Sin sena</option>
+              <option value="porcentaje" selected>Porcentaje</option>
+              <option value="fijo">Fijo $</option>
+            </select>
+          </div>
+          <div>
+            <label>Valor sena</label>
+            <input id="cfgSenaValor" type="number" value="30">
+          </div>
+          <div>
+            <label>Pedir DNI al cliente?</label>
+            <select id="cfgPideDni">
+              <option value="false">No - Opcional</option>
+              <option value="true">Si - Obligatorio</option>
+            </select>
+          </div>
+          <div><label>Titular</label><input id="cobTitular"></div>
+          <div><label>Banco</label><input id="cobBanco"></div>
+          <div><label>Alias</label><input id="cobAlias"></div>
+          <div><label>CBU</label><input id="cobCBU"></div>
+          <div class="full">
+            <label>Instrucciones para sena</label>
+            <textarea id="cobInstr"></textarea>
+          </div>
+          <div class="full">
+            <label>Politica</label>
+            <textarea id="cfgPolitica"></textarea>
+          </div>
+        </div>
+        <div id="cobroPreview" class="item" style="display:block;margin-top:10px"></div>
+        <div class="row" style="margin-top:10px">
+          <button id="btnGuardarCobros" class="btn">Guardar cobros y sena</button>
+          <span id="cobroMsg" style="color:#86efac"></span>
+        </div>
+      </div>
+            <div class="card">
+        <h3>Equipo</h3>
+        <div class="formgrid">
+          <div><input id="newUserName" placeholder="Nombre"></div>
+          <div><input id="newUserEmail" type="email" placeholder="Email empleado"></div>
+          <div><input id="newUserPass" type="password" placeholder="Pass temporal"></div>
+        </div>
+        <button id="btnAddUser" class="btn">Agregar empleado</button>
+        <p id="userMsg" style="color:#86efac"></p>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <button id="btnBackup" class="btn">Backup JSON</button>
+          <button id="btnRestore" class="btn ghost">Restaurar</button>
+          <input id="fileRestore" type="file" class="hidden">
+        </div>
+      </div>
+    </section>
+
+    <section id="soporte" class="screen">
+      <div class="card">
+        <h3>Soporte</h3>
+        <ul id="listaSoporte" class="list"></ul>
+        <div class="row">
+          <button id="btnBorrarSoporte" class="btn small ghost">Borrar todos leidos</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<button id="btnSoporte">💬</button>
+<div id="panelSoporte" class="hidden">
+  <h4>Soporte reservAR</h4>
+  <select id="sopTipo" style="margin-bottom:8px">
+    <option value="error">Error</option>
+    <option value="queja">Queja</option>
+    <option value="sugerencia">Sugerencia</option>
+  </select>
+  <textarea id="sopMsg" placeholder="Que paso?" style="margin-bottom:8px"></textarea>
+  <input id="sopEmail" placeholder="Tu email (opcional)" style="margin-bottom:8px">
+  <button id="btnEnviarSoporte" class="btn full">Enviar</button>
+  <p id="sopStatus" style="font-size:12px;color:#86efac"></p>
+  <button id="btnCerrarSoporte" class="btn small ghost full" style="margin-top:6px">Cerrar</button>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+const firebaseConfig={
+  apiKey:"AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",
+  authDomain:"reservar-cb70d.firebaseapp.com",
+  projectId:"reservar-cb70d",
+  storageBucket:"reservar-cb70d.firebasestorage.app",
+  messagingSenderId:"630908928696",
+  appId:"1:630908928696:web:5e89f5f2b1cc2b240e6a4d"
+};
+firebase.initializeApp(firebaseConfig);
+let secondaryApp;
+try{
+  secondaryApp=firebase.initializeApp(firebaseConfig,"secondary")
+}catch(e){
+  secondaryApp=firebase.app("secondary")
+}
+const auth=firebase.auth();
+const db=firebase.firestore();
+const storage=firebase.storage();
+const auth2=secondaryApp.auth();
+  document.addEventListener('DOMContentLoaded',()=>{
+
+const $=id=>document.getElementById(id);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const safe=(id,ev,fn)=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener(ev,fn)
+};
+const toast=m=>{
+  const t=document.getElementById('toast');
+  t.textContent=m;
+  t.classList.remove('hidden');
+  setTimeout(()=>t.classList.add('hidden'),3000)
+};
+
+let editId=null;
+let calDate=new Date();
+let allReservas=[];
+let cfg={
+  senaTipo:'porcentaje',
+  senaValor:30,
+  senaActiva:false,
+  senaDesdeDias:3,
+  pideDni:false,
+  plan:'',planEstado:'sin',
+  planVence:null,trialVence:null,
+  diasAnticipacion:30,
+  foto:'',visible:true,
+  apertura:'',cierre:''
+};
+let bloqueoPorPlan=false;
+let tempLocalFotoFile=null;
+let tempSvcFotoFile=null;
+
+safe('cfgFotoFile','change',e=>{
+  const f=e.target.files[0];
+  if(!f) return;
+  tempLocalFotoFile=f;
+  $('cfgFotoPreview').src=URL.createObjectURL(f);
+  $('cfgFotoPreview').classList.remove('hidden');
+  $('cfgFotoURL').textContent=f.name;
+});
+
+safe('svcFotoFile','change',e=>{
+  const f=e.target.files[0];
+  if(!f) return;
+  tempSvcFotoFile=f;
+  $('svcFotoPreview').src=URL.createObjectURL(f);
+  $('svcFotoPreview').classList.remove('hidden');
+});
+
+safe('btnSoporte','click',()=>{
+  $('panelSoporte').classList.toggle('hidden')
+});
+safe('btnCerrarSoporte','click',()=>{
+  $('panelSoporte').classList.add('hidden')
+});
+
+safe('btnEnviarSoporte','click',async()=>{
+  const tipo=$('sopTipo').value;
+  const msg=$('sopMsg').value.trim();
+  const email=$('sopEmail').value.trim();
+  if(!msg){
+    $('sopStatus').textContent='Escribi el mensaje';
+    return
+  }
+  try{
+    await db.collection('soporte').add({
+      tipo,msg,email,
+      uid:auth.currentUser?auth.currentUser.uid:'anonimo',
+      fecha:firebase.firestore.FieldValue.serverTimestamp(),
+      ts:Date.now()
+    });
+    $('sopStatus').textContent='Enviado!';
+    $('sopMsg').value='';
+    setTimeout(()=>{
+      $('panelSoporte').classList.add('hidden');
+      $('sopStatus').textContent='';
+    },1500);
+    toast('Soporte enviado');
+  }catch(e){
+    $('sopStatus').textContent='Error: '+e.message
+  }
+});
+
+async function cargarSoporte(){
+  const ul=$('listaSoporte');
+  if(!ul) return;
+  try{
+    const snap=await db.collection('soporte')
+      .where('uid','==',auth.currentUser.uid).get();
+    ul.innerHTML='';
+    if(snap.empty){
+      ul.innerHTML='<li class="item">Sin mensajes</li>';
+      return
+    }
+    snap.forEach(d=>{
+      const s=d.data();
+      const li=document.createElement('li');
+      li.className='item';
+      li.style.flexDirection='column';
+      li.innerHTML=`
+        <div>
+          <b>${s.tipo}</b>
+          <div style="font-size:12px">${s.msg}</div>
+          <div style="font-size:11px;color:#cfc9e6">${s.email||''}</div>
+        </div>
+      `;
+      ul.appendChild(li);
+    });
+  }catch(e){
+    ul.innerHTML='<li class="item">Error cargando soporte</li>'
+  }
+}
+
+safe('btnBorrarSoporte','click',async()=>{
+  if(!confirm('Borrar todos?')) return;
+  try{
+    const snap=await db.collection('soporte')
+      .where('uid','==',auth.currentUser.uid).get();
+    for(const doc of snap.docs){
+      await doc.ref.delete();
+    }
+    cargarSoporte();
+    toast('Borrados');
+  }catch(e){toast(e.message)}
+});
           
