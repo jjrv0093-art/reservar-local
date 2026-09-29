@@ -140,7 +140,7 @@ input[type=file]::file-selector-button{background:linear-gradient(135deg,#a855f7
 <div><label>Precio $</label><input id="rPrecio" type="number"><div id="senaInfo" class="hint"></div></div>
 <div><label>Duracion min</label><input id="rDur" type="number" value="60"></div>
 <div><label>Fecha y hora</label><input id="rFechaHora" type="datetime-local" required></div>
-<div><label>Estado</label><select id="rEstado"><option value="pendiente">Pendiente</option><option value="confirmada" selected>Confirmada</option><option value="cancelada">Cancelada</option><option value="pendiente_sena">Pendiente sena</option></select></div>
+<div><label>Estado</label><select id="rEstado"><option value="pendiente">Pendiente</option><option value="confirmada" selected>Confirmada</option><option value="cancelada">Cancelada</option><option value="pendiente_sena">Pendiente seña</option></select></div>
 <div><label>Origen</label><select id="rOrigen"><option value="local">Local</option><option value="cliente">Cliente</option></select></div>
 <div class="full"><label>Comentario</label><textarea id="rComentario"></textarea></div>
 <div class="full row"><button type="submit" class="btn" id="btnGuardarRes">Guardar</button><button id="btnCancelarEdicion" type="button" class="btn ghost hidden">Cancelar edicion</button><button id="btnVerListaDesdeForm" type="button" class="btn ghost">Ver reservas</button></div>
@@ -152,7 +152,7 @@ input[type=file]::file-selector-button{background:linear-gradient(135deg,#a855f7
 <div class="row" style="margin-bottom:8px"><button id="btnNuevaDesdeLista" class="btn small">+ Nueva reserva</button></div>
 <div class="row">
 <input id="filtroFecha" type="date" style="width:auto">
-<select id="filtroEstado" style="width:auto"><option value="todas">Todas</option><option value="confirmada">Confirmadas</option><option value="pendiente">Pendientes</option><option value="pendiente_sena">Pendiente sena</option><option value="cancelada">Canceladas</option></select>
+<select id="filtroEstado" style="width:auto"><option value="todas">Todas</option><option value="confirmada">Confirmadas</option><option value="pendiente">Pendientes</option><option value="pendiente_sena">Pendiente seña</option><option value="cancelada">Canceladas</option></select>
 <button id="btnFiltrar" class="btn small">Filtrar</button><button id="btnLimpiarFiltro" class="btn small ghost">Limpiar</button><button id="btnCSV" class="btn small ghost">CSV</button>
 </div>
 <ul id="listaReservas" class="list"></ul>
@@ -210,10 +210,10 @@ input[type=file]::file-selector-button{background:linear-gradient(135deg,#a855f7
 <div class="card">
 <h3>Cobros y seña</h3>
 <div class="formgrid">
-<div><label>Pedir seña?</label><select id="cfgSeñaActiva"><option value="false">No</option><option value="true">Si</option></select></div>
+<div><label>Pedir seña?</label><select id="cfgSenaActiva"><option value="false">No</option><option value="true">Si</option></select></div>
 <div><label>Seña desde cuantos dias</label><input id="cfgSenaDesdeDias" type="number" value="3"></div>
-<div><label>Tipo seña</label><select id="cfgSeñaTipo"><option value="ninguna">Sin seña</option><option value="porcentaje" selected>Porcentaje</option><option value="fijo">Fijo $</option></select></div>
-<div><label>Valor seña</label><input id="cfgSeñaValor" type="number" value="30"></div>
+<div><label>Tipo seña</label><select id="cfgSenaTipo"><option value="ninguna">Sin seña</option><option value="porcentaje" selected>Porcentaje</option><option value="fijo">Fijo $</option></select></div>
+<div><label>Valor seña</label><input id="cfgSenaValor" type="number" value="30"></div>
 <div><label>Pedir DNI al cliente?</label><select id="cfgPideDni"><option value="false">No - Opcional</option><option value="true">Si - Obligatorio</option></select></div>
 <div><label>Titular</label><input id="cobTitular"></div>
 <div><label>Banco</label><input id="cobBanco"></div>
@@ -223,7 +223,7 @@ input[type=file]::file-selector-button{background:linear-gradient(135deg,#a855f7
 <div class="full"><label>Politica</label><textarea id="cfgPolitica"></textarea></div>
 </div>
 <div id="cobroPreview" class="item" style="display:block;margin-top:10px"></div>
-<div class="row" style="margin-top:10px"><button id="btnGuardarCobros" class="btn">Guardar cobros y sena</button><span id="cobroMsg" style="color:#86efac"></span></div>
+<div class="row" style="margin-top:10px"><button id="btnGuardarCobros" class="btn">Guardar cobros y seña</button><span id="cobroMsg" style="color:#86efac"></span></div>
 </div>
 <div class="card">
 <h3>Equipo</h3>
@@ -269,11 +269,11 @@ safe('btnCerrarSoporte','click',()=>{$('panelSoporte').classList.add('hidden')})
 safe('btnEnviarSoporte','click',async()=>{const tipo=$('sopTipo').value;const msg=$('sopMsg').value.trim();const email=$('sopEmail').value.trim();if(!msg){$('sopStatus').textContent='Escribi el mensaje';return}try{await db.collection('soporte').add({tipo,msg,email,uid:auth.currentUser?auth.currentUser.uid:'anonimo',fecha:firebase.firestore.FieldValue.serverTimestamp(),ts:Date.now()});$('sopStatus').textContent='Enviado!';$('sopMsg').value='';setTimeout(()=>{$('panelSoporte').classList.add('hidden');$('sopStatus').textContent='';},1500);toast('Soporte enviado');}catch(e){$('sopStatus').textContent='Error: '+e.message}});
 async function cargarSoporte(){const ul=$('listaSoporte');if(!ul) return;try{const snap=await db.collection('soporte').where('uid','==',auth.currentUser.uid).get();ul.innerHTML='';if(snap.empty){ul.innerHTML='<li class="item">Sin mensajes</li>';return}snap.forEach(d=>{const s=d.data();const li=document.createElement('li');li.className='item';li.style.flexDirection='column';li.innerHTML=`<div><b>${s.tipo}</b><div style="font-size:12px">${s.msg}</div><div style="font-size:11px;color:#cfc9e6">${s.email||''}</div></div>`;ul.appendChild(li);});}catch(e){ul.innerHTML='<li class="item">Error cargando soporte</li>'}}
 safe('btnBorrarSoporte','click',async()=>{if(!confirm('Borrar todos?')) return;try{const snap=await db.collection('soporte').where('uid','==',auth.currentUser.uid).get();for(const doc of snap.docs){await doc.ref.delete();}cargarSoporte();toast('Borrados');}catch(e){toast(e.message)}});
-  function minutosDesdeHora(hhmm){if(!hhmm) return null;const [h,m]=hhmm.split(':').map(Number);return h*60+m;}
+  function minutosDesdeHora(hhmm){if(!hhmm) return null;const parts=hhmm.split(':');const h=Number(parts[0]);const m=Number(parts[1]);return h*60+m;}
 function haySuperposicion(nuevaFechaHora,nuevaDur,idExcluir){const inicioNuevo=new Date(nuevaFechaHora).getTime();const finNuevo=inicioNuevo+nuevaDur*60000;for(const r of allReservas){if(idExcluir&&r.id===idExcluir) continue;if(r.estado==='cancelada') continue;if(!r.fechaHora) continue;const inicioExist=new Date(r.fechaHora).getTime();const finExist=inicioExist+(Number(r.duracion||60)*60000);if(inicioNuevo<finExist&&finNuevo>inicioExist){return r}}return null;}
 function validarAperturaCierre(fechaHoraStr){const ap=$('cfgApertura')?.value||cfg.apertura;const ci=$('cfgCierre')?.value||cfg.cierre;if(!ap||!ci) return {ok:true};const d=new Date(fechaHoraStr);const mins=d.getHours()*60+d.getMinutes();const apM=minutosDesdeHora(ap);const ciM=minutosDesdeHora(ci);if(mins<apM||mins>=ciM){return {ok:false,msg:`Local abre ${ap} a ${ci}. Elegiste ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`}}const dur=Number($('rDur').value||60);const finMins=mins+dur;if(finMins>ciM){return {ok:false,msg:`Termina ${Math.floor(finMins/60)}:${String(finMins%60).padStart(2,'0')} y cierra a ${ci}`}}return {ok:true};}
-function validarPasado(fechaHoraStr){const ahora=new Date();const elegida=new Date(fechaHoraStr);if(elegida<aho
-                                                                                                    ra){return {ok:false,msg:'No podes reservar en el pasado'}}return {ok:true};}
+function validarPasado(fechaHoraStr){const ahora=new Date();const elegida
+  =new Date(fechaHoraStr);if(elegida.getTime()<ahora.getTime()){return {ok:false,msg:'No podes reservar en el pasado'}}return {ok:true};}
 safe('goRegister','click',e=>{e.preventDefault();$('auth').classList.add('hidden');$('register').classList.remove('hidden');$('forgot').classList.add('hidden');});
 safe('goLogin','click',e=>{e.preventDefault();$('auth').classList.remove('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');});
 safe('goForgot','click',e=>{e.preventDefault();$('forgot').classList.remove('hidden');$('auth').classList.add('hidden');$('register').classList.add('hidden');});
@@ -284,8 +284,8 @@ safe('forgotBtn','click',async()=>{const email=$('forgotEmail').value.trim();if(
 safe('btnLogout','click',()=>auth.signOut());
 auth.onAuthStateChanged(async user=>{if(!user){$('auth').classList.remove('hidden');$('app').classList.add('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');return}$('auth').classList.add('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');$('app').classList.remove('hidden');await cargarTodo();});
 function fmtMoney(n){return '$'+Number(n||0).toLocaleString('es-AR')}
-function fmtFecha(iso){if(!iso) return '';const d=new Date(iso);return d.toLocaleDateString('es-AR')+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}
-function señaTexto(precio){if(cfg.señaTipo==='ninguna'||cfg.senaActiva===false) return 'Sin seña';if(cfg.señaTipo==='fijo') return 'Seña $'+cfg.señaValor;const v=Math.round(precio*cfg.senaValor/100);return 'Seña '+cfg.señaValor+'% = $'+v}
+function fmtFecha(iso){if(!iso) return '';const d=new Date(iso);return d.toLocaleDateString('es-AR')+' '+d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}  
+function senaTexto(precio){if(cfg.senaTipo==='ninguna'||cfg.senaActiva===false) return 'Sin seña';if(cfg.senaTipo==='fijo') return 'Seña $'+cfg.senaValor;const v=Math.round(precio*cfg.senaValor/100);return 'Seña '+cfg.senaValor+'% = $'+v}
   async function cargarTodo(){
 const uid=auth.currentUser.uid;
 try{
@@ -440,18 +440,18 @@ const li=document.createElement('li');
 li.className='item';
 li.style.flexDirection='column';
 const dur=r.duracion||r.dur||60;
-const sena=r.sena?' Seña $'+r.seña:'';
+const senaTxt=r.sena?' Seña $'+r.sena:'';
 const precio=r.precio?' $'+r.precio:'';
 const cli=r.cliente||r.nombre||'Cliente';
 const estado=r.estado||'confirmada';
 const hora=r.fechaHora||r.fecha||'';
 const color=estado==='cancelada'?'#fca5a5':estado==='pendiente'?'#fde68a':estado==='pendiente_sena'?'#fb923c':'#86efac';
-li.innerHTML=`<div style="width:100%"><div style="display:flex;justify-content:space-between"><div><b>${cli}</b> - ${r.servicio||''}<div style="font-size:12px;color:#cfc9e6">${fmtFecha(hora)} - ${dur}min${precio}${sena} <span style="color:${color}"> ${estado}</span> ${r.whats?' - WA: '+r.whats:''}</div>${r.comentario?'<div style="font-size:11px">'+r.comentario+'</div>':''}</div><div class="row">${estado==='pendiente_sena'?'<button class="btn small" data-aprobar="'+r.id+'">Aprobar sena</button><button class="btn small ghost" data-rechazar="'+r.id+'">Rechazar</button>':''}<button class="btn small ghost" data-editar="${r.id}">Editar</button><button class="btn small ghost" data-borrar="${r.id}">X</button></div></div></div>`;
+li.innerHTML=`<div style="width:100%"><div style="display:flex;justify-content:space-between"><div><b>${cli}</b> - ${r.servicio||''}<div style="font-size:12px;color:#cfc9e6">${fmtFecha(hora)} - ${dur}min${precio}${senaTxt} <span style="color:${color}"> ${estado}</span> ${r.whats?' - WA: '+r.whats:''}</div>${r.comentario?'<div style="font-size:11px">'+r.comentario+'</div>':''}</div><div class="row">${estado==='pendiente_sena'?'<button class="btn small" data-aprobar="'+r.id+'">Aprobar seña</button><button class="btn small ghost" data-rechazar="'+r.id+'">Rechazar</button>':''}<button class="btn small ghost" data-editar="${r.id}">Editar</button><button class="btn small ghost" data-borrar="${r.id}">X</button></div></div></div>`;
 ul.appendChild(li);
 });
 ul.querySelectorAll('[data-editar]').forEach(b=>{b.addEventListener('click',()=>{const r=allReservas.find(x=>x.id===b.dataset.editar);if(!r) return;editarReserva(r);});});
 ul.querySelectorAll('[data-borrar]').forEach(b=>{b.addEventListener('click',async()=>{if(!confirm('Borrar?')) return;await db.collection('reservas').doc(b.dataset.borrar).delete();cargarReservas();});});
-ul.querySelectorAll('[data-aprobar]').forEach(b=>{b.addEventListener('click',async()=>{await db.collection('reservas').doc(b.dataset.aprobar).update({estado:'confirmada'});toast('Sena aprobada');cargarReservas();});});
+ul.querySelectorAll('[data-aprobar]').forEach(b=>{b.addEventListener('click',async()=>{await db.collection('reservas').doc(b.dataset.aprobar).update({estado:'confirmada'});toast('Seña aprobada');cargarReservas();});});
 ul.querySelectorAll('[data-rechazar]').forEach(b=>{b.addEventListener('click',async()=>{await db.collection('reservas').doc(b.dataset.rechazar).update({estado:'cancelada'});toast('Rechazada');cargarReservas();});});
 }
 function renderTurnosHoy(){
@@ -499,7 +499,7 @@ const t=senaTexto(precio);
 $('senaInfo').textContent=t;
 const c=$('cobroPreview');
 if(!c) return;
-c.innerHTML=`<div style="font-size:12px">${t||'Sin sena'} - Desde ${cfg.senaDesdeDias||3} dias<br>Titular: ${$('cobTitular').value||'-'} - Alias: ${$('cobAlias').value||'-'}<br>${$('cobInstr').value||''}<br>DNI: ${cfg.pideDni?'Obligatorio':'Opcional'}</div>`;
+c.innerHTML=`<div style="font-size:12px">${t||'Sin seña'} - Desde ${cfg.senaDesdeDias||3} dias<br>Titular: ${$('cobTitular').value||'-'} - Alias: ${$('cobAlias').value||'-'}<br>${$('cobInstr').value||''}<br>DNI: ${cfg.pideDni?'Obligatorio':'Opcional'}</div>`;
 }
 safe('reservaForm','submit',async e=>{
 e.preventDefault();
@@ -524,8 +524,8 @@ if(!vHorario.ok){$('validacionMsg').textContent=vHorario.msg;toast(vHorario.msg)
 const solapada=haySuperposicion(fechaHora,dur,editId);
 if(solapada){$('validacionMsg').textContent='Se pisa con '+solapada.cliente+' a las '+ (solapada.fechaHora||'').slice(11,16);toast('Choque de horarios');return}
 let sena=0;
-if(cfg.senaTipo==='fijo') sena=cfg.señaValor;
-else if(cfg.señaTipo==='porcentaje') seña=Math.round(precio*cfg.senaValor/100);
+if(cfg.senaTipo==='fijo') sena=cfg.senaValor;
+else if(cfg.senaTipo==='porcentaje') sena=Math.round(precio*cfg.senaValor/100);
 const payload={uid:auth.currentUser.uid,cliente,nombre:cliente,whats,servicio,precio,duracion:dur,dur,fechaHora,fecha:fechaHora,estado,origen,comentario,sena,ts:new Date(fechaHora).getTime(),createdAt:firebase.firestore.FieldValue.serverTimestamp()};
 try{
 if(editId){
