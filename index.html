@@ -147,14 +147,39 @@ const $$=s=>Array.from(document.querySelectorAll(s));
 const safe=(id,ev,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener(ev,fn)};
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3000)};
 let editId=null,allReservas=[],horariosCache={},serviciosCache={},cfgFotoBase64='',svcFotoBase64='',editSvcId=null,selectedPlan='medio';
-let planPrecios={basico:{limite:100,precio:5000},medio:{limite:300,precio:9000},premium:{limite:999999,precio:15000}};
+let planPrecios={basico:{nombre:'Básico',limite:100,precio:5000},medio:{nombre:'Medio',limite:300,precio:9000},premium:{nombre:'Premium',limite:999999,precio:15000}};
 let cfg={senaTipo:'porcentaje',senaValor:30,senaActiva:false,senaDesdeDias:3,pideDni:false};
 let calDate=new Date(),sopFileBase64='',currentConfig=null;
 let planCompBase64='',planCompNombre='',cobrosCache=null;
 function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 function goScreen(id){$$('.screen').forEach(s=>s.classList.remove('active'));const t=$(id);if(t)t.classList.add('active')}
 function fmtDate(d){try{if(!d)return'-';if(d.toDate)return d.toDate().toLocaleDateString('es-AR');if(d.seconds)return new Date(d.seconds*1000).toLocaleDateString('es-AR');return new Date(d).toLocaleDateString('es-AR')}catch{return'-'}}
-async function cargarTarifas(){try{const pDoc=await db.collection('config').doc('planes').get();if(pDoc.exists){const d=pDoc.data();if(d.base){planPrecios.basico=d.base;const b=$('planBtnBasico');if(b)b.textContent=`${d.base.nombre||'Básico'} - ${d.base.limite}/mes - $${d.base.precio}`;}if(d.medio){planPrecios.medio=d.medio;const b=$('planBtnMedio');if(b)b.textContent=`${d.medio.nombre||'Medio'} - ${d.medio.limite}/mes - $${d.medio.precio}`;}if(d.premium){planPrecios.premium=d.premium;const b=$('planBtnPremium');if(b)b.textContent=`${d.premium.nombre||'Premium'} - ${d.premium.limite==999999?'Ilimitado':d.premium.limite+'/mes'} - $${d.premium.precio}`;}}}catch(e){}}
+async function cargarTarifas(){
+try{
+const pDoc=await db.collection('config').doc('planes').get();
+if(pDoc.exists){
+const d=pDoc.data();
+if(d.base){
+planPrecios.basico={nombre:d.base.nombre||'Básico',limite:Number(d.base.limite)||0,precio:Number(d.base.precio)||0};
+const b=$('planBtnBasico');
+if(b) b.textContent=`${planPrecios.basico.nombre} - ${planPrecios.basico.limite}/mes - $${planPrecios.basico.precio}`;
+}
+if(d.medio){
+planPrecios.medio={nombre:d.medio.nombre||'Medio',limite:Number(d.medio.limite)||0,precio:Number(d.medio.precio)||0};
+const b=$('planBtnMedio');
+if(b) b.textContent=`${planPrecios.medio.nombre} - ${planPrecios.medio.limite}/mes - $${planPrecios.medio.precio}`;
+}
+if(d.premium){
+planPrecios.premium={nombre:d.premium.nombre||'Premium',limite:Number(d.premium.limite)||0,precio:Number(d.premium.precio)||0};
+const b=$('planBtnPremium');
+if(b){
+const limTxt=planPrecios.premium.limite>=9999?'Ilimitado':planPrecios.premium.limite+'/mes';
+b.textContent=`${planPrecios.premium.nombre} - ${limTxt} - $${planPrecios.premium.precio}`;
+}
+}
+}
+}catch(e){}
+}
 async function cargarCobros(){try{const c=await db.collection('config').doc('cobros').get();if(c.exists){cobrosCache=c.data();$('planTransAlias').textContent='Alias: '+(cobrosCache.alias||'');$('planTransCbu').textContent='CBU: '+(cobrosCache.cbu||'');$('planTransTitular').textContent='Titular: '+(cobrosCache.titular||'');$('planTransInstr').textContent=cobrosCache.instrucciones||'';}}catch(e){}}
 safe('cfgFotoFile','change',async e=>{const f=e.target.files[0];if(!f)return;cfgFotoBase64=await fileToBase64(f);$('cfgFotoPrev').src=cfgFotoBase64;$('cfgFotoPrev').classList.remove('hidden')});
 safe('svcFoto','change',async e=>{const f=e.target.files[0];if(!f)return;svcFotoBase64=await fileToBase64(f);$('svcFotoPrev').src=svcFotoBase64;$('svcFotoPrev').classList.remove('hidden')});
