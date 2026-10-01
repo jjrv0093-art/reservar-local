@@ -25,7 +25,6 @@ body{margin:0;font-family:system-ui;color:#fff;background:linear-gradient(160deg
 .btn.ghost{background:transparent;border:1px solid var(--stroke)}
 .btn.full{width:100%}
 .btn.small{padding:.35rem.6rem;font-size:12px}
-.btn:disabled{opacity:.35;pointer-events:none}
 .auth{max-width:420px;margin:30px auto;background:#ffffff12;border:1px solid var(--stroke);border-radius:14px;padding:16px}
 .auth input{width:100%;padding:.6rem.7rem;border-radius:10px;border:1px solid #ffffff22;background:#ffffff08;color:#fff;margin-bottom:8px}
 .screen{display:none}
@@ -46,6 +45,8 @@ input,select,textarea{width:100%;padding:.6rem.7rem;border-radius:10px;border:1p
 @media(max-width:700px){.cupo-grid{grid-template-columns:1fr 1fr}}
 .cupo-item{border:1px solid #a855f7;background:#a855f722;border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:4px}
 .svc-img{width:54px;height:54px;border-radius:10px;object-fit:cover;border:1px solid #a855f7}
+/* FIX color inputs file */
+input[type=file]{background:#a855f722;border:1px dashed #a855f7;padding:10px}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -89,8 +90,8 @@ input,select,textarea{width:100%;padding:.6rem.7rem;border-radius:10px;border:1p
 <div class="topbar-main">
 <div class="logo">reservAR</div>
 <div class="right">
-<span id="estadoPill" class="pill">Pausadas</span>
-<button id="btnToggleEstado" class="btn small">Activar</button>
+<span id="estadoPill" class="pill">Activas</span>
+<button id="btnToggleEstado" class="btn small">Pausar</button>
 <button id="btnLogout" class="btn small ghost">Salir</button>
 </div>
 </div>
@@ -111,201 +112,49 @@ input,select,textarea{width:100%;padding:.6rem.7rem;border-radius:10px;border:1p
 <div id="trialAviso" class="aviso hidden" style="background:#a855f722;border-color:#a855f7"></div>
 <div id="graciaAviso" class="aviso hidden" style="background:#f59e0b22;border-color:#f59e0b"></div>
 <div id="bloqueoAviso" class="aviso hidden" style="background:#ef4444dd;border-color:#fff"></div>
-
 <section id="dashboard" class="screen active">
-<div class="card">
-<h2 id="saludo">Panel</h2>
-<div class="row">
-<button id="btnNuevaReserva" class="btn">+ Nueva reserva</button>
-<button id="btnIrReservas" class="btn ghost">Ver reservas</button>
-</div>
-<div id="kpis" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div>
-</div>
-<div class="card">
-<h3>Turnos de hoy</h3>
-<ul id="turnosHoy" class="list"></ul>
-</div>
-<div class="card">
-<h3>Mi membresía</h3>
-<div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px">
-<div><div style="font-size:11px;color:#cfc9e6">PLAN ACTUAL</div><strong id="membershipPlan">Sin plan</strong></div>
-<div><div style="font-size:11px;color:#cfc9e6">ESTADO</div><strong id="membershipStatus">Sin membresía</strong></div>
-<div><div style="font-size:11px;color:#cfc9e6">VENCE</div><strong id="membershipVence">-</strong></div>
-</div>
-<p id="planUso" class="hint"></p>
-<div class="row" style="margin:12px 0">
-<button class="btn small plan" data-plan="basico" id="planBtnBasico">Básico - 100/mes - $5000</button>
-<button class="btn small plan" data-plan="medio" id="planBtnMedio">Medio - 300/mes - $9000</button>
-<button class="btn small plan" data-plan="premium" id="planBtnPremium">Premium - Ilimitado - $15000</button>
-</div>
-<div class="formgrid">
-<div><label>Método de pago</label><select id="metodoPago"><option value="">Elegí</option><option value="mercadopago">Mercado Pago</option><option value="uala">Ualá</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select></div>
-</div>
-<div class="row" style="margin-top:12px">
-<button id="btnPagarPlan" class="btn">Contratar / Cambiar plan</button>
-<button id="btnRenovarPlan" class="btn ghost hidden">Renovar 30 días</button>
-<button id="btnCancelarPlan" class="btn ghost hidden">Cancelar membresía</button>
-<button id="btnReactivarPlan" class="btn ghost hidden">Reactivar</button>
-</div>
-<p id="planMsg" style="color:#86efac"></p>
-</div>
+<div class="card"><h2 id="saludo">Panel</h2><div class="row"><button id="btnNuevaReserva" class="btn">+ Nueva reserva</button><button id="btnIrReservas" class="btn ghost">Ver reservas</button></div><div id="kpis" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"></div></div>
+<div class="card"><h3>Turnos de hoy</h3><ul id="turnosHoy" class="list"></ul></div>
+<div class="card"><h3>Mi membresía</h3><div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px"><div><div style="font-size:11px;color:#cfc9e6">PLAN ACTUAL</div><strong id="membershipPlan">Sin plan</strong></div><div><div style="font-size:11px;color:#cfc9e6">ESTADO</div><strong id="membershipStatus">Sin membresía</strong></div><div><div style="font-size:11px;color:#cfc9e6">VENCE</div><strong id="membershipVence">-</strong></div></div><p id="planUso" class="hint"></p><div class="row" style="margin:12px 0"><button class="btn small plan" data-plan="basico" id="planBtnBasico">Básico - 100/mes - $5000</button><button class="btn small plan" data-plan="medio" id="planBtnMedio">Medio - 300/mes - $9000</button><button class="btn small plan" data-plan="premium" id="planBtnPremium">Premium - Ilimitado - $15000</button></div><div class="formgrid"><div><label>Método de pago</label><select id="metodoPago"><option value="">Elegí</option><option value="mercadopago">Mercado Pago</option><option value="uala">Ualá</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select></div></div><div class="row" style="margin-top:12px"><button id="btnPagarPlan" class="btn">Contratar / Cambiar plan</button><button id="btnRenovarPlan" class="btn ghost hidden">Renovar 30 días</button></div><p id="planMsg" style="color:#86efac"></p></div>
 </section>
-
 <section id="reservas" class="screen">
-<div id="cardNuevaReserva" class="card">
-<h3 id="tituloReserva">Nueva reserva</h3>
-<form id="reservaForm" class="formgrid">
-<div><label>Cliente *</label><input id="rCliente" required></div>
-<div><label>WhatsApp</label><input id="rWhats" placeholder="11 1234 5678"></div>
-<div><label>Servicio</label><select id="rServicioSelect"></select><input id="rServicioCustom" class="hidden" placeholder="Otro - nombre servicio"></div>
-<div><label>Precio $</label><input id="rPrecio" type="number"><div id="senaInfo" class="hint"></div></div>
-<div><label>Duración min</label><input id="rDur" type="number" value="60"></div>
-<div><label>Fecha y hora</label><input id="rFechaHora" type="datetime-local" required></div>
-<div><label>Estado</label><select id="rEstado"><option value="pendiente">Pendiente</option><option value="confirmada" selected>Confirmada</option><option value="cancelada">Cancelada</option><option value="pendiente_sena">Pendiente seña</option></select></div>
-<div><label>Origen</label><select id="rOrigen"><option value="local">Local</option><option value="cliente">Cliente</option></select></div>
-<div class="full"><label>Comentario</label><textarea id="rComentario"></textarea></div>
-<div class="full row">
-<button type="submit" class="btn" id="btnGuardarRes">Guardar</button>
-<button id="btnCancelarEdicion" type="button" class="btn ghost hidden">Cancelar edición</button>
-<button id="btnVerListaDesdeForm" type="button" class="btn ghost">Ver reservas</button>
-</div>
-</form>
-<p id="validacionMsg" style="color:#fca5a5;font-size:13px;margin-top:8px"></p>
-</div>
-<div id="cardListaReservas" class="card hidden">
-<h3>Reservas - Lista</h3>
-<div class="row" style="margin-bottom:8px"><button id="btnNuevaDesdeLista" class="btn small">+ Nueva reserva</button></div>
-<div class="row">
-<input id="filtroFecha" type="date" style="width:auto">
-<select id="filtroEstado" style="width:auto"><option value="todas">Todas</option><option value="confirmada">Confirmadas</option><option value="pendiente">Pendientes</option><option value="pendiente_sena">Pendiente seña</option><option value="cancelada">Canceladas</option></select>
-<button id="btnFiltrar" class="btn small">Filtrar</button>
-<button id="btnLimpiarFiltro" class="btn small ghost">Limpiar</button>
-<button id="btnCSV" class="btn small ghost">CSV</button>
-</div>
-<ul id="listaReservas" class="list"></ul>
-</div>
+<div id="cardNuevaReserva" class="card"><h3 id="tituloReserva">Nueva reserva</h3><form id="reservaForm" class="formgrid"><div><label>Cliente *</label><input id="rCliente" required></div><div><label>WhatsApp</label><input id="rWhats" placeholder="11 1234 5678"></div><div><label>Servicio</label><select id="rServicioSelect"></select><input id="rServicioCustom" class="hidden" placeholder="Otro - nombre servicio"></div><div><label>Precio $</label><input id="rPrecio" type="number"><div id="senaInfo" class="hint"></div></div><div><label>Duración min</label><input id="rDur" type="number" value="60"></div><div><label>Fecha y hora</label><input id="rFechaHora" type="datetime-local" required></div><div><label>Estado</label><select id="rEstado"><option value="pendiente">Pendiente</option><option value="confirmada" selected>Confirmada</option><option value="cancelada">Cancelada</option><option value="pendiente_sena">Pendiente seña</option></select></div><div><label>Origen</label><select id="rOrigen"><option value="local">Local</option><option value="cliente">Cliente</option></select></div><div class="full"><label>Comentario</label><textarea id="rComentario"></textarea></div><div class="full row"><button type="submit" class="btn" id="btnGuardarRes">Guardar</button><button id="btnCancelarEdicion" type="button" class="btn ghost hidden">Cancelar edición</button><button id="btnVerListaDesdeForm" type="button" class="btn ghost">Ver reservas</button></div></form><p id="validacionMsg" style="color:#fca5a5;font-size:13px;margin-top:8px"></p></div>
+<div id="cardListaReservas" class="card hidden"><h3>Reservas - Lista</h3><div class="row" style="margin-bottom:8px"><button id="btnNuevaDesdeLista" class="btn small">+ Nueva reserva</button></div><div class="row"><input id="filtroFecha" type="date" style="width:auto"><select id="filtroEstado" style="width:auto"><option value="todas">Todas</option><option value="confirmada">Confirmadas</option><option value="pendiente">Pendientes</option><option value="pendiente_sena">Pendiente seña</option><option value="cancelada">Canceladas</option></select><button id="btnFiltrar" class="btn small">Filtrar</button><button id="btnLimpiarFiltro" class="btn small ghost">Limpiar</button><button id="btnCSV" class="btn small ghost">CSV</button></div><ul id="listaReservas" class="list"></ul></div>
 </section>
-
-<section id="calendario" class="screen">
-<div class="card">
-<div style="display:flex;justify-content:space-between"><button id="calPrev" class="btn small ghost"><</button><h3 id="calTitulo"></h3><button id="calNext" class="btn small ghost">></button></div>
-<div id="calendar" class="cal-grid"></div>
-<p style="font-size:12px;color:#cfc9e6">Tocá un día para filtrar - rojo ocupado</p>
-</div>
-</section>
-
-<section id="clientes" class="screen">
-<div class="card"><h3>Clientes frecuentes</h3><ul id="clientesFrecuentes" class="list"></ul></div>
-</section>
-
-<section id="servicios" class="screen">
-<div class="card">
-<h3>Servicios</h3>
-<div class="formgrid">
-<div><input id="svcName" placeholder="Nombre *"></div>
-<div><input id="svcPrice" type="number" placeholder="Precio *"></div>
-<div><input id="svcDur" type="number" value="60" placeholder="Duración"></div>
-<div><input id="svcCupo" type="number" value="1" min="1" max="20" placeholder="Cupo por hora"></div>
-<div class="full"><label>Foto del servicio</label><input id="svcFoto" type="file" accept="image/*"><img id="svcFotoPrev" class="hidden" style="width:100%;max-width:200px;border-radius:10px;margin-top:8px;border:1px solid #a855f7"></div>
-</div>
-<div class="row" style="margin-top:8px"><button id="btnAddService" class="btn">Agregar servicio</button><button id="btnCancelEditSvc" class="btn ghost hidden">Cancelar edición</button></div>
-<ul id="serviceList" class="list" style="margin-top:12px"></ul>
-</div>
-</section>
-
+<section id="calendario" class="screen"><div class="card"><div style="display:flex;justify-content:space-between"><button id="calPrev" class="btn small ghost"><</button><h3 id="calTitulo"></h3><button id="calNext" class="btn small ghost">></button></div><div id="calendar" class="cal-grid"></div><p style="font-size:12px;color:#cfc9e6">Tocá un día para filtrar - rojo ocupado</p></div></section>
+<section id="clientes" class="screen"><div class="card"><h3>Clientes frecuentes</h3><ul id="clientesFrecuentes" class="list"></ul></div></section>
+<section id="servicios" class="screen"><div class="card"><h3>Servicios</h3><div class="formgrid"><div><input id="svcName" placeholder="Nombre *"></div><div><input id="svcPrice" type="number" placeholder="Precio *"></div><div><input id="svcDur" type="number" value="60" placeholder="Duración"></div><div><input id="svcCupo" type="number" value="1" min="1" max="20" placeholder="Cupo por hora"></div><div class="full"><label style="color:#a855f7;font-weight:700">Foto del servicio (violeta)</label><input id="svcFoto" type="file" accept="image/*"><img id="svcFotoPrev" class="hidden" style="width:100%;max-width:200px;border-radius:10px;margin-top:8px;border:1px solid #a855f7"></div></div><div class="row" style="margin-top:8px"><button id="btnAddService" class="btn">Agregar servicio</button><button id="btnCancelEditSvc" class="btn ghost hidden">Cancelar edición</button></div><ul id="serviceList" class="list" style="margin-top:12px"></ul></div></section>
 <section id="estadisticas" class="screen"><div class="card"><h3>Ranking de servicios</h3><div id="rankingServicios"></div></div></section>
-
-<section id="facturacion" class="screen">
-<div class="card"><h3>Facturación</h3><div class="row"><input id="factMes" type="month" style="width:auto"></div><p id="factTotal" style="font-weight:800"></p><ul id="facturacionLista" class="list"></ul></div>
-</section>
-
-<section id="ajustes" class="screen">
-<div class="card">
-<h3>Datos del local</h3>
-<div class="formgrid">
-<div><label>Nombre del local</label><input id="cfgLocalNombre"></div>
-<div><label>Email</label><input id="cfgEmail"></div>
-<div><label>Teléfono</label><input id="cfgTel"></div>
-<div><label>Dirección</label><input id="cfgDireccion"></div>
-<div><label>Apertura</label><input id="cfgApertura" type="time"></div>
-<div><label>Cierre</label><input id="cfgCierre" type="time"></div>
-<div class="full"><label>Foto del local</label><input id="cfgFotoFile" type="file" accept="image/*"><img id="cfgFotoPrev" class="hidden" style="width:100%;max-width:240px;border-radius:12px;margin-top:8px"></div>
-<div><label>Días anticipación</label><input id="cfgDiasAnticipacion" type="number" value="30"></div>
-<div><label>Visible</label><select id="cfgVisible"><option value="true">Sí</option><option value="false">No</option></select></div>
-</div>
-<div class="row" style="margin-top:10px">
-<button id="btnGuardarCfg" class="btn">Guardar datos</button><span id="cfgMsg" style="color:#86efac"></span>
-</div>
-</div>
-<div class="card">
-<h3>Cobros y Seña</h3>
-<div class="formgrid">
-<div><label>¿Pedir seña?</label><select id="cfgSenaActiva"><option value="false">No</option><option value="true">Sí</option></select></div>
-<div><label>Seña desde días</label><input id="cfgSenaDesdeDias" type="number" value="3"></div>
-<div><label>Tipo seña</label><select id="cfgSenaTipo"><option value="ninguna">Sin seña</option><option value="porcentaje">Porcentaje</option><option value="fijo">Fijo $</option></select></div>
-<div><label>Valor seña</label><input id="cfgSenaValor" type="number" value="30"></div>
-<div><label>¿Pedir DNI?</label><select id="cfgPideDni"><option value="false">No</option><option value="true">Sí</option></select></div>
-<div><label>Titular</label><input id="cobTitular"></div>
-<div><label>Banco</label><input id="cobBanco"></div>
-<div><label>Alias</label><input id="cobAlias"></div>
-<div><label>CBU</label><input id="cobCBU"></div>
-<div class="full"><label>Instrucciones seña</label><textarea id="cobInstr"></textarea></div>
-</div>
-<div id="cobroPreview" class="item" style="display:block;margin-top:10px"></div>
-<button id="btnGuardarCobros" class="btn" style="margin-top:10px">Guardar seña</button><span id="cobroMsg" style="color:#86efac"></span>
-</div>
-<div class="card" style="border-color:#a855f7">
-<h3 style="color:#a855f7">Horarios activos</h3>
-<div id="cuposGrid" class="cupo-grid"></div>
-<div class="row" style="margin-top:10px">
-<button id="btnGuardarCupos" class="btn">Guardar horarios</button><span id="cuposMsg" style="color:#86efac"></span>
-</div>
-</div>
-</section>
-
-<section id="soporte" class="screen">
-<div class="card" style="border-color:#a855f7">
-<h3 style="color:#a855f7">Soporte</h3>
-<div class="formgrid">
-<div><label>Cliente</label><select id="sopClienteSelect"></select></div>
-<div><label>Fecha</label><input id="sopFecha" type="date"></div>
-<div><label>Hora</label><input id="sopHora" type="time"></div>
-<div><label>Reserva</label><select id="sopReservaSelect"></select></div>
-<div class="full"><label>Tipo</label><select id="sopTipoLocal"><option value="consulta">Consulta</option><option value="problema">Problema</option><option value="otro">Otro</option></select></div>
-<div class="full"><label>Comentario</label><textarea id="sopComentarioLocal"></textarea></div>
-<div class="full"><label>Archivo</label><input id="sopArchivoLocal" type="file" accept="image/*"><div id="sopPrev"></div></div>
-</div>
-<button id="btnEnviarSoporteLocal" class="btn full" style="margin-top:8px">Enviar a soporte</button>
-<p id="sopLocalMsg" style="color:#86efac"></p>
-<ul id="listaSoporte" class="list"></ul>
-</div>
-</section>
-</div>
-</section>
-<div id="toast" class="toast hidden"></div>
+<section id="facturacion" class="screen"><div class="card"><h3>Facturación</h3><div class="row"><input id="factMes" type="month" style="width:auto"></div><p id="factTotal" style="font-weight:800"></p><ul id="facturacionLista" class="list"></ul></div></section>
+<section id="ajustes" class="screen"><div class="card"><h3>Datos del local</h3><div class="formgrid"><div><label>Nombre del local</label><input id="cfgLocalNombre"></div><div><label>Email</label><input id="cfgEmail"></div><div><label>Teléfono</label><input id="cfgTel"></div><div><label>Dirección</label><input id="cfgDireccion"></div><div><label>Apertura</label><input id="cfgApertura" type="time"></div><div><label>Cierre</label><input id="cfgCierre" type="time"></div><div class="full"><label style="color:#a855f7;font-weight:700">Foto del local (violeta)</label><input id="cfgFotoFile" type="file" accept="image/*"><img id="cfgFotoPrev" class="hidden" style="width:100%;max-width:240px;border-radius:12px;margin-top:8px"></div><div><label>Días anticipación</label><input id="cfgDiasAnticipacion" type="number" value="30"></div><div><label>Visible</label><select id="cfgVisible"><option value="true">Sí</option><option value="false">No</option></select></div></div><div class="row" style="margin-top:10px"><button id="btnGuardarCfg" class="btn">Guardar datos</button><span id="cfgMsg" style="color:#86efac"></span></div></div><div class="card"><h3>Cobros y Seña</h3><div class="formgrid"><div><label>¿Pedir seña?</label><select id="cfgSenaActiva"><option value="false">No</option><option value="true">Sí</option></select></div><div><label>Seña desde días</label><input id="cfgSenaDesdeDias" type="number" value="3"></div><div><label>Tipo seña</label><select id="cfgSenaTipo"><option value="ninguna">Sin seña</option><option value="porcentaje">Porcentaje</option><option value="fijo">Fijo $</option></select></div><div><label>Valor seña</label><input id="cfgSenaValor" type="number" value="30"></div><div><label>¿Pedir DNI?</label><select id="cfgPideDni"><option value="false">No</option><option value="true">Sí</option></select></div><div><label>Titular</label><input id="cobTitular"></div><div><label>Banco</label><input id="cobBanco"></div><div><label>Alias</label><input id="cobAlias"></div><div><label>CBU</label><input id="cobCBU"></div><div class="full"><label>Instrucciones seña</label><textarea id="cobInstr"></textarea></div></div><div id="cobroPreview" class="item" style="display:block;margin-top:10px"></div><button id="btnGuardarCobros" class="btn" style="margin-top:10px">Guardar seña</button><span id="cobroMsg" style="color:#86efac"></span></div><div class="card" style="border-color:#a855f7"><h3 style="color:#a855f7">Horarios activos</h3><div id="cuposGrid" class="cupo-grid"></div><div class="row" style="margin-top:10px"><button id="btnGuardarCupos" class="btn">Guardar horarios</button><span id="cuposMsg" style="color:#86efac"></span></div></div></section>
+<section id="soporte" class="screen"><div class="card" style="border-color:#a855f7"><h3 style="color:#a855f7">Soporte</h3><div class="formgrid"><div><label>Cliente</label><select id="sopClienteSelect"></select></div><div><label>Fecha</label><input id="sopFecha" type="date"></div><div><label>Hora</label><input id="sopHora" type="time"></div><div><label>Reserva</label><select id="sopReservaSelect"></select></div><div class="full"><label>Tipo</label><select id="sopTipoLocal"><option value="consulta">Consulta</option><option value="problema">Problema</option><option value="otro">Otro</option></select></div><div class="full"><label>Comentario</label><textarea id="sopComentarioLocal"></textarea></div><div class="full"><label style="color:#a855f7;font-weight:700">Archivo (violeta)</label><input id="sopArchivoLocal" type="file" accept="image/*"><div id="sopPrev"></div></div></div><button id="btnEnviarSoporteLocal" class="btn full" style="margin-top:8px">Enviar a soporte</button><p id="sopLocalMsg" style="color:#86efac"></p><ul id="listaSoporte" class="list"></ul></div></section>
+</div></section><div id="toast" class="toast hidden"></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",authDomain:"reservar-cb70d.firebaseapp.com",projectId:"reservar-cb70d",storageBucket:"reservar-cb70d.firebasestorage.app",messagingSenderId:"630908928696",appId:"1:630908928696:web:5e89f5f2b1cc2b240e6a4d"};
 firebase.initializeApp(firebaseConfig);
-let secondaryApp;try{secondaryApp=firebase.initializeApp(firebaseConfig,"secondary")}catch(e){secondaryApp=firebase.app("secondary")}
-const auth=firebase.auth();const db=firebase.firestore();
+const auth=firebase.auth();
+const db=firebase.firestore();
+
 document.addEventListener('DOMContentLoaded',()=>{
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
 const safe=(id,ev,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener(ev,fn)};
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),3000)};
-let editId=null,allReservas=[],horariosCache={},serviciosCache={},cfgFotoBase64='',svcFotoBase64='',editSvcId=null,selectedPlan='medio',planPrecios={basico:{limite:100,precio:5000},medio:{limite:300,precio:9000},premium:{limite:999999,precio:15000}},planTarifasData=null,cfg={senaTipo:'porcentaje',senaValor:30,senaActiva:false,senaDesdeDias:3,pideDni:false},calDate=new Date(),sopFileBase64='';
-let currentConfig=null;
+
+let editId=null,allReservas=[],horariosCache={},serviciosCache={},cfgFotoBase64='',svcFotoBase64='',editSvcId=null,selectedPlan='medio';
+let planPrecios={basico:{limite:100,precio:5000},medio:{limite:300,precio:9000},premium:{limite:999999,precio:15000}};
+let cfg={senaTipo:'porcentaje',senaValor:30,senaActiva:false,senaDesdeDias:3,pideDni:false};
+let calDate=new Date(),sopFileBase64='',currentConfig=null;
 
 function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file)})}
 function goScreen(id){$$('.screen').forEach(s=>s.classList.remove('active'));const t=$(id);if(t)t.classList.add('active')}
-function fmtDate(d){try{if(d.toDate)return d.toDate().toLocaleDateString('es-AR');if(d.seconds)return new Date(d.seconds*1000).toLocaleDateString('es-AR');return new Date(d).toLocaleDateString('es-AR')}catch{return '-'}}
-function toMin(h){let [a,b]=h.split(':').map(Number);return a*60+b}
+function fmtDate(d){try{if(!d)return'-';if(d.toDate)return d.toDate().toLocaleDateString('es-AR');if(d.seconds)return new Date(d.seconds*1000).toLocaleDateString('es-AR');return new Date(d).toLocaleDateString('es-AR')}catch{return'-'}}
 
 async function cargarTarifas(){
 try{
 const pDoc=await db.collection('config').doc('planes').get();
 if(pDoc.exists){
-const d=pDoc.data();planTarifasData=d;
+const d=pDoc.data();
 if(d.base){planPrecios.basico=d.base;const b=$('planBtnBasico');if(b)b.textContent=`${d.base.nombre||'Básico'} - ${d.base.limite}/mes - $${d.base.precio}`;}
 if(d.medio){planPrecios.medio=d.medio;const b=$('planBtnMedio');if(b)b.textContent=`${d.medio.nombre||'Medio'} - ${d.medio.limite}/mes - $${d.medio.precio}`;}
 if(d.premium){planPrecios.premium=d.premium;const b=$('planBtnPremium');if(b)b.textContent=`${d.premium.nombre||'Premium'} - ${d.premium.limite==999999?'Ilimitado':d.premium.limite+'/mes'} - $${d.premium.precio}`;}
@@ -322,12 +171,26 @@ safe('goLogin','click',e=>{e.preventDefault();$('auth').classList.remove('hidden
 safe('goForgot','click',e=>{e.preventDefault();$('forgot').classList.remove('hidden');$('auth').classList.add('hidden')});
 safe('goBackLogin','click',e=>{e.preventDefault();$('forgot').classList.add('hidden');$('auth').classList.remove('hidden')});
 
-safe('loginBtn','click',async()=>{const email=$('email').value.trim();const pass=$('password').value;if(!email||!pass){$('loginMsg').textContent='Completá email y contraseña';return}try{await auth.signInWithEmailAndPassword(email,pass)}catch(err){$('loginMsg').textContent=err.message}});
-safe('registerBtn','click',async()=>{const nom=$('regNombre').value.trim();const ape=$('regApellido').value.trim();const email=$('regEmail').value.trim();const pass=$('regPass').value;const pass2=$('regPass2').value;if(!nom||!ape||!email||!pass){$('regMsg').textContent='Completá todo';return}if(pass!==pass2){$('regMsg').textContent='No coinciden';return}try{const cred=await auth.createUserWithEmailAndPassword(email,pass);await db.collection('users').doc(cred.user.uid).set({nombre:nom,apellido:ape,email,rol:'admin',creado:firebase.firestore.FieldValue.serverTimestamp()});await db.collection('config').doc(cred.user.uid).set({localNombre:nom+' '+ape,email,plan:'medio',planActivo:true,visible:true,planEstado:'trial',trialUsado:false,planVence:firebase.firestore.Timestamp.fromDate(new Date(Date.now()+30*86400000)),senaTipo:'porcentaje',senaValor:30,senaActiva:false,creado:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}catch(err){$('regMsg').textContent=err.message}});
+safe('loginBtn','click',async()=>{
+const email=$('email').value.trim();const pass=$('password').value;
+if(!email||!pass){$('loginMsg').textContent='Completá email y contraseña';return}
+try{await auth.signInWithEmailAndPassword(email,pass)}
+catch(err){$('loginMsg').textContent=err.message}
+});
+safe('registerBtn','click',async()=>{
+const nom=$('regNombre').value.trim();const ape=$('regApellido').value.trim();const email=$('regEmail').value.trim();
+const pass=$('regPass').value;const pass2=$('regPass2').value;
+if(!nom||!ape||!email||!pass){$('regMsg').textContent='Completá todo';return}
+if(pass!==pass2){$('regMsg').textContent='No coinciden';return}
+try{
+const cred=await auth.createUserWithEmailAndPassword(email,pass);
+await db.collection('users').doc(cred.user.uid).set({nombre:nom,apellido:ape,email,rol:'admin',creado:firebase.firestore.FieldValue.serverTimestamp()});
+await db.collection('config').doc(cred.user.uid).set({localNombre:nom+' '+ape,email,plan:'medio',planActivo:true,visible:true,planEstado:'trial',planVence:firebase.firestore.Timestamp.fromDate(new Date(Date.now()+30*86400000)),senaTipo:'porcentaje',senaValor:30,senaActiva:false,creado:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+}catch(err){$('regMsg').textContent=err.message}
+});
 safe('forgotBtn','click',async()=>{const email=$('forgotEmail').value.trim();try{await auth.sendPasswordResetEmail(email);$('forgotOk').textContent='Mail enviado';}catch(err){$('forgotMsg').textContent=err.message}});
 safe('btnLogout','click',()=>auth.signOut());
 
-// bloqueo + carga
 auth.onAuthStateChanged(async user=>{
 if(!user){$('auth').classList.remove('hidden');$('app').classList.add('hidden');const h=document.getElementById('headerRes');if(h)h.classList.remove('hidden');return}
 $('auth').classList.add('hidden');$('register').classList.add('hidden');$('forgot').classList.add('hidden');$('app').classList.remove('hidden');const h=document.getElementById('headerRes');if(h)h.classList.add('hidden');
@@ -340,48 +203,65 @@ await cargarTarifas();
 const cDoc=await db.collection('config').doc(uid).get();
 if(cDoc.exists){
 const d=cDoc.data();currentConfig=d;
-// bloqueo check foto 2
-if(d.bloqueado===true){$('bloqueoAviso').textContent='⛔ Local bloqueado por ADMI. Contactá soporte.';$('bloqueoAviso').classList.remove('hidden');await auth.signOut();return;}
-if(d.planActivo===false){let v=null;try{if(d.planVence&&d.planVence.toDate)v=d.planVence.toDate();else if(d.planVence&&d.planVence.seconds)v=new Date(d.planVence.seconds*1000);else if(d.planVence)v=new Date(d.planVence)}catch{}if(v&&new Date()-v> (48*3600000)){ $('bloqueoAviso').textContent='⛔ Plan vencido. Renová membresía.';$('bloqueoAviso').classList.remove('hidden');}}
-cfg.senaTipo=d.senaTipo||'porcentaje';cfg.senaValor=d.senaValor||30;cfg.senaActiva=d.senaActiva===true||d.senaActiva==='true';cfg.senaDesdeDias=d.senaDesdeDias||3;cfg.pideDni=d.pideDni===true;
-$('cfgLocalNombre').value=d.localNombre||'';$('cfgEmail').value=d.email||'';$('cfgTel').value=d.telefono||d.tel||'';$('cfgDireccion').value=d.direccion||'';$('cfgApertura').value=d.apertura||'09:00';$('cfgCierre').value=d.cierre||'18:00';$('cfgDiasAnticipacion').value=d.diasAnticipacion||30;$('cfgVisible').value=String(d.visible!==false);$('cfgSenaActiva').value=String(cfg.senaActiva);$('cfgSenaTipo').value=d.senaTipo||'porcentaje';$('cfgSenaValor').value=d.senaValor||30;$('cfgSenaDesdeDias').value=d.senaDesdeDias||3;$('cfgPideDni').value=String(cfg.pideDni);$('cobTitular').value=d.titular||d.cobTitular||'';$('cobBanco').value=d.banco||d.cobBanco||'';$('cobAlias').value=d.alias||d.cobAlias||'';$('cobCBU').value=d.cbu||d.cobCBU||'';$('cobInstr').value=d.instrucciones||d.cobInstr||'';if(d.foto){cfgFotoBase64=d.foto;$('cfgFotoPrev').src=d.foto;$('cfgFotoPrev').classList.remove('hidden')}
-// membresia UI
-$('membershipPlan').textContent=d.plan||'Sin plan';$('membershipStatus').textContent=d.planActivo===false?'Vencido':(d.bloqueado?'Bloqueado':'Activo');$('membershipVence').textContent=fmtDate(d.planVence||'');const uso=d.usosMes||0;const lim=planPrecios[d.plan||'medio']?.limite||300;$('planUso').textContent=`Uso: ${uso}/${lim==999999?'∞':lim} reservas este mes`;if(d.planEstado==='trial'){$('trialAviso').textContent='Estás en trial 30 días único';$('trialAviso').classList.remove('hidden')}
+if(d.bloqueado===true){$('bloqueoAviso').textContent='⛔ Local bloqueado por ADMI. Contactá soporte.';$('bloqueoAviso').classList.remove('hidden');return;}
+cfg.senaTipo=d.senaTipo||'porcentaje';cfg.senaValor=d.senaValor||30;cfg.senaActiva=d.senaActiva===true||d.senaActiva==='true';
+$('cfgLocalNombre').value=d.localNombre||'';$('cfgEmail').value=d.email||'';$('cfgTel').value=d.telefono||d.tel||'';$('cfgDireccion').value=d.direccion||'';$('cfgApertura').value=d.apertura||'09:00';$('cfgCierre').value=d.cierre||'18:00';$('cfgDiasAnticipacion').value=d.diasAnticipacion||30;$('cfgVisible').value=String(d.visible!==false);$('cfgSenaActiva').value=String(cfg.senaActiva);$('cfgSenaTipo').value=d.senaTipo||'porcentaje';$('cfgSenaValor').value=d.senaValor||30;$('cfgSenaDesdeDias').value=d.senaDesdeDias||3;$('cfgPideDni').value=String(d.pideDni===true);$('cobTitular').value=d.titular||'';$('cobBanco').value=d.banco||'';$('cobAlias').value=d.alias||'';$('cobCBU').value=d.cbu||'';$('cobInstr').value=d.instrucciones||'';if(d.foto){cfgFotoBase64=d.foto;$('cfgFotoPrev').src=d.foto;$('cfgFotoPrev').classList.remove('hidden')}
+$('membershipPlan').textContent=d.plan||'Sin plan';$('membershipStatus').textContent=d.planActivo===false?'Vencido':'Activo';$('membershipVence').textContent=fmtDate(d.planVence);const uso=d.usosMes||0;const lim=planPrecios[d.plan||'medio']?.limite||300;$('planUso').textContent=`Uso: ${uso}/${lim==999999?'∞':lim} este mes`;
 }
-await cargarHorarios();await cargarServicios();await cargarReservas();renderKPIs();renderCalendario();cargarClientesFrec();cargarEstadisticas();cargarFacturacion();cargarSoporteLista();
+await cargarHorarios();await cargarServicios();await cargarReservas();
 }
 
 async function cargarHorarios(){
-const uid=auth.currentUser.uid;const grid=$('cuposGrid');grid.innerHTML='';try{const snap=await db.collection('config').doc(uid).collection('horarios').get();snap.forEach(doc=>{horariosCache[doc.id]=doc.data()})}catch(e){}
-for(let h=7;h<=21;h++){const key=String(h).padStart(2,'0')+':00';const conf=horariosCache[key]||{activo:true,cupoMax:1};const div=document.createElement('div');div.className='cupo-item';div.innerHTML=`<label>${key}</label><label><input type="checkbox" ${conf.activo!==false?'checked':''} data-hora="${key}" data-tipo="activo" style="width:auto"> Activo</label><label>Cupo<input type="number" min="0" max="20" value="${conf.cupoMax||1}" data-hora="${key}" data-tipo="cupo" style="width:100%"></label>`;grid.appendChild(div);horariosCache[key]=conf}
+const uid=auth.currentUser.uid;const grid=$('cuposGrid');grid.innerHTML='';
+try{const snap=await db.collection('config').doc(uid).collection('horarios').get();snap.forEach(doc=>{horariosCache[doc.id]=doc.data()})}catch(e){}
+for(let h=7;h<=21;h++){
+const key=String(h).padStart(2,'0')+':00';const conf=horariosCache[key]||{activo:true,cupoMax:1};
+const div=document.createElement('div');div.className='cupo-item';
+div.innerHTML=`<label>${key}</label><label><input type="checkbox" ${conf.activo!==false?'checked':''} data-hora="${key}" data-tipo="activo" style="width:auto"> Activo</label><label>Cupo<input type="number" min="0" max="20" value="${conf.cupoMax||1}" data-hora="${key}" data-tipo="cupo" style="width:100%"></label>`;
+grid.appendChild(div);horariosCache[key]=conf;
+}
 }
 
 async function cargarServicios(){
 const uid=auth.currentUser.uid;
 const snap=await db.collection('config').doc(uid).collection('servicios').get();
-serviciosCache={};const sel=$('rServicioSelect');if(sel)sel.innerHTML='<option value="">Servicio</option><option value="__custom">Otro</option>';
+serviciosCache={};
+const sel=$('rServicioSelect');if(sel)sel.innerHTML='<option value="">Servicio</option><option value="__custom">Otro</option>';
 const list=$('serviceList');list.innerHTML='';
-snap.forEach(doc=>{const d=doc.data();serviciosCache[doc.id]=d;if(sel){const o=document.createElement('option');o.value=d.nombre;o.textContent=`${d.nombre} $${d.precio}`;o.dataset.precio=d.precio;o.dataset.dur=d.duracion;sel.appendChild(o)}const li=document.createElement('li');li.className='item';li.innerHTML=`<div style="display:flex;gap:8px;align-items:center">${d.foto?`<img src="${d.foto}" class="svc-img">`:''}<div><b>${d.nombre}</b><div style="font-size:11px">$${d.precio} - ${d.duracion}min - cupo ${d.cupo||1}</div></div></div><div style="display:flex;gap:4px"><button class="btn small ghost" data-edit="${doc.id}">Edit</button><button class="btn small ghost" data-del="${doc.id}">X</button></div>`;list.appendChild(li);});
-// edit/del listeners
-list.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{const id=b.dataset.edit;const s=serviciosCache[id];$('svcName').value=s.nombre;$('svcPrice').value=s.precio;$('svcDur').value=s.duracion;$('svcCupo').value=s.cupo||1;editSvcId=id;$('btnCancelEditSvc').classList.remove('hidden');goScreen('servicios')});
-list.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Borrar servicio?'))return;await db.collection('config').doc(uid).collection('servicios').doc(b.dataset.del).delete();await db.collection('servicios').doc(b.dataset.del).delete().catch(()=>{});toast('Borrado');cargarServicios()});
-// cliente select soporte
-const cliSel=$('sopClienteSelect');if(cliSel){const cSnap=await db.collection('clientes').limit(100).get();cliSel.innerHTML='<option value="">Sin cliente / general</option>';cSnap.forEach(d=>{const o=document.createElement('option');o.value=d.id;o.textContent=(d.data().nombre||d.id);cliSel.appendChild(o)})}
+snap.forEach(doc=>{
+const d=doc.data();serviciosCache[doc.id]=d;
+if(sel){const o=document.createElement('option');o.value=d.nombre;o.textContent=`${d.nombre} $${d.precio}`;sel.appendChild(o)}
+const li=document.createElement('li');li.className='item';
+li.innerHTML=`<div style="display:flex;gap:8px;align-items:center">${d.foto?`<img src="${d.foto}" class="svc-img">`:''}<div><b>${d.nombre}</b><div style="font-size:11px">$${d.precio} - ${d.duracion}min</div></div></div><div style="display:flex;gap:4px"><button class="btn small ghost" data-edit="${doc.id}">Edit</button><button class="btn small ghost" data-del="${doc.id}">X</button></div>`;
+list.appendChild(li);
+});
+list.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{const id=b.dataset.edit;const s=serviciosCache[id];$('svcName').value=s.nombre;$('svcPrice').value=s.precio;$('svcDur').value=s.duracion;editSvcId=id;$('btnCancelEditSvc').classList.remove('hidden')});
+list.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Borrar?'))return;await db.collection('config').doc(uid).collection('servicios').doc(b.dataset.del).delete();await db.collection('servicios').doc(b.dataset.del).delete().catch(()=>{});toast('Borrado');cargarServicios()});
 }
 
+// FIX SIN ERROR SINTAXIS
 async function cargarReservas(){
 const uid=auth.currentUser.uid;
-let q=db.collection('reservas').where('uidLocal','==',uid);
-try{const snap=await q.orderBy('ts','desc').limit(200).get();allReservas=[];snap.forEach(doc=>{allReservas.push({id:doc.id,...doc.data()})});}catch{const snap=await db.collection('reservas').where('localId','==',uid).orderBy('ts','desc').limit(200).get();allReservas=[];snap.forEach(doc=>{allReservas.push({id:doc.id,...doc.data())}));allReservas.forEach(doc=>allReservas.push) }
-renderReservas(allReservas);renderKPIs();renderCalendario();cargarClientesFrec();cargarEstadisticas();cargarFacturacion();
+allReservas=[];
+try{
+const snap=await db.collection('reservas').where('uidLocal','==',uid).orderBy('ts','desc').limit(200).get();
+snap.forEach(doc=>{allReservas.push({id:doc.id,...doc.data()})});
+}catch(e1){
+try{
+const snap2=await db.collection('reservas').where('localId','==',uid).orderBy('ts','desc').limit(200).get();
+snap2.forEach(doc=>{allReservas.push({id:doc.id,...doc.data()})});
+}catch(e2){
+console.log('reservas error',e2);
+}
+}
+renderReservas(allReservas);renderKPIs();renderCalendario();cargarClientesFrec();cargarEstadisticas();cargarFacturacion();cargarSoporteLista();
 }
 
 function renderKPIs(){
 const hoy=new Date().toISOString().split('T')[0];
 const hoyRes=allReservas.filter(r=>{const f=(r.fecha||'').split('T')[0]||r.fecha||'';return f.includes(hoy)||(r.fechaHora||'').includes(hoy)});
 const conf=allReservas.filter(r=>r.estado==='confirmada').length;
-const pend=allReservas.filter(r=>r.estado==='pendiente' || r.estado==='pendiente_sena').length;
-$('kpis').innerHTML=`<span class="pill">Hoy ${hoyRes.length}</span><span class="pill">Confirmadas ${conf}</span><span class="pill">Pendientes ${pend}</span><span class="pill">Total ${allReservas.length}</span>`;
+$('kpis').innerHTML=`<span class="pill">Hoy ${hoyRes.length}</span><span class="pill">Conf ${conf}</span><span class="pill">Total ${allReservas.length}</span>`;
 const ul=$('turnosHoy');ul.innerHTML='';hoyRes.slice(0,10).forEach(r=>{const li=document.createElement('li');li.className='item';li.innerHTML=`<div><b>${r.cliente||r.clienteNombre||'Cliente'}</b> - ${r.servicio||''} ${r.hora||''}</div><span class="pill">${r.estado}</span>`;ul.appendChild(li)});if(!hoyRes.length)ul.innerHTML='<li class="item">Sin turnos hoy</li>';
 }
 
@@ -389,119 +269,72 @@ function renderReservas(list){
 const ul=$('listaReservas');if(!ul)return;ul.innerHTML='';
 list.forEach(r=>{
 const li=document.createElement('li');li.className='item';
-li.innerHTML=`<div><b>${r.cliente||r.clienteNombre||''}</b><div style="font-size:11px">${r.servicio||''} - ${r.fecha||''} ${r.hora||r.fechaHora||''} - $${r.precio||0}</div><span class="pill">${r.estado}</span></div><div style="display:flex;gap:4px;flex-wrap:wrap"><button class="btn small ghost" data-ed="${r.id}">Edit</button><button class="btn small ghost" data-cf="${r.id}">Conf</button><button class="btn small ghost" data-ca="${r.id}">Canc</button><button class="btn small ghost" data-del="${r.id}">X</button></div>`;
+li.innerHTML=`<div><b>${r.cliente||r.clienteNombre||''}</b><div style="font-size:11px">${r.servicio||''} - ${r.fecha||''} ${r.hora||''} - $${r.precio||0}</div><span class="pill">${r.estado}</span></div><div style="display:flex;gap:4px"><button class="btn small ghost" data-ed="${r.id}">Edit</button><button class="btn small ghost" data-del="${r.id}">X</button></div>`;
 ul.appendChild(li);
 });
-ul.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{const r=allReservas.find(x=>x.id===b.dataset.ed);if(!r)return;editId=r.id;$('rCliente').value=r.cliente||r.clienteNombre||'';$('rWhats').value=r.whatsapp||'';$('rPrecio').value=r.precio||0;$('rFechaHora').value=(r.fechaHora||'').replace(' ','T')||r.fecha||'';$('rEstado').value=r.estado||'confirmada';$('tituloReserva').textContent='Editar reserva';$('btnCancelarEdicion').classList.remove('hidden');$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');goScreen('reservas')});
-ul.querySelectorAll('[data-cf]').forEach(b=>b.onclick=async()=>{await db.collection('reservas').doc(b.dataset.cf).update({estado:'confirmada'});toast('Confirmada');cargarReservas()});
-ul.querySelectorAll('[data-ca]').forEach(b=>b.onclick=async()=>{await db.collection('reservas').doc(b.dataset.ca).update({estado:'cancelada'});toast('Cancelada');cargarReservas()});
+ul.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{const r=allReservas.find(x=>x.id===b.dataset.ed);if(!r)return;editId=r.id;$('rCliente').value=r.cliente||'';$('rPrecio').value=r.precio||0;$('rFechaHora').value=(r.fechaHora||'').replace(' ','T')||'';$('tituloReserva').textContent='Editar';$('btnCancelarEdicion').classList.remove('hidden');$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');goScreen('reservas')});
 ul.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{if(!confirm('Borrar?'))return;await db.collection('reservas').doc(b.dataset.del).delete();toast('Borrada');cargarReservas()});
-// soporte reserva select
-const sRes=$('sopReservaSelect');if(sRes){sRes.innerHTML='<option value="">Sin reserva</option>';allReservas.slice(0,50).forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=`${r.fecha||''} ${r.hora||''} ${r.cliente||''}`;sRes.appendChild(o)})}
+const sRes=$('sopReservaSelect');if(sRes){sRes.innerHTML='<option value="">Sin reserva</option>';allReservas.slice(0,50).forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=`${r.fecha||''} ${r.cliente||''}`;sRes.appendChild(o)})}
 }
 
 function renderCalendario(){
-const cont=$('calendar');const tit=$('calTitulo');if(!cont)return;cont.innerHTML='';const y=calDate.getFullYear(),m=calDate.getMonth();tit.textContent=new Date(y,m,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});const first=new Date(y,m,1).getDay();const days=new Date(y,m+1,0).getDate();for(let i=0;i<first;i++){const d=document.createElement('div');cont.appendChild(d)}for(let d=1;d<=days;d++){const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const count=allReservas.filter(r=>(r.fecha||'').startsWith(dateStr)).length;const div=document.createElement('div');div.className='cal-day'+(count?' ocupado':'')+(new Date().toISOString().slice(0,10)===dateStr?' hoy':'');div.innerHTML=`${d}<div style="font-size:9px">${count?count+' turnos':''}</div>`;div.onclick=()=>{$('filtroFecha').value=dateStr;filtrarReservas();goScreen('reservas');$('cardListaReservas').classList.remove('hidden');$('cardNuevaReserva').classList.add('hidden')};cont.appendChild(div)}
+const cont=$('calendar');const tit=$('calTitulo');if(!cont)return;cont.innerHTML='';
+const y=calDate.getFullYear(),m=calDate.getMonth();
+tit.textContent=new Date(y,m,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+const first=new Date(y,m,1).getDay();const days=new Date(y,m+1,0).getDate();
+for(let i=0;i<first;i++){const d=document.createElement('div');cont.appendChild(d)}
+for(let d=1;d<=days;d++){
+const dateStr=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+const count=allReservas.filter(r=>(r.fecha||'').startsWith(dateStr)).length;
+const div=document.createElement('div');div.className='cal-day'+(count?' ocupado':'')+(new Date().toISOString().slice(0,10)===dateStr?' hoy':'');
+div.innerHTML=`${d}<div style="font-size:9px">${count?count+' turnos':''}</div>`;
+div.onclick=()=>{$('filtroFecha').value=dateStr;filtrar();goScreen('reservas');$('cardListaReservas').classList.remove('hidden');$('cardNuevaReserva').classList.add('hidden')};
+cont.appendChild(div)
 }
-
-function filtrarReservas(){
-let list=[...allReservas];const fFecha=$('filtroFecha').value;const fEst=$('filtroEstado').value;if(fFecha)list=list.filter(r=>(r.fecha||'').includes(fFecha));if(fEst!=='todas')list=list.filter(r=>r.estado===fEst);renderReservas(list);
 }
+function filtrar(){let list=[...allReservas];const fFecha=$('filtroFecha').value;const fEst=$('filtroEstado').value;if(fFecha)list=list.filter(r=>(r.fecha||'').includes(fFecha));if(fEst!=='todas')list=list.filter(r=>r.estado===fEst);renderReservas(list)}
+function cargarClientesFrec(){const map={};allReservas.forEach(r=>{const k=r.cliente||r.clienteNombre||'Desconocido';map[k]=(map[k]||0)+1});const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,20);const ul=$('clientesFrecuentes');ul.innerHTML='';sorted.forEach(([n,c])=>{const li=document.createElement('li');li.className='item';li.innerHTML=`<div><b>${n}</b></div><span class="pill">${c}</span>`;ul.appendChild(li)});if(!sorted.length)ul.innerHTML='<li class="item">Sin clientes</li>';}
+function cargarEstadisticas(){const map={};allReservas.forEach(r=>{const k=r.servicio||'Sin servicio';map[k]=(map[k]||0)+1});const div=$('rankingServicios');div.innerHTML=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="item"><b>${k}</b><span class="pill">${v}</span></div>`).join('')||'Sin datos';}
+function cargarFacturacion(){const mes=$('factMes').value;let list=allReservas.filter(r=>r.estado!=='cancelada');if(mes){list=list.filter(r=>(r.fecha||'').startsWith(mes))}const total=list.reduce((s,r)=>s+Number(r.precio||0),0);$('factTotal').textContent=`Total: $${total} (${list.length})`;const ul=$('facturacionLista');ul.innerHTML='';list.slice(0,100).forEach(r=>{const li=document.createElement('li');li.className='item';li.innerHTML=`<div>${r.fecha||''} ${r.servicio||''}</div><b>$${r.precio||0}</b>`;ul.appendChild(li)});}
+async function cargarSoporteLista(){try{const uid=auth.currentUser.uid;const snap=await db.collection('soporte').where('uidLocal','==',uid).orderBy('ts','desc').limit(30).get();const ul=$('listaSoporte');ul.innerHTML='';snap.forEach(doc=>{const x=doc.data();const li=document.createElement('li');li.className='item';li.innerHTML=`<div><b>${x.tipo||''}</b> - ${x.mensaje||''}</div>`;ul.appendChild(li)});}catch(e){}}
 
-function cargarClientesFrec(){
-const map={};allReservas.forEach(r=>{const k=r.cliente||r.clienteNombre||r.clienteUid||'Desconocido';map[k]=(map[k]||0)+1});const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,20);const ul=$('clientesFrecuentes');ul.innerHTML='';sorted.forEach(([n,c])=>{const li=document.createElement('li');li.className='item';li.innerHTML=`<div><b>${n}</b></div><span class="pill">${c} reservas</span>`;ul.appendChild(li)});if(!sorted.length)ul.innerHTML='<li class="item">Sin clientes</li>';
-}
-
-function cargarEstadisticas(){
-const map={};allReservas.forEach(r=>{const k=r.servicio||'Sin servicio';map[k]=(map[k]||0)+1});const div=$('rankingServicios');div.innerHTML=Object.entries(map).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="item"><b>${k}</b><span class="pill">${v}</span></div>`).join('')||'Sin datos';
-}
-
-function cargarFacturacion(){
-const mes=$('factMes').value;let list=allReservas.filter(r=>r.estado!=='cancelada');if(mes){list=list.filter(r=>(r.fecha||'').startsWith(mes))}const total=list.reduce((s,r)=>s+Number(r.precio||0),0);$('factTotal').textContent=`Total: $${total} (${list.length} reservas)`;const ul=$('facturacionLista');ul.innerHTML='';list.slice(0,100).forEach(r=>{const li=document.createElement('li');li.className='item';li.innerHTML=`<div>${r.fecha||''} ${r.servicio||''}</div><b>$${r.precio||0}</b>`;ul.appendChild(li)});
-}
-
-async function cargarSoporteLista(){
-try{const uid=auth.currentUser.uid;const snap=await db.collection('soporte').where('uidLocal','==',uid).orderBy('ts','desc').limit(30).get();const ul=$('listaSoporte');ul.innerHTML='';snap.forEach(doc=>{const x=doc.data();const li=document.createElement('li');li.className='item';li.innerHTML=`<div><b>${x.tipo||''}</b> - ${x.mensaje||x.comentario||''}<div style="font-size:11px">${x.fechaProblema||''} ${x.horaProblema||''}</div></div>`;ul.appendChild(li)});}catch(e){console.log(e)}
-}
-
-// tabs
 $$('.tab').forEach(t=>{t.addEventListener('click',()=>{$$('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');goScreen(t.dataset.screen)})});
 safe('btnNuevaReserva','click',()=>{editId=null;$('tituloReserva').textContent='Nueva reserva';$('reservaForm').reset();$('btnCancelarEdicion').classList.add('hidden');$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');goScreen('reservas')});
 safe('btnIrReservas','click',()=>{goScreen('reservas');$('cardListaReservas').classList.remove('hidden');$('cardNuevaReserva').classList.add('hidden')});
 safe('btnVerListaDesdeForm','click',()=>{$('cardListaReservas').classList.remove('hidden');$('cardNuevaReserva').classList.add('hidden')});
-safe('btnNuevaDesdeLista','click',()=>{$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');editId=null;$('tituloReserva').textContent='Nueva reserva';$('reservaForm').reset()});
-safe('btnCancelarEdicion','click',()=>{editId=null;$('reservaForm').reset();$('btnCancelarEdicion').classList.add('hidden');$('tituloReserva').textContent='Nueva reserva'});
+safe('btnNuevaDesdeLista','click',()=>{$('cardNuevaReserva').classList.remove('hidden');$('cardListaReservas').classList.add('hidden');editId=null;$('reservaForm').reset()});
+safe('btnCancelarEdicion','click',()=>{editId=null;$('reservaForm').reset();$('btnCancelarEdicion').classList.add('hidden');});
 safe('calPrev','click',()=>{calDate.setMonth(calDate.getMonth()-1);renderCalendario()});
 safe('calNext','click',()=>{calDate.setMonth(calDate.getMonth()+1);renderCalendario()});
-safe('btnFiltrar','click',filtrarReservas);
+safe('btnFiltrar','click',filtrar);
 safe('btnLimpiarFiltro','click',()=>{$('filtroFecha').value='';$('filtroEstado').value='todas';renderReservas(allReservas)});
 safe('btnCSV','click',()=>{let csv='cliente,servicio,fecha,hora,precio,estado\n'+allReservas.map(r=>`${r.cliente||''},${r.servicio||''},${r.fecha||''},${r.hora||''},${r.precio||''},${r.estado||''}`).join('\n');let blob=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='reservas.csv';a.click()});
 safe('factMes','change',cargarFacturacion);
-
-// planes
 $$('.plan').forEach(b=>{b.addEventListener('click',()=>{$$('.plan').forEach(x=>x.style.outline='');b.style.outline='2px solid #fff';selectedPlan=b.dataset.plan;toast('Elegiste '+selectedPlan)})});
 safe('btnPagarPlan','click',async()=>{
 if(!selectedPlan){toast('Elegí plan');return}
 const metodo=$('metodoPago').value;if(!metodo){toast('Elegí método pago');return}
-const uid=auth.currentUser.uid;const email=auth.currentUser.email;
-const precio=planPrecios[selectedPlan]?.precio||0;
-const nombreLocal=$('cfgLocalNombre').value||currentConfig?.localNombre||'Local';
-try{
-await db.collection('solicitudes').add({uid,email,nombreLocal,plan:selectedPlan,precio,metodoPago:metodo,estado:'pendiente',creado:firebase.firestore.FieldValue.serverTimestamp(),ts:Date.now()});
-$('planMsg').textContent='Solicitud enviada. ADM aprueba en 💸 Pagos';
-toast('Solicitud enviada');
-}catch(e){$('planMsg').textContent=e.message}
+const uid=auth.currentUser.uid;const precio=planPrecios[selectedPlan]?.precio||0;const nombreLocal=$('cfgLocalNombre').value||currentConfig?.localNombre||'Local';
+try{await db.collection('solicitudes').add({uid,email:auth.currentUser.email,nombreLocal,plan:selectedPlan,precio,metodoPago:metodo,estado:'pendiente',creado:firebase.firestore.FieldValue.serverTimestamp(),ts:Date.now()});$('planMsg').textContent='Solicitud enviada';toast('Enviada');}catch(e){$('planMsg').textContent=e.message}
 });
-safe('btnRenovarPlan','click',()=>{$('btnPagarPlan').click()});
-
-// guardar cfg
-safe('btnGuardarCfg','click',async()=>{
-const uid=auth.currentUser.uid;
-const payload={localNombre:$('cfgLocalNombre').value,email:$('cfgEmail').value,telefono:$('cfgTel').value,tel:$('cfgTel').value,direccion:$('cfgDireccion').value,apertura:$('cfgApertura').value,cierre:$('cfgCierre').value,diasAnticipacion:Number($('cfgDiasAnticipacion').value||30),visible:$('cfgVisible').value==='true'};
-if(cfgFotoBase64)payload.foto=cfgFotoBase64;
-await db.collection('config').doc(uid).set(payload,{merge:true});$('cfgMsg').textContent='Guardado';toast('Guardado')
-});
-safe('btnGuardarCobros','click',async()=>{
-const uid=auth.currentUser.uid;
-await db.collection('config').doc(uid).set({senaTipo:$('cfgSenaTipo').value,senaValor:Number($('cfgSenaValor').value),senaActiva:$('cfgSenaActiva').value==='true',senaDesdeDias:Number($('cfgSenaDesdeDias').value||3),pideDni:$('cfgPideDni').value==='true',titular:$('cobTitular').value,banco:$('cobBanco').value,alias:$('cobAlias').value,cobAlias:$('cobAlias').value,cbu:$('cobCBU').value,cobCBU:$('cobCBU').value,instrucciones:$('cobInstr').value,cobInstr:$('cobInstr').value},{merge:true});
-$('cobroMsg').textContent='Guardado';toast('Seña guardada')
-});
-safe('btnGuardarCupos','click',async()=>{
-const uid=auth.currentUser.uid;const inputs=$$('#cuposGrid input');const nuevos={};inputs.forEach(inp=>{const hora=inp.dataset.hora;if(!nuevos[hora])nuevos[hora]={};if(inp.dataset.tipo==='activo')nuevos[hora].activo=inp.checked;if(inp.dataset.tipo==='cupo')nuevos[hora].cupoMax=Number(inp.value||1)});for(const hora in nuevos){await db.collection('config').doc(uid).collection('horarios').doc(hora).set(nuevos[hora],{merge:true})}toast('Horarios guardados')
-});
-
-// servicios
-safe('btnAddService','click',async()=>{
-const uid=auth.currentUser.uid;const nombre=$('svcName').value.trim();const precio=Number($('svcPrice').value||0);const dur=Number($('svcDur').value||60);const cupo=Number($('svcCupo').value||1);if(!nombre||!precio){toast('Nombre y precio');return}
-const payload={nombre,precio,duracion:dur,cupo,activo:true,foto:svcFotoBase64||'',localId:uid,uidLocal:uid,ts:Date.now(),creado:firebase.firestore.FieldValue.serverTimestamp()};
-if(editSvcId){await db.collection('config').doc(uid).collection('servicios').doc(editSvcId).set(payload,{merge:true});await db.collection('servicios').doc(editSvcId).set(payload,{merge:true});editSvcId=null;$('btnCancelEditSvc').classList.add('hidden')}else{const ref=await db.collection('config').doc(uid).collection('servicios').add(payload);await db.collection('servicios').doc(ref.id).set({...payload,id:ref.id},{merge:true})}
-$('svcName').value='';$('svcPrice').value='';$('svcFoto').value='';$('svcFotoPrev').classList.add('hidden');svcFotoBase64='';toast('Servicio guardado');cargarServicios()
-});
+safe('btnGuardarCfg','click',async()=>{const uid=auth.currentUser.uid;const payload={localNombre:$('cfgLocalNombre').value,email:$('cfgEmail').value,telefono:$('cfgTel').value,direccion:$('cfgDireccion').value,apertura:$('cfgApertura').value,cierre:$('cfgCierre').value,diasAnticipacion:Number($('cfgDiasAnticipacion').value||30),visible:$('cfgVisible').value==='true'};if(cfgFotoBase64)payload.foto=cfgFotoBase64;await db.collection('config').doc(uid).set(payload,{merge:true});$('cfgMsg').textContent='Guardado';toast('Guardado')});
+safe('btnGuardarCobros','click',async()=>{const uid=auth.currentUser.uid;await db.collection('config').doc(uid).set({senaTipo:$('cfgSenaTipo').value,senaValor:Number($('cfgSenaValor').value),senaActiva:$('cfgSenaActiva').value==='true',senaDesdeDias:Number($('cfgSenaDesdeDias').value||3),pideDni:$('cfgPideDni').value==='true',titular:$('cobTitular').value,banco:$('cobBanco').value,alias:$('cobAlias').value,cbu:$('cobCBU').value,instrucciones:$('cobInstr').value},{merge:true});$('cobroMsg').textContent='Guardado';toast('Seña guardada')});
+safe('btnGuardarCupos','click',async()=>{const uid=auth.currentUser.uid;const inputs=$$('#cuposGrid input');const nuevos={};inputs.forEach(inp=>{const hora=inp.dataset.hora;if(!nuevos[hora])nuevos[hora]={};if(inp.dataset.tipo==='activo')nuevos[hora].activo=inp.checked;if(inp.dataset.tipo==='cupo')nuevos[hora].cupoMax=Number(inp.value||1)});for(const hora in nuevos){await db.collection('config').doc(uid).collection('horarios').doc(hora).set(nuevos[hora],{merge:true})}toast('Horarios guardados')});
+safe('btnAddService','click',async()=>{const uid=auth.currentUser.uid;const nombre=$('svcName').value.trim();const precio=Number($('svcPrice').value||0);const dur=Number($('svcDur').value||60);const cupo=Number($('svcCupo').value||1);if(!nombre||!precio){toast('Nombre y precio');return}const payload={nombre,precio,duracion:dur,cupo,activo:true,foto:svcFotoBase64||'',localId:uid,uidLocal:uid,ts:Date.now(),creado:firebase.firestore.FieldValue.serverTimestamp()};if(editSvcId){await db.collection('config').doc(uid).collection('servicios').doc(editSvcId).set(payload,{merge:true});await db.collection('servicios').doc(editSvcId).set(payload,{merge:true});editSvcId=null;$('btnCancelEditSvc').classList.add('hidden')}else{const ref=await db.collection('config').doc(uid).collection('servicios').add(payload);await db.collection('servicios').doc(ref.id).set({...payload,id:ref.id},{merge:true})}$('svcName').value='';$('svcPrice').value='';$('svcFoto').value='';$('svcFotoPrev').classList.add('hidden');svcFotoBase64='';toast('Guardado');cargarServicios()});
 safe('btnCancelEditSvc','click',()=>{editSvcId=null;$('svcName').value='';$('svcPrice').value='';$('btnCancelEditSvc').classList.add('hidden')});
-
-// reservas form
 safe('reservaForm','submit',async e=>{
-e.preventDefault();
-const uid=auth.currentUser.uid;
-let serv=$('rServicioSelect').value;if(serv==='__custom')serv=$('rServicioCustom').value.trim();
-if(!serv){$('validacionMsg').textContent='Elegí servicio';return}
+e.preventDefault();const uid=auth.currentUser.uid;let serv=$('rServicioSelect').value;if(serv==='__custom')serv=$('rServicioCustom').value.trim();if(!serv){$('validacionMsg').textContent='Elegí servicio';return}
 const payload={uid,uidLocal:uid,localId:uid,cliente:$('rCliente').value,clienteNombre:$('rCliente').value,whatsapp:$('rWhats').value,servicio:serv,precio:Number($('rPrecio').value||0),duracion:Number($('rDur').value||60),fechaHora:$('rFechaHora').value,fecha:$('rFechaHora').value.split('T')[0],hora:$('rFechaHora').value.split('T')[1]?.slice(0,5)||'',estado:$('rEstado').value,origen:$('rOrigen').value,comentario:$('rComentario').value,ts:Date.now(),creado:firebase.firestore.FieldValue.serverTimestamp()};
-if(editId){await db.collection('reservas').doc(editId).update(payload);toast('Reserva actualizada');editId=null;$('tituloReserva').textContent='Nueva reserva';$('btnCancelarEdicion').classList.add('hidden')}else{await db.collection('reservas').add(payload);toast('Reserva creada')}
-$('reservaForm').reset();cargarReservas();$('cardListaReservas').classList.remove('hidden');$('cardNuevaReserva').classList.add('hidden')
+if(editId){await db.collection('reservas').doc(editId).update(payload);toast('Actualizada');editId=null;}else{await db.collection('reservas').add(payload);toast('Creada')}$('reservaForm').reset();cargarReservas();$('cardListaReservas').classList.remove('hidden');$('cardNuevaReserva').classList.add('hidden')
 });
-safe('rServicioSelect','change',()=>{const v=$('rServicioSelect').value;if(v==='__custom'){$('rServicioCustom').classList.remove('hidden')}else{$('rServicioCustom').classList.add('hidden');const s=serviciosCache[Object.keys(serviciosCache).find(k=>serviciosCache[k].nombre===v)];if(s){$('rPrecio').value=s.precio;$('rDur').value=s.duracion;$('senaInfo').textContent=(s.precio?`Seña: ${s.precio*0.3} aprox`:'')}}});
-
-// soporte local
+safe('rServicioSelect','change',()=>{const v=$('rServicioSelect').value;if(v==='__custom'){$('rServicioCustom').classList.remove('hidden')}else{$('rServicioCustom').classList.add('hidden')}});
 safe('btnEnviarSoporteLocal','click',async()=>{
-const uid=auth.currentUser.uid;const tipo=$('sopTipoLocal').value;const com=$('sopComentarioLocal').value.trim();const f=$('sopFecha').value;const h=$('sopHora').value;if(!com){toast('Escribí comentario');return}
-const resId=$('sopReservaSelect').value;const cliId=$('sopClienteSelect').value;
-const cliDoc=cliId?await db.collection('clientes').doc(cliId).get().catch(()=>null):null;const cliData=cliDoc?.data()||null;
-const resData=resId?allReservas.find(r=>r.id===resId):null;
-await db.collection('soporte').add({origen:'local',uidLocal:uid,idLocal:uid,nombreLocal:currentConfig?.localNombre||'Local',localData:currentConfig,datosLocalCompleto:currentConfig,email:currentConfig?.email||auth.currentUser.email,uidCliente:cliId||'',clienteData:cliData,nombreCliente:cliData?.nombre||'',idReserva:resId,reservaData:resData,tipo,tipoLocal:tipo,mensaje:com,comentario:com,fechaProblema:f,horaProblema:h,fechaHoraProblema:f+' '+h,fechaEnvio:new Date().toLocaleDateString('es-AR'),horaEnvio:new Date().toLocaleTimeString('es-AR'),imagen:sopFileBase64||'',archivo:sopFileBase64||'',ts:Date.now(),creado:firebase.firestore.FieldValue.serverTimestamp()});
-$('sopLocalMsg').textContent='Enviado a soporte';$('sopComentarioLocal').value='';sopFileBase64='';$('sopPrev').innerHTML='';toast('Soporte enviado');cargarSoporteLista()
+const uid=auth.currentUser.uid;const tipo=$('sopTipoLocal').value;const com=$('sopComentarioLocal').value.trim();const f=$('sopFecha').value;const h=$('sopHora').value;if(!com){toast('Comentario');return}
+const resId=$('sopReservaSelect').value;const cliId=$('sopClienteSelect').value;const resData=resId?allReservas.find(r=>r.id===resId):null;
+await db.collection('soporte').add({origen:'local',uidLocal:uid,nombreLocal:currentConfig?.localNombre||'Local',email:currentConfig?.email||auth.currentUser.email,uidCliente:cliId||'',idReserva:resId,reservaData:resData,tipo,mensaje:com,comentario:com,fechaProblema:f,horaProblema:h,imagen:sopFileBase64||'',ts:Date.now(),creado:firebase.firestore.FieldValue.serverTimestamp()});
+$('sopLocalMsg').textContent='Enviado';$('sopComentarioLocal').value='';sopFileBase64='';$('sopPrev').innerHTML='';toast('Enviado');cargarSoporteLista()
 });
-safe('btnToggleEstado','click',async()=>{const uid=auth.currentUser.uid;const doc=await db.collection('config').doc(uid).get();const cur=doc.data()?.reservasPausadas===true;await db.collection('config').doc(uid).set({reservasPausadas:!cur,visible:!cur},{merge:true});$('estadoPill').textContent=!cur?'Pausadas':'Activas';toast(!cur?'Pausadas':'Activas')});
-
+safe('btnToggleEstado','click',async()=>{const uid=auth.currentUser.uid;const doc=await db.collection('config').doc(uid).get();const cur=doc.data()?.reservasPausadas===true;await db.collection('config').doc(uid).set({reservasPausadas:!cur},{merge:true});$('estadoPill').textContent=!cur?'Pausadas':'Activas';toast(!cur?'Pausadas':'Activas')});
 });
 </script>
 </body>
