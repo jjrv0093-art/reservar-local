@@ -280,7 +280,7 @@ border:none
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 </head>
 <body>
-<div id="headerRes" style="padding:20px">
+  <div id="headerRes" style="padding:20px">
 <h1 style="margin:0;font-size:21px">reservAR<span style="font-weight:300;font-size:15px;color:#cfc9e6"> tu lugar, tu momento.</span></h1>
 </div>
 <section id="auth" class="auth">
@@ -397,7 +397,8 @@ border:none
 <section id="facturacion" class="screen"><div class="card"><h3>Facturación dividida</h3><div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"><span id="factHoyBruto" class="pill" style="background:#a855f722;border-color:#a855f7">Hoy Bruto $0</span><span id="factHoySena" class="pill" style="background:#22c55e22;border-color:#22c55e">Seña Hoy $0</span><span id="factHoySaldo" class="pill" style="background:#facc1522;border-color:#facc15">A cobrar Hoy $0</span></div><div class="row"><input id="factMes" type="month" style="width:auto"><button id="btnFactHoy" class="btn small ghost">Hoy</button></div><p id="factTotal" style="font-weight:800;margin-top:8px"></p><p id="factTotalSena" style="font-weight:700;color:#86efac"></p><p id="factTotalSaldo" style="font-weight:700;color:#fde68a"></p><ul id="facturacionLista" class="list"></ul></div></section>
 <section id="ajustes" class="screen">
 <div class="card" style="border-color:#a855f7"><h3 style="color:#a855f7">Membresía y Pagos</h3><div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:10px"><div><div style="font-size:11px;color:#cfc9e6">PLAN ACTUAL</div><strong id="membershipPlan2">Cargando...</strong></div><div><div style="font-size:11px;color:#cfc9e6">VENCE</div><strong id="membershipVence2">-</strong></div></div><div class="row" style="margin:12px 0"><button class="btn small plan" data-plan="basico" id="planBtnBasico">Básico</button><button class="btn small plan" data-plan="medio" id="planBtnMedio">Medio</button><button class="btn small plan" data-plan="premium" id="planBtnPremium">Premium</button></div><div class="formgrid"><div><label>Método</label><select id="metodoPago"><option value="transferencia" selected>Transferencia</option></select></div></div><div style="margin-top:10px;background:#facc1522;border:1px solid #facc15;border-radius:12px;padding:12px"><div style="font-weight:900;color:#facc15">Datos transferir</div><div style="font-size:12px" id="planTransAlias"></div><div style="font-size:12px" id="planTransCbu"></div><div style="font-size:12px" id="planTransTitular"></div><div style="font-size:11px;color:#cfc9e6" id="planTransInstr"></div></div><div style="margin-top:10px"><label style="color:#a855f7;font-weight:700">Comprobante *</label><input id="planCompFile" type="file" accept="image/*" class="file-input"><label for="planCompFile" class="file-btn">Subir comprobante</label><div id="planCompStatus" style="font-size:11px;color:#86efac;margin-top:6px"></div><img id="planCompPrev" class="hidden" style="width:100%;max-width:200px;border-radius:10px;margin-top:8px;border:1px solid #a855f7"></div><div class="row" style="margin-top:12px"><button id="btnPagarPlan" class="btn">Enviar comprobante</button><button id="btnRenovarPlan" class="btn ghost hidden">Renovar 30 días</button></div><p id="planMsg" style="color:#86efac"></p></div>
-<div class="card"><h3>Datos del local</h3><div class="formgrid"><div><label>Nombre local</label><input id="cfgLocalNombre"></div><div><label>Email</label><input id="cfgEmail"></div><div><label>Tel</label><input id="cfgTel"></div><div><label>Dirección</label><input id="cfgDireccion"></div><div><label>Apertura</label><input id="cfgApertura" type="time"></div><div><label>Cierre</label><input id="cfgCierre" type="time"></div><div class="full"><label style="color:#a855f7;font-weight:700">Foto local</label><input id="cfgFotoFile" type="file" accept="image/*" class="file-input"><label for="cfgFotoFile" class="file-btn">Foto local</label><img id="cfgFotoPrev" class="hidden" style="width:100%;max-width:240px;border-radius:12px;margin-top:8px"></div><div><label>Días anticipación</label><input id="cfgDiasAnticipacion" type="number" value="30"></div><div><label>Visible</label><select id="cfgVisible"><option value="true">Sí</option><option value="false">No</option></select></div></div><div class="row" style="margin-top:10px"><button id="btnGuardarCfg" class="btn">Guardar datos</button><span id="cfgMsg" style="color:#86efac"></span></div></div>
+<div class="card"><h3>Datos del local</h3><div class="formgrid"><div><label>Nombre local</label><input id="cfgLocalNombre"></div><div><label>Email</label><input id="cfgEmail"></div><div><label>Tel</label><input id="cfgTel"></div><div><label>Dirección</label><input id="cfgDireccion"></div><div><label>Apertura</label><input id="cfgApertura" type="time"></div><div><label>Cierre</label><input id="cfgCierre" type="time"></div><div class="full"><label style="color:#a855f7;font-weight:700">Foto principal vieja</label><input id="cfgFotoFile" type="file" accept="image/*" class="file-input"><label for="cfgFotoFile" class="file-btn">Foto principal</label><img id="cfgFotoPrev" class="hidden" style="width:100%;max-width:240px;border-radius:12px;margin-top:8px"></div><div><label>Días anticipación</label><input id="cfgDiasAnticipacion" type="number" value="30"></div><div><label>Visible</label><select id="cfgVisible"><option value="true">Sí</option><option value="false">No</option></select></div></div><div class="row" style="margin-top:10px"><button id="btnGuardarCfg" class="btn">Guardar datos</button><span id="cfgMsg" style="color:#86efac"></span></div></div>
+<div class="card" style="border-color:#a855f7"><h3 style="color:#a855f7">📸 Álbum del local - NUEVO</h3><input id="galeriaFiles" type="file" accept="image/*" multiple class="file-input"><label for="galeriaFiles" class="file-btn">+ Agregar fotos al álbum</label><div id="galeriaGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px"></div><div style="font-size:11px;color:#cfc9e6;margin-top:6px">Podés borrar y elegir portada. La portada es la que ve el cliente.</div></div>
 <div class="card"><h3>Cobros y Seña</h3><div class="formgrid"><div><label>¿Pedir seña?</label><select id="cfgSenaActiva"><option value="false">No</option><option value="true">Sí</option></select></div><div><label>Seña desde días</label><input id="cfgSenaDesdeDias" type="number" value="3"></div><div><label>Tipo seña</label><select id="cfgSenaTipo"><option value="ninguna">Sin seña</option><option value="porcentaje">Porcentaje</option><option value="fijo">Fijo $</option></select></div><div><label>Valor seña</label><input id="cfgSenaValor" type="number" value="30"></div><div><label>¿Pedir DNI?</label><select id="cfgPideDni"><option value="false">No</option><option value="true">Sí</option></select></div><div><label>Titular</label><input id="cobTitular"></div><div><label>Banco</label><input id="cobBanco"></div><div><label>Alias</label><input id="cobAlias"></div><div><label>CBU</label><input id="cobCBU"></div><div class="full"><label>Instrucciones</label><textarea id="cobInstr"></textarea></div></div><div id="cobroPreview" class="item" style="display:block;margin-top:10px;background:#a855f722"></div><button id="btnGuardarCobros" class="btn" style="margin-top:10px">Guardar seña</button><span id="cobroMsg" style="color:#86efac"></span></div>
 <div class="card" style="border-color:#a855f7"><h3 style="color:#a855f7">Horarios activos</h3><div id="cuposGrid" class="cupo-grid"></div><div class="row" style="margin-top:10px"><button id="btnGuardarCupos" class="btn">Guardar horarios</button><span id="cuposMsg" style="color:#86efac"></span></div></div>
 <div class="card" style="border-color:#f59e0b"><h3 style="color:#f59e0b">Pausas por día</h3><div class="formgrid"><div><label>Fecha a pausar</label><input id="pausaFecha" type="date"></div><div style="display:flex;align-items:flex-end"><button id="btnPausarFecha" class="btn" style="background:#f59e0b;color:#000">Pausar día</button></div></div><ul id="listaPausas" class="list" style="margin-top:10px"></ul><div style="font-size:11px;color:#fde68a;margin-top:6px">Pausás un día, cliente no reserva ese día pero los demás sí.</div></div>
@@ -691,9 +692,77 @@ cargarPausasFechasLocal()
 }
 }catch(e){}
 }
+async function cargarGaleriaLocal(){
+const uid=auth.currentUser.uid;
+const grid=$('galeriaGrid');
+if(!grid)return;
+grid.innerHTML='Cargando...';
+try{
+const snap=await db.collection('config').doc(uid).collection('galeriaLocal').orderBy('orden').get();
+grid.innerHTML='';
+snap.forEach(doc=>{
+const d=doc.data();
+const div=document.createElement('div');
+div.style.cssText='border:1px solid #a855f7;border-radius:10px;overflow:hidden;background:#00000033';
+div.innerHTML=`<img src="${d.url}" style="width:100%;height:90px;object-fit:cover"><div style="padding:4px;display:flex;flex-direction:column;gap:4px"><button class="btn small ${d.principal?'':'ghost'}" data-princ="${doc.id}" style="font-size:10px">${d.principal?'★ Portada':'Portada'}</button><div style="display:flex;gap:2px"><button class="btn small ghost" data-up="${doc.id}" style="font-size:10px">↑</button><button class="btn small ghost" data-down="${doc.id}" style="font-size:10px">↓</button><button class="btn small ghost" data-del="${doc.id}" style="font-size:10px;background:#ef444433">X</button></div></div>`;
+grid.appendChild(div);
+});
+grid.querySelectorAll('[data-del]').forEach(b=>{
+b.onclick=async()=>{
+if(!confirm('Borrar?'))return;
+await db.collection('config').doc(uid).collection('galeriaLocal').doc(b.dataset.del).delete();
+toast('Borrada');
+cargarGaleriaLocal()
+}
+});
+grid.querySelectorAll('[data-princ]').forEach(b=>{
+b.onclick=async()=>{
+const snap2=await db.collection('config').doc(uid).collection('galeriaLocal').get();
+for(const dd of snap2.docs){
+await dd.ref.update({principal:false})
+}
+await db.collection('config').doc(uid).collection('galeriaLocal').doc(b.dataset.princ).update({principal:true});
+const docP=await db.collection('config').doc(uid).collection('galeriaLocal').doc(b.dataset.princ).get();
+if(docP.exists){
+await db.collection('config').doc(uid).set({foto:docP.data().url},{merge:true});
+cfgFotoBase64=docP.data().url;
+if($('cfgFotoPrev')){
+$('cfgFotoPrev').src=cfgFotoBase64;
+$('cfgFotoPrev').classList.remove('hidden')
+}
+}
+toast('Portada');
+cargarGaleriaLocal()
+}
+});
+grid.querySelectorAll('[data-up]').forEach(b=>{
+b.onclick=async()=>{
+const ref=db.collection('config').doc(uid).collection('galeriaLocal').doc(b.dataset.up);
+const s=await ref.get();
+if(!s.exists)return;
+await ref.update({orden:(s.data().orden||0)-1});
+cargarGaleriaLocal()
+}
+});
+grid.querySelectorAll('[data-down]').forEach(b=>{
+b.onclick=async()=>{
+const ref=db.collection('config').doc(uid).collection('galeriaLocal').doc(b.dataset.down);
+const s=await ref.get();
+if(!s.exists)return;
+await ref.update({orden:(s.data().orden||0)+1});
+cargarGaleriaLocal()
+}
+});
+if(snap.empty){
+grid.innerHTML='<div style="font-size:11px;opacity:.7">Sin fotos aún</div>'
+}
+}catch(e){
+grid.innerHTML='Error '+e.message
+}
+}
 async function cargarTodo(){
 const uid=auth.currentUser.uid;
-await Promise.all([cargarTarifas(),cargarCobros(),cargarServicios(),cargarHorarios(),cargarPausasFechasLocal()]);
+await Promise.all([cargarTarifas(),cargarCobros(),cargarServicios(),cargarHorarios(),cargarPausasFechasLocal(),cargarGaleriaLocal()]);
 try{
 const doc=await db.collection('config').doc(uid).get();
 if(doc.exists){
@@ -829,7 +898,6 @@ const ul=$('listaReservas');
 if(!ul)return;
 ul.innerHTML='';
 list.forEach(r=>{
-const s=calcSena(Number(r.precio||0));
 const li=document.createElement('li');
 li.className='item';
 li.innerHTML=`<div><b>${r.cliente||''}</b><div style="font-size:11px">${r.servicio||''} ${r.fecha||''} ${r.hora||''} $${r.precio||0}</div><span class="pill">${r.estado}</span></div><div style="display:flex;gap:4px"><button class="btn small ghost" data-ed="${r.id}">Edit</button><button class="btn small ghost" data-del="${r.id}">X</button></div>`;
@@ -885,6 +953,33 @@ safe('btnIrReservas','click',()=>{
 goScreen('reservas');
 if($('cardListaReservas'))$('cardListaReservas').classList.remove('hidden');
 if($('cardNuevaReserva'))$('cardNuevaReserva').classList.add('hidden')
+});
+safe('galeriaFiles','change',async e=>{
+const files=e.target.files;
+if(!files.length)return;
+const uid=auth.currentUser.uid;
+let ordenBase=Date.now();
+for(let i=0;i<files.length;i++){
+const f=files[i];
+if(f.size>900000){
+toast('Foto grande max 900KB');
+continue
+}
+const url=await new Promise(res=>{
+const r=new FileReader();
+r.onload=()=>res(r.result);
+r.readAsDataURL(f)
+});
+await db.collection('config').doc(uid).collection('galeriaLocal').add({
+url,
+orden:ordenBase+i,
+principal:false,
+ts:Date.now()
+});
+}
+toast('Fotos agregadas');
+e.target.value='';
+cargarGaleriaLocal()
 });
 safe('btnGuardarCfg','click',async()=>{
 const uid=auth.currentUser.uid;
@@ -947,7 +1042,6 @@ if(!com){toast('Comentario');return}
 const f=$('sopFecha').value;
 const h=$('sopHora').value;
 const rid=$('sopReservaSelect').value;
-const cli=$('sopClienteSelect').value;
 const rdata=rid?allReservas.find(r=>r.id===rid):null;
 await db.collection('soporte').add({
 origen:'local',
