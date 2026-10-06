@@ -1,97 +1,712 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>reservAR tu lugar, tu momento.</title><style>:root{--stroke:#ffffff26;--muted:#cfc9e6}*{box-sizing:border-box}body{margin:0;font-family:system-ui;color:#fff;background:linear-gradient(160deg,#6a11cb,#3a0f6e 70%,#0a0933);background-attachment:fixed}.hidden{display:none!important}.wrap{max-width:1100px;margin:0 auto;padding:12px}.row{display:flex;gap:8px;flex-wrap:wrap}.stack{display:flex;flex-direction:column;gap:14px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:700px){.formgrid{grid-template-columns:1fr}}.top-head{padding:12px 16px;font-weight:800;font-size:20px;background:rgba(0,0,0,.2)}.top-head span{font-weight:400;font-size:14px;color:var(--muted);margin-left:6px}.topbar{position:sticky;top:0;z-index:10;background:rgba(31,7,54,.98);border-bottom:1px solid var(--stroke);padding:10px}.logo{font-weight:800;font-size:20px}.logo span{font-weight:300;font-size:14px;color:var(--muted);margin-left:6px}.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}.tab{border:1px solid var(--stroke);background:#ffffff12;color:#fff;padding:10px 16px;border-radius:999px;cursor:pointer;font-weight:700;white-space:nowrap}.tab.active{background:#ffffff26;border-color:#ffffff66}.pill{padding:5px 10px;border-radius:999px;border:1px solid var(--stroke);background:#ffffff18;font-size:12px}.pill.ok{background:#22c55e33;border-color:#22c55e66}.pill.warn{background:#f59e0b33;border-color:#f59e0b66}.pill.bad{background:#ef444433;border-color:#ef444466}.btn{background:#a855f7;border:none;color:#fff;padding:.7rem 1rem;border-radius:10px;cursor:pointer;font-weight:700}.btn.ghost{background:transparent;border:1px solid var(--stroke)}.btn.small{padding:.45rem .7rem;font-size:13px}.btn.full{width:100%}.auth{max-width:420px;margin:24px auto;background:#ffffff12;border:1px solid var(--stroke);border-radius:14px;padding:16px}.auth input{width:100%;padding:.7rem;border-radius:10px;border:1px solid #ffffff22;background:#ffffff08;color:#fff;margin-bottom:8px}.screen{display:none}.screen.active{display:block}.card{background:#ffffff12;border:1px solid var(--stroke);border-radius:16px;padding:16px;margin-bottom:12px}.list{list-style:none;margin:0;padding:0}.item{display:flex;justify-content:space-between;gap:8px;padding:12px;border:1px solid var(--stroke);border-radius:12px;background:#ffffff0f;margin-bottom:8px}input,select,textarea{width:100%;padding:.7rem;border-radius:10px;border:1px solid #ffffff22;background:#ffffff08;color:#fff}input::placeholder{color:#a99dc6}label{font-size:13px;color:#e8e0ff;margin-bottom:2px;display:block}.muted{color:var(--muted);font-size:12px}.error{color:#fca5a5;min-height:18px}.note{color:#cfe6c6}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1f0736;border:1px solid #ffffff33;padding:12px 18px;border-radius:12px;z-index:9999}.rojo{background:#ef444433;border:1px solid #ef444466}.verde{background:#22c55e33;border:1px solid #22c55e66}.thumb{width:100%;border-radius:10px;max-height:180px;object-fit:cover}</style>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-</head><body>
-<div class="top-head" id="mainHeader">reservAR <span>tu lugar, tu momento.</span></div>
-<div id="status" class="card verde" style="margin:12px">Iniciando v4.6 RESTAURADA ORIGINAL COLORES + LOGIN + 9 FIX ORO + 5 GRATIS - quota + cooldown + betterHash + privacidad.html</div>
-<div class="wrap" style="display:flex;gap:8px;flex-wrap:wrap">
-<div class="pill">Plan: <b id="planTxt">-</b></div><div class="pill">Deuda Casa $100 x res: $<b id="deudaTxt">0</b></div><div class="pill">Total Casa: <b id="totalCasaTxt">0</b></div><div class="pill">Promo 30: <b id="promoTxt">-</b></div><div class="pill">Vence: <b id="venceTxt">-</b></div><div class="pill">Gracia ADM: <b id="graciaTxt">48</b>hs</div><div class="pill">Galeria: <b id="galeriaCountTxt">0</b>/4</div><div class="pill">UID: <span id="uidTxt"></span></div>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>reservAR tu lugar, tu momento.</title>
+<style>
+:root{--stroke:#ffffff26;--muted:#cfc9e6}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:system-ui;
+ color:#fff;
+ background:linear-gradient(160deg,#6a11cb,#3a0f6e 70%,#0a0933);
+ background-attachment:fixed
+}
+.hidden{display:none!important}
+.wrap{max-width:1100px;margin:0 auto;padding:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:14px}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:700px){.formgrid{grid-template-columns:1fr}}
+.top-head{padding:12px 16px;font-weight:800;font-size:20px;background:rgba(0,0,0,.2)}
+.top-head span{font-weight:400;font-size:14px;color:var(--muted);margin-left:6px}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(31,7,54,.98);border-bottom:1px solid var(--stroke);padding:10px}
+.logo{font-weight:800;font-size:20px}
+.logo span{font-weight:300;font-size:14px;color:var(--muted);margin-left:6px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.tab{border:1px solid var(--stroke);background:#ffffff12;color:#fff;padding:10px 16px;border-radius:999px;cursor:pointer;font-weight:700;white-space:nowrap}
+.tab.active{background:#ffffff26;border-color:#ffffff66}
+.pill{padding:5px 10px;border-radius:999px;border:1px solid var(--stroke);background:#ffffff18;font-size:12px}
+.pill.ok{background:#22c55e33;border-color:#22c55e66}
+.pill.bad{background:#ef444433;border-color:#ef444466}
+.btn{background:#a855f7;border:none;color:#fff;padding:.7rem 1rem;border-radius:10px;cursor:pointer;font-weight:700}
+.btn.ghost{background:transparent;border:1px solid var(--stroke)}
+.btn.small{padding:.45rem.7rem;font-size:13px}
+.btn.full{width:100%}
+.auth{max-width:420px;margin:24px auto;background:#ffffff12;border:1px solid var(--stroke);border-radius:14px;padding:16px}
+.auth input{width:100%;padding:.7rem;border-radius:10px;border:1px solid #ffffff22;background:#ffffff08;color:#fff;margin-bottom:8px}
+.screen{display:none}.screen.active{display:block}
+.card{background:#ffffff12;border:1px solid var(--stroke);border-radius:16px;padding:16px;margin-bottom:12px}
+.list{list-style:none;margin:0;padding:0}
+.item{display:flex;justify-content:space-between;gap:8px;padding:12px;border:1px solid var(--stroke);border-radius:12px;background:#ffffff0f;margin-bottom:8px}
+input,select,textarea{width:100%;padding:.7rem;border-radius:10px;border:1px solid #ffffff22;background:#ffffff08;color:#fff}
+label{font-size:13px;color:#e8e0ff;margin-bottom:2px;display:block}
+.muted{color:var(--muted);font-size:12px}
+.error{color:#fca5a5;min-height:18px}
+.note{color:#cfe6c6}
+.rojo{background:#ef444433;border:1px solid #ef444466}
+.verde{background:#22c55e33;border:1px solid #22c55e66}
+.thumb{width:100%;border-radius:10px;max-height:180px;object-fit:cover}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="top-head">reservAR <span>tu lugar, tu momento.</span></div>
+<div id="status" class="hidden"></div>
+<div style="display:none">
+ <span id="planTxt"></span>
+ <span id="deudaTxt"></span>
+ <span id="totalCasaTxt"></span>
+ <span id="promoTxt"></span>
+ <span id="venceTxt"></span>
+ <span id="graciaTxt"></span>
+ <span id="galeriaCountTxt"></span>
+ <span id="uidTxt"></span>
+ <span id="mailTxt"></span>
 </div>
-<div class="wrap"><div class="card" style="background:#ffffff08"><a href="privacidad.html" target="_blank" style="color:#a78bfa">Privacidad / Términos / Contacto - GitHub Pages</a> <span class="muted">Datos: mail, celu AR norm, DNI opcional, reservas - no vendemos datos</span></div></div>
-<div id="verifyBox" class="hidden card rojo wrap"><b>MAIL NO VERIFICADO - BLOQUEADO</b><br>Mail: <span id="mailTxt"></span><br><button class="btn small" onclick="reenviarVerif()">Reenviar verificación cooldown 60s</button> <button class="btn small ghost" onclick="auth.currentUser.reload().then(()=>location.reload())">Ya verifiqué - Recargar</button> <button class="btn small ghost" onclick="auth.signOut()">Salir</button></div>
-<section id="auth" class="auth"><h2>Iniciar sesion</h2><label>Correo</label><input id="email" type="email"><label>Contrasena</label><input id="password" type="password"><p id="loginMsg" class="error"></p><button id="loginBtn" class="btn full">Entrar</button><p style="margin-top:10px">No tenes cuenta? <a href="#" id="goRegister" style="color:#ff5ab3">Crear cuenta</a> · <a href="#" id="goForgot" style="color:#ff5ab3">Olvide</a></p></section>
-<section id="register" class="auth hidden"><h2>Crear cuenta</h2><input id="regNombre" placeholder="Nombre"><input id="regApellido" placeholder="Apellido"><input id="regLocal" placeholder="Nombre del local *"><input id="regEmail" type="email" placeholder="Correo *"><input id="regPass" type="password" placeholder="Contrasena *"><input id="regPass2" type="password" placeholder="Repetir *"><label style="display:flex;gap:6px;align-items:center"><input id="regTerminos" type="checkbox"> Acepto terminos</label><p id="regMsg" class="error"></p><button id="registerBtn" class="btn full">Registrarme</button><p><a href="#" id="goLogin" style="color:#ff5ab3">Volver</a></p></section>
-<section id="forgot" class="auth hidden"><h2>Recuperar</h2><input id="forgotEmail" type="email" placeholder="tu correo"><p id="forgotMsg" class="error"></p><p id="forgotOk" class="note"></p><button id="btnForgotSend" class="btn full">Enviar link</button><p><a href="#" id="goLogin2" style="color:#ff5ab3">Volver</a></p></section>
-<section id="app" class="hidden"><div class="topbar"><div style="display:flex;justify-content:space-between;align-items:center"><div class="logo">reservAR <span>tu lugar, tu momento.</span></div><div style="display:flex;gap:8px;align-items:center"><span id="estadoPill" class="pill">Reservas online: pausadas</span><button id="btnToggleEstado" class="btn small">Activar</button><button id="btnLogout" class="btn small ghost">Salir</button></div></div><div class="tabs" style="margin-top:8px"><button class="tab active" data-screen="dashboard">Inicio</button><button class="tab" data-screen="reservas">Reservas</button><button class="tab" data-screen="calendario">Calendario</button><button class="tab" data-screen="clientes">Clientes</button><button class="tab" data-screen="servicios">Servicios</button><button class="tab" data-screen="estadisticas">Estadisticas</button><button class="tab" data-screen="facturacion">Facturacion</button><button class="tab" data-screen="ajustes">Ajustes</button><button class="tab" data-screen="cobros">Cobros CBU Galería Perfil Comprobante</button></div></div>
 <div class="wrap">
-<section id="dashboard" class="screen active stack"><div class="card"><h2>Panel</h2><p id="saludo" class="muted"></p><div class="row" style="margin-top:10px"><button id="btnNuevaReserva" class="btn">+ Nueva reserva</button><button id="btnCopiarLink" class="btn ghost">Copiar link clientes</button></div><p class="muted" style="margin-top:6px">Este link es tu pagina publica reservar.html?uid=TU_ID para que tus clientes reserven solos - flujo cliente sync 100%</p><div id="kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px"></div></div><div class="card"><h3>Turnos de hoy <span id="hoyFecha" class="pill"></span></h3><ul id="turnosHoy" class="list"></ul></div><div class="card"><h3>Recordatorios 48h</h3><div id="recordatoriosBox"></div></div><div class="card"><h3>Ingresos por servicio</h3><div id="revenueByUser"></div></div></section>
-<section id="reservas" class="screen stack"><div class="card"><h3 id="tituloReserva">Nueva reserva - FIX 3 4 6 8 transaction real</h3><form id="reservaForm" class="formgrid"><div><label>Cliente *</label><input id="rCliente" required placeholder="Nombre cliente"></div><div><label>WhatsApp Celu AR * norm +54 9</label><input id="rClienteTel" placeholder="11 1234 5678 ó +54 9 11 1234 5678"></div><div><label>WhatsApp extra</label><input id="resWhat" placeholder="opcional"></div><div id="boxDNI" class="hidden"><label>DNI cliente</label><input id="rClienteDNI" placeholder="40123456"></div><div><label>Servicio * sync cliente</label><select id="rServicioSelect"></select><input id="rServicioCustom" class="hidden" placeholder="Nombre servicio manual" style="margin-top:6px"></div><div><label>Precio $ del servicio</label><input id="rPrecio" type="number" placeholder="0"><div id="senaInfo" style="font-size:12px;color:#86efac;margin-top:4px"></div></div><div><label>Duracion del servicio (min)</label><input id="rDur" type="number" value="30" placeholder="30"></div><div><label>Fecha *</label><input id="resFecha" type="date" required></div><div><label>Hora *</label><select id="resHora"></select></div><div><label>Fecha y hora completa</label><input id="rFechaHora" type="datetime-local" required></div><div><label>Estado de la reserva</label><select id="rEstado"><option value="pendiente">Pendiente</option><option value="confirmada" selected>Confirmada</option><option value="cancelada">Cancelada</option></select></div><div><label>Origen</label><select id="rOrigen"><option value="local">Local</option><option value="cliente">Cliente online</option></select></div><div style="grid-column:1/-1"><label>Comentario</label><textarea id="rComentario" placeholder="Notas..."></textarea></div><div style="grid-column:1/-1" class="row"><button type="submit" class="btn">Guardar reserva transaction</button><button id="btnCancelarEdicion" type="button" class="btn ghost hidden">Cancelar edicion</button></div></form><div id="resMsg" class="pill"></div><div id="resMsgLong" class="muted"></div></div>
-<div class="card"><h3>Reservas realizadas - con detalle y estado - paginación sin índice + sync cliente 100%</h3><div class="row"><input id="filtroFecha" type="date" style="max-width:160px"><select id="filtroEstado" style="max-width:160px"><option value="todas">Todas</option><option value="pendiente">Pendientes</option><option value="confirmada">Confirmadas</option><option value="cancelada">Canceladas</option></select><input id="filtroCelu" placeholder="filtrar celu AR" style="max-width:160px"><button id="btnFiltrar" class="btn small">Filtrar</button><button id="btnLimpiarFiltro" class="btn small ghost">Ver todas</button><button onclick="cambiarPagina(-1)" class="btn small ghost">‹ Anterior</button><button onclick="cambiarPagina(1)" class="btn small ghost">Siguiente ›</button> Página <b id="pagTxt">1</b></div><ul id="listaReservas" class="list" style="margin-top:10px"></ul><div id="reservasCount" class="muted"></div></div></section>
-<section id="calendario" class="screen"><div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><button id="calPrev" class="btn small ghost"><</button><h3 id="calTitulo"></h3><button id="calNext" class="btn small ghost">></button></div><div id="calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px"></div><div id="calDetalle" style="margin-top:12px"></div><hr><div class="card"><h3>Calendario 35 días - Pausas + Limpieza automática viejas + ADM</h3><div class="row"><button onclick="limpiarPausasViejas()" class="btn small">Limpiar pausas viejas (auto)</button><span class="muted">Borra fechas < hoy-1 para no llenar doc 1MB</span></div><div id="calGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px"></div></div></div></section>
-<section id="clientes" class="screen"><div class="card"><h3>Clientes frecuentes - normCeluAR +54 9</h3><ul id="clientesFrecuentes" class="list"></ul><div id="cliBox"></div></div></section>
-<section id="servicios" class="screen"><div class="card"><h3>Servicios - 150KB detalle / 80KB lista lazy FIX GRATIS</h3><div id="servBox" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px"></div><hr><h4>Agregar Servicio - foto 150KB detalle + 80KB lista</h4><div class="formgrid"><div><label>Nombre servicio *</label><input id="svcName" placeholder="Ej: Corte + barba"></div><div><label>Precio $ *</label><input id="svcPrice" type="number" placeholder="Ej: 6500"></div><div><label>Duracion (min) * - va aca</label><input id="svcDur" type="number" value="30" placeholder="30"></div><div><label>Estado</label><select id="svcEstado"><option value="activo">Activo</option><option value="pausado">Pausado</option></select></div><div><label>Foto servicio 150KB</label><input type="file" id="sFoto" accept="image/jpeg,image/png,image/webp"></div></div><button onclick="addServ()" class="btn" style="margin-top:10px">Agregar Servicio 150KB sync cliente</button><div id="sMsg" class="muted"></div></div></section>
+ <div class="card" style="background:#ffffff08">
+  <a href="privacidad.html" target="_blank" style="color:#a78bfa">Privacidad / Términos</a>
+ </div>
+</div>
+<div id="verifyBox" class="hidden card rojo wrap">
+ <b>MAIL NO VERIFICADO</b><br>
+ <button class="btn small" onclick="reenviarVerif()">Reenviar verificación</button>
+ <button class="btn small ghost" onclick="auth.currentUser.reload().then(()=>location.reload())">Ya verifiqué</button>
+ <button class="btn small ghost" onclick="auth.signOut()">Salir</button>
+</div>
+
+<section id="auth" class="auth">
+ <h2>Iniciar sesion</h2>
+ <label>Correo</label><input id="email" type="email">
+ <label>Contrasena</label><input id="password" type="password">
+ <p id="loginMsg" class="error"></p>
+ <button id="loginBtn" class="btn full">Entrar</button>
+ <p>No tenes cuenta? <a href="#" id="goRegister" style="color:#ff5ab3">Crear</a> · <a href="#" id="goForgot" style="color:#ff5ab3">Olvide</a></p>
+</section>
+
+<section id="register" class="auth hidden">
+ <h2>Crear cuenta</h2>
+ <input id="regNombre" placeholder="Nombre">
+ <input id="regApellido" placeholder="Apellido">
+ <input id="regLocal" placeholder="Nombre del local *">
+ <input id="regEmail" type="email" placeholder="Correo *">
+ <input id="regPass" type="password" placeholder="Contrasena *">
+ <input id="regPass2" type="password" placeholder="Repetir *">
+ <label><input id="regTerminos" type="checkbox"> Acepto terminos</label>
+ <p id="regMsg" class="error"></p>
+ <button id="registerBtn" class="btn full">Registrarme</button>
+ <p><a href="#" id="goLogin" style="color:#ff5ab3">Volver</a></p>
+</section>
+
+<section id="forgot" class="auth hidden">
+ <h2>Recuperar</h2>
+ <input id="forgotEmail" type="email" placeholder="tu correo">
+ <p id="forgotMsg" class="error"></p>
+ <p id="forgotOk" class="note"></p>
+ <button id="btnForgotSend" class="btn full">Enviar link</button>
+ <p><a href="#" id="goLogin2" style="color:#ff5ab3">Volver</a></p>
+</section>
+
+<section id="app" class="hidden">
+<div class="topbar">
+ <div style="display:flex;justify-content:space-between;align-items:center">
+  <div class="logo">reservAR <span>tu lugar, tu momento.</span></div>
+  <div style="display:flex;gap:8px;align-items:center">
+   <span id="estadoPill" class="pill">Reservas</span>
+   <button id="btnToggleEstado" class="btn small">Activar</button>
+   <button id="btnLogout" class="btn small ghost">Salir</button>
+  </div>
+ </div>
+ <div class="tabs" style="margin-top:8px">
+  <button class="tab active" data-screen="dashboard">Inicio</button>
+  <button class="tab" data-screen="reservas">Reservas</button>
+  <button class="tab" data-screen="calendario">Calendario</button>
+  <button class="tab" data-screen="clientes">Clientes</button>
+  <button class="tab" data-screen="servicios">Servicios</button>
+  <button class="tab" data-screen="estadisticas">Estadisticas</button>
+  <button class="tab" data-screen="facturacion">Facturacion</button>
+  <button class="tab" data-screen="ajustes">Ajustes</button>
+  <button class="tab" data-screen="cobros">Cobros</button>
+ </div>
+</div>
+<div class="wrap">
+  <section id="dashboard" class="screen active stack">
+ <div class="card">
+  <h2>Panel</h2>
+  <p id="saludo" class="muted"></p>
+  <div class="row" style="margin-top:10px">
+   <button id="btnNuevaReserva" class="btn">+ Nueva reserva</button>
+   <button id="btnCopiarLink" class="btn ghost">Copiar link clientes</button>
+  </div>
+  <div id="kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px"></div>
+ </div>
+ <div class="card"><h3>Turnos de hoy <span id="hoyFecha" class="pill"></span></h3><ul id="turnosHoy" class="list"></ul></div>
+ <div class="card"><h3>Recordatorios 48h</h3><div id="recordatoriosBox"></div></div>
+</section>
+
+<section id="reservas" class="screen stack">
+ <div class="card">
+  <h3 id="tituloReserva">Nueva reserva</h3>
+  <form id="reservaForm" class="formgrid">
+   <div><label>Cliente *</label><input id="rCliente" required placeholder="Nombre"></div>
+   <div><label>Celu *</label><input id="rClienteTel" placeholder="11 1234 5678"></div>
+   <div><label>WhatsApp extra</label><input id="resWhat" placeholder="opcional"></div>
+   <div id="boxDNI" class="hidden"><label>DNI</label><input id="rClienteDNI"></div>
+   <div><label>Servicio *</label><select id="rServicioSelect"></select></div>
+   <div><label>Precio</label><input id="rPrecio" type="number"><div id="senaInfo" style="font-size:12px;color:#86efac"></div></div>
+   <div><label>Duracion</label><input id="rDur" type="number" value="30"></div>
+   <div><label>Fecha *</label><input id="resFecha" type="date" required></div>
+   <div><label>Hora *</label><select id="resHora"></select></div>
+   <div><label>Fecha y hora</label><input id="rFechaHora" type="datetime-local" required></div>
+   <div><label>Estado</label><select id="rEstado"><option value="pendiente">Pendiente</option><option value="confirmada" selected>Confirmada</option><option value="cancelada">Cancelada</option></select></div>
+   <div style="grid-column:1/-1"><button type="submit" class="btn">Guardar reserva</button><button id="btnCancelarEdicion" type="button" class="btn ghost hidden">Cancelar</button></div>
+  </form>
+  <div id="resMsg" class="pill"></div>
+ </div>
+ <div class="card">
+  <h3>Reservas realizadas</h3>
+  <div class="row">
+   <input id="filtroFecha" type="date" style="max-width:160px">
+   <select id="filtroEstado" style="max-width:160px"><option value="todas">Todas</option><option value="pendiente">Pendientes</option><option value="confirmada">Confirmadas</option><option value="cancelada">Canceladas</option></select>
+   <input id="filtroCelu" placeholder="celu" style="max-width:160px">
+   <button id="btnFiltrar" class="btn small">Filtrar</button>
+   <button onclick="cambiarPagina(-1)" class="btn small ghost">‹ Anterior</button>
+   <button onclick="cambiarPagina(1)" class="btn small ghost">Siguiente ›</button>
+   Pag <b id="pagTxt">1</b>
+  </div>
+  <ul id="listaReservas" class="list" style="margin-top:10px"></ul>
+  <div id="reservasCount" class="muted"></div>
+ </div>
+</section>
+<section id="calendario" class="screen">
+ <div class="card">
+  <div style="display:flex;justify-content:space-between"><button id="calPrev" class="btn small ghost"><</button><h3 id="calTitulo"></h3><button id="calNext" class="btn small ghost">></button></div>
+  <div id="calendar" style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px"></div>
+  <div id="calDetalle" style="margin-top:12px"></div>
+  <div class="card" style="margin-top:12px">
+   <h3>Calendario 35 días - Pausas</h3>
+   <div class="row"><button onclick="limpiarPausasViejas()" class="btn small">Limpiar pausas viejas</button></div>
+   <div id="calGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px"></div>
+  </div>
+ </div>
+</section>
+
+<section id="clientes" class="screen">
+ <div class="card"><h3>Clientes frecuentes</h3><ul id="clientesFrecuentes" class="list"></ul></div>
+</section>
+
+<section id="servicios" class="screen">
+ <div class="card">
+  <h3>Servicios</h3>
+  <div id="servBox" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px"></div>
+  <hr>
+  <h4>Agregar Servicio</h4>
+  <div class="formgrid">
+   <div><label>Nombre *</label><input id="svcName" placeholder="Ej: Corte"></div>
+   <div><label>Precio *</label><input id="svcPrice" type="number"></div>
+   <div><label>Duracion (min)</label><input id="svcDur" type="number" value="30"></div>
+   <div><label>Foto</label><input type="file" id="sFoto" accept="image/jpeg,image/png,image/webp"></div>
+  </div>
+  <button onclick="addServ()" class="btn" style="margin-top:10px">Agregar Servicio</button>
+  <div id="sMsg" class="muted"></div>
+ </div>
+</section>
+
 <section id="estadisticas" class="screen"><div class="card"><h3>Estadísticas</h3><div id="statsBox"></div></div></section>
-<section id="facturacion" class="screen"><div class="card"><h3>Facturación Casa $100 x reserva - NO VENCE POR FECHA - deuda no bloquea</h3><div id="factBox"></div></div></section>
-<section id="ajustes" class="screen"><div class="card"><h3>Ajustes Local - Horarios cupoMax activo SYNC CLIENTE 100% + Inicializar 8-20</h3><div class="row"><button onclick="inicializarHorarios()" class="btn small">Inicializar 08:00-20:00 30min cupo1</button><span class="muted">Para local nuevo vacío</span></div><div id="horariosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px"></div><div id="horariosCount" class="muted"></div></div></section>
-<section id="cobros" class="screen"><div class="card"><h3>Cobros - CBU 22 dígitos / Alias con punto - FIX 9 - Foto Perfil 150KB + 80KB - Galería subcolección transaction anti race 6 fotos - Comprobante transaction 1 por día</h3>
-<div class="card"><b>Foto Perfil Local - 150KB detalle + 80KB lista - FIX 7 + FIX GRATIS</b><br><input type="file" id="perfilFile" accept="image/jpeg,image/png,image/webp"><button onclick="borrarFotoPerfil()" class="btn small ghost">Borrar perfil</button><div id="perfilBox" style="margin-top:8px"></div></div>
-<div class="card"><b>CBU / CVU / Alias - FIX 9 - Validación 22 dígitos o alias con punto</b><br><div class="row"><input id="cobCBU" placeholder="CBU 22 dígitos o alias.punto.mp" style="max-width:340px"><button onclick="guardarCBU()" class="btn small">Guardar CBU Validado</button><span id="cbuMsg" class="pill"></span></div></div>
-<div class="card"><b>Comprobante Casa $100 - FIX 2 - TRANSACTION anti race doble click + 1 por día + REF + HASH + betterHash first/last 100 - ultimoComprobanteFecha en locales doc</b><br><div class="row">Ref Transferencia <input id="compRef" placeholder="123456">Comprobante foto 150KB <input type="file" id="compFile" accept="image/jpeg,image/png,image/webp"><button onclick="enviarComprobante()" class="btn small">Enviar Comprobante Transaction</button><span id="compSizeTxt" class="pill"></span></div><div id="compList" style="margin-top:8px"></div></div>
-<div class="card"><b>Galería Local - FIX 1 - SUBCOLECCIÓN + TRANSACTION + galeriaCount en locales doc anti race 6 fotos - max 4 x 150KB</b><br><input type="file" id="galFile" accept="image/jpeg,image/png,image/webp" multiple><span class="muted">1 a 4 fotos 150KB detalle + 80KB lista lazy</span><div>Galería: <b id="galCount">0/4</b> <span id="galSizeTxt" class="muted"></span></div><div id="galBox" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px"></div></div>
+<section id="facturacion" class="screen"><div class="card"><h3>Facturación</h3><div id="factBox"></div></div></section>
+<section id="ajustes" class="screen"><div class="card"><h3>Ajustes Horarios</h3><button onclick="inicializarHorarios()" class="btn small">Inicializar 08-20 30min</button><div id="horariosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px"></div><div id="horariosCount" class="muted"></div></div></section>
+<section id="cobros" class="screen">
+ <div class="card"><h3>Cobros</h3>
+  <div class="card"><b>Foto Perfil</b><br><input type="file" id="perfilFile" accept="image/jpeg,image/png,image/webp"><button onclick="borrarFotoPerfil()" class="btn small ghost">Borrar</button><div id="perfilBox" style="margin-top:8px"></div></div>
+  <div class="card"><b>CBU / Alias</b><br><div class="row"><input id="cobCBU" placeholder="CBU 22 o alias.punto.mp" style="max-width:340px"><button onclick="guardarCBU()" class="btn small">Guardar CBU</button><span id="cbuMsg" class="pill"></span></div></div>
+  <div class="card"><b>Comprobante</b><br><div class="row">Ref <input id="compRef" placeholder="123456"> Foto <input type="file" id="compFile" accept="image/jpeg,image/png,image/webp"><button onclick="enviarComprobante()" class="btn small">Enviar</button></div><div id="compList" style="margin-top:8px"></div></div>
+  <div class="card"><b>Galería</b><br><input type="file" id="galFile" accept="image/jpeg,image/png,image/webp" multiple><div>Galería: <b id="galCount">0/4</b></div><div id="galBox" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:8px"></div></div>
+ </div>
+</section>
 </div></section>
-</div></section>
+
 <script>
-const firebaseConfig={apiKey:"AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",authDomain:"reservar-cb70d.firebaseapp.com",projectId:"reservar-cb70d",storageBucket:"reservar-cb70d.firebasestorage.app",messagingSenderId:"630908928696",appId:"1:630908928696:web:5e89f5f2b1cc2b240e6a4d",measurementId:"G-2HMNZ69E4G"};
+const firebaseConfig={
+ apiKey:"AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",
+ authDomain:"reservar-cb70d.firebaseapp.com",
+ projectId:"reservar-cb70d",
+ storageBucket:"reservar-cb70d.firebasestorage.app",
+ messagingSenderId:"630908928696",
+ appId:"1:630908928696:web:5e89f5f2b1cc2b240e6a4d"
+};
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore(), auth=firebase.auth();
-let uidLocal=null, localData={}, horarios={}, pausasFechas=new Set(), servicios=[], horasPlan=48, paginaReservas=1; const porPagina=15;
-function show(p){document.getElementById('auth').classList.add('hidden');document.getElementById('register').classList.add('hidden');document.getElementById('forgot').classList.add('hidden');document.getElementById('app').classList.add('hidden');document.getElementById(p).classList.remove('hidden');}
-function showTab(id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelector(`[data-screen="${id}"]`)?.classList.add('active');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id)?.classList.add('active');}
+let uidLocal=null, localData={}, horarios={}, pausasFechas=new Set(), servicios=[], horasPlan=48, paginaReservas=1;
+const porPagina=15;
+function show(p){
+ document.getElementById('auth').classList.add('hidden');
+ document.getElementById('register').classList.add('hidden');
+ document.getElementById('forgot').classList.add('hidden');
+ document.getElementById('app').classList.add('hidden');
+ document.getElementById(p).classList.remove('hidden');
+}
+function showTab(id){
+ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+ document.querySelector(`[data-screen="${id}"]`)?.classList.add('active');
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.getElementById(id)?.classList.add('active');
+}
 function getAnioMes(d=new Date()){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,'0');}
 function toMin(h){const [hh,mm]=h.split(':').map(Number);return hh*60+mm;}
-function checkSolapamiento(h1,d1,h2,d2){const s1=toMin(h1), e1=s1+(parseInt(d1)||30), s2=toMin(h2), e2=s2+(parseInt(d2)||30);return s1<e2 && s2<e1;}
-function betterHash(s){let h=0;for(let i=0;i<Math.min(s.length,15000);i++){h=(h*31 + s.charCodeAt(i))%1000000007;}const first=(s||'').slice(0,100);const last=(s||'').slice(-100);let hf=0,hl=0;for(let i=0;i<first.length;i++)hf=(hf*13+first.charCodeAt(i))%999983;for(let i=0;i<last.length;i++)hl=(hl*17+last.charCodeAt(i))%999983;let b='';try{b=btoa(first.slice(0,10)).replace(/=/g,'');}catch(e){b='x';}return 'h'+h+'_l'+s.length+'_f'+hf+'_e'+hl+'_b'+b;}
-function simpleHash(s){return betterHash(s);}
-function normCeluAR(c){if(!c)return "";let d=c.replace(/\D/g,"");if(d.startsWith('54'))d=d.slice(2);if(d.startsWith('9')&&d.length>=11)d=d.slice(1);if(d.length>10)d=d.slice(-10);return d;}
-function validarCBU_CVU_ALIAS(v){v=v.trim();if(/^\d{22}$/.test(v))return {ok:true,tipo:'CBU/CVU 22 dig',msg:'CBU/CVU 22 dig OK'};if(/^[a-zA-Z0-9-]+\.[a-zA-Z0-9.-]+$/.test(v)&&v.includes('.')&&v.length>=6&&v.length<=30)return {ok:true,tipo:'ALIAS',msg:'ALIAS punto OK'};return {ok:false,msg:'Invalido: CBU 22 dígitos o alias con punto ej mi.alias.mp'};}
-function compressImage(file,maxW=600,quality=0.6,maxKB=150){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=()=>rej('Error leyendo file');r.onload=e=>{const img=new Image();img.onerror=()=>rej('Imagen invalida');img.onload=()=>{let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);let q=quality,b64=c.toDataURL('image/jpeg',q);let iter=0;while(b64.length/1024>maxKB&&q>0.15&&iter<12){q-=0.06;b64=c.toDataURL('image/jpeg',q);iter++;}res(b64);};img.src=e.target.result;};r.readAsDataURL(file);});}
-function compressImageSmall(file){return compressImage(file,400,0.4,80);}
-function handleQuotaError(e,prefix){const msg=(e&&e.message?e.message:''+e).toLowerCase();const code=(e&&e.code?e.code:'').toLowerCase();if(msg.includes('quota')||msg.includes('resource-exhausted')||code.includes('resource-exhausted')||code.includes('quota')){document.getElementById('status').innerText=(prefix||'')+' Límite Firebase cuota excedida - espera 1h - FIX GRATIS quota-exceeded';document.getElementById('status').className='card rojo';return true;}return false;}
-function reenviarVerif(){const last=parseInt(localStorage.getItem('lastVerifMail')||'0');const now=Date.now();const diff=(now-last)/1000;if(diff<60){alert('Esperá '+(60-Math.floor(diff))+'s para reenviar - anti spam gratis FIX GRATIS');return;}auth.currentUser.sendEmailVerification().then(()=>{localStorage.setItem('lastVerifMail',String(now));alert('Mail verificación reenviado - cooldown 60s gratis');}).catch(e=>{const m=(e.message||'').toLowerCase();if(m.includes('quota')||m.includes('resource-exhausted')){document.getElementById('status').innerText='Cuota Firebase excedida - reintenta en 1h - quota-exceeded gratis FIX';document.getElementById('status').className='card rojo';}alert(e);});}
-async function guardarCBU(){const v=document.getElementById('cobCBU').value.trim();const val=validarCBU_CVU_ALIAS(v);document.getElementById('cbuMsg').innerText=val.msg;if(!val.ok){alert(val.msg);return;}try{await db.doc('locales/'+uidLocal).update({cobCBU:v,cobCBU_tipo:val.tipo,cobCBU_validado:true,cobCBU_syncCliente:true});alert('CBU guardado validado: '+val.msg+' - sync cliente');}catch(e){if(!handleQuotaError(e,'CBU '))alert(e);}}
-async function inicializarHorarios(){if(!confirm('Crear horarios 08:00-20:00 cada 30min cupo1 activo?'))return;const up={};for(let h=8;h<20;h++)for(let m=0;m<60;m+=30){const hh=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');up['horarios.'+hh]={activo:true,cupoMax:1,precioSync:true};}up['horarios.20:00']={activo:true,cupoMax:1,precioSync:true};try{await db.doc('locales/'+uidLocal).update(up);alert('Horarios inicializados 08-20');}catch(e){handleQuotaError(e,'Horarios ');}}
-async function limpiarPausasViejas(){const hoy=new Date();hoy.setDate(hoy.getDate()-1);const hoyStr=hoy.toISOString().slice(0,10);let arr=[...pausasFechas].filter(d=>d>=hoyStr);try{await db.doc('locales/'+uidLocal).update({pausasFechas:arr});alert('Pausas viejas limpiadas - quedan '+arr.length);}catch(e){handleQuotaError(e,'Pausas ');}}
-function checkActivo(){let msg='ACTIVO';let plan=localData.plan||'gratis';const ahora=new Date();let vence=localData.planVence?.toDate?localData.planVence.toDate():null;let vencido=false;if(localData.bloqueado)msg='BLOQUEADO POR ADM - no permite crear reservas - validado dentro transaction';else if(localData.visible===false)msg='OCULTO POR ADM - transaction bloquea';else if(plan!=='casa'){if(vence&&!localData.planActivo){const diffHs=(ahora-vence)/1000/3600;if(diffHs>(localData.horasPlan||horasPlan||48)){vencido=true;msg=`VENCIDO hace ${diffHs.toFixed(1)}hs > gracia ${horasPlan}hs - BLOQUEADO - transaction bloquea - quota check`;}else msg=`VENCIDO hace ${diffHs.toFixed(1)}hs dentro gracia ${horasPlan}hs - PERMITIDO - ADM->Local OK`;}}if(plan==='casa'){msg+=' | CASA $100 x reserva - NO VENCE POR FECHA - deuda no bloquea - 10=$1000 2=$200';}document.getElementById('status').innerText=msg;document.getElementById('status').className=vencido?'card rojo wrap':'card verde wrap';}
-function renderHoraOptions(){const sel=document.getElementById('resHora');if(!sel)return;sel.innerHTML='';for(let h=8;h<21;h++)for(let m=0;m<60;m+=30){const hh=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');const o=document.createElement('option');o.value=hh;o.textContent=hh;sel.appendChild(o);}const selS=document.getElementById('rServicioSelect');if(!selS)return;selS.innerHTML='';servicios.forEach(s=>{const o=document.createElement('option');o.value=s.id;o.textContent=s.nombre+' ('+(s.duracion||30)+'min) $'+(s.precio||0)+' syncCliente';selS.appendChild(o);});}
-function renderHorarios(){const g=document.getElementById('horariosGrid');if(!g)return;g.innerHTML='';const keys=Object.keys(horarios).sort();if(keys.length===0){g.innerHTML='<div class="muted">Sin horarios - clic Inicializar 08-20</div>';}keys.forEach(h=>{const ho=horarios[h]||{activo:true,cupoMax:1};const div=document.createElement('div');div.className='card';div.innerHTML=`<b>${h}</b><br><label><input type="checkbox" ${ho.activo!==false?'checked':''} onchange="toggleHora('${h}',this.checked)"> Activo sync cliente</label><br>Cupo <input type="number" value="${ho.cupoMax||1}" min="1" max="20" style="width:60px" onchange="setCupo('${h}',this.value)">`;g.appendChild(div);});const c=document.getElementById('horariosCount');if(c)c.innerText=keys.length+' horarios - sync 100% cliente';}
-async function toggleHora(h,activo){const up={};up['horarios.'+h+'.activo']=activo;up['horarios.'+h+'.syncCliente']=true;try{await db.doc('locales/'+uidLocal).update(up);}catch(e){handleQuotaError(e,'Toggle hora ');}}
-async function setCupo(h,cupo){const up={};up['horarios.'+h+'.cupoMax']=parseInt(cupo)||1;up['horarios.'+h+'.syncCliente']=true;try{await db.doc('locales/'+uidLocal).update(up);}catch(e){handleQuotaError(e,'Cupo ');}}
-function renderCalendario(){const box=document.getElementById('calGrid');if(!box)return;box.innerHTML='';const hoy=new Date();for(let i=0;i<35;i++){const d=new Date();d.setDate(hoy.getDate()+i);const iso=d.toISOString().slice(0,10);const div=document.createElement('div');div.className='card '+(pausasFechas.has(iso)?'rojo':'');div.innerHTML=`${iso}<br>${pausasFechas.has(iso)?'<b>PAUSA sync cliente</b>':''}<br><button class="btn small ghost" onclick="togglePausa('${iso}')">${pausasFechas.has(iso)?'Quitar pausa':'Pausar día'}</button>`;box.appendChild(div);}}
-async function togglePausa(iso){let arr=[...pausasFechas];if(arr.includes(iso))arr=arr.filter(x=>x!==iso);else arr.push(iso);try{await db.doc('locales/'+uidLocal).update({pausasFechas:arr,pausasSyncCliente:true});}catch(e){handleQuotaError(e,'Pausa ');}}
-function renderServicios(){const b=document.getElementById('servBox');if(!b)return;b.innerHTML='';if(servicios.length===0)b.innerHTML='<div class="muted">Sin servicios - precio sync cliente pendiente</div>';servicios.forEach(s=>{const d=document.createElement('div');d.className='card';d.innerHTML=`${s.foto?`<img loading="lazy" src="${s.foto}" class="thumb"><br>`:''}<b>${s.nombre}</b><br>$${s.precio||0} - ${s.duracion||30}min - sync cliente precio+foto<br><span class="muted">ID:${s.id} betterHash:${(s.fotoHash||'').slice(0,20)}</span><br><button class="btn small ghost" onclick="borrarServ('${s.id}')">Borrar</button>`;b.appendChild(d);});}
-async function addServ(){const nom=document.getElementById('svcName').value.trim(),prec=document.getElementById('svcPrice').value,dur=document.getElementById('svcDur').value,file=document.getElementById('sFoto').files[0];const msg=document.getElementById('sMsg');if(!nom){msg.innerText='Falta nombre';return;}let foto='';if(file){try{foto=await compressImage(file,600,0.6,150);msg.innerText='Foto comprimida '+Math.round(foto.length/1024)+'KB 150KB detalle OK betterHash';}catch(e){if(!handleQuotaError(e,'Servicio ')){msg.innerText='Error foto: '+e;}return;}}try{await db.collection('locales/'+uidLocal+'/servicios').add({nombre:nom,precio:parseInt(prec)||0,duracion:parseInt(dur)||30,foto:foto,fotoSize:foto.length,fotoHash:foto?betterHash(foto):'',syncCliente:true,syncPrecio:true,syncFoto:true,createdAt:firebase.firestore.FieldValue.serverTimestamp(),gratis80KB:false});document.getElementById('svcName').value='';document.getElementById('svcPrice').value='';document.getElementById('sFoto').value='';msg.innerText='Servicio agregado 150KB detalle + 80KB lista sync cliente OK - FIX 5 + FIX GRATIS';}catch(e){handleQuotaError(e,'Add serv ');}}
-async function borrarServ(id){if(!confirm('Borrar servicio? sync cliente se borra también'))return;try{await db.doc('locales/'+uidLocal+'/servicios/'+id).delete();}catch(e){handleQuotaError(e,'Borrar serv ');}}
+function checkSolapamiento(h1,d1,h2,d2){
+ const s1=toMin(h1), e1=s1+(parseInt(d1)||30);
+ const s2=toMin(h2), e2=s2+(parseInt(d2)||30);
+ return s1<e2 && s2<e1;
+}
+function betterHash(s){
+ let h=0;
+ for(let i=0;i<Math.min(s.length,15000);i++){h=(h*31 + s.charCodeAt(i))%1000000007;}
+ return 'h'+h+'_l'+s.length;
+}
+function normCeluAR(c){
+ if(!c)return "";
+ let d=c.replace(/\D/g,"");
+ if(d.startsWith('54'))d=d.slice(2);
+ if(d.startsWith('9')&&d.length>=11)d=d.slice(1);
+ if(d.length>10)d=d.slice(-10);
+ return d;
+}
+function validarCBU_CVU_ALIAS(v){
+ v=v.trim();
+ if(/^\d{22}$/.test(v))return {ok:true,tipo:'CBU',msg:'CBU OK'};
+ if(v.includes('.')&&v.length>=6)return {ok:true,tipo:'ALIAS',msg:'ALIAS OK'};
+ return {ok:false,msg:'Invalido'};
+}
+function compressImage(file,maxW=600,quality=0.6,maxKB=150){
+ return new Promise((res,rej)=>{
+  const r=new FileReader();
+  r.onload=e=>{
+   const img=new Image();
+   img.onload=()=>{
+    let w=img.width,h=img.height;
+    if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+    const c=document.createElement('canvas');
+    c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    let q=quality,b64=c.toDataURL('image/jpeg',q);
+    let iter=0;
+    while(b64.length/1024>maxKB&&q>0.15&&iter<12){q-=0.06;b64=c.toDataURL('image/jpeg',q);iter++;}
+    res(b64);
+   };
+   img.src=e.target.result;
+  };
+  r.readAsDataURL(file);
+ });
+}
+function handleQuotaError(e,prefix){
+ const msg=(e&&e.message?e.message:''+e).toLowerCase();
+ if(msg.includes('quota')||msg.includes('resource-exhausted')){
+  const st=document.getElementById('status');
+  if(st){st.innerText='Cuota excedida - espera 1h';st.className='card rojo';st.classList.remove('hidden');}
+  return true;
+ }
+ return false;
+}
+  function reenviarVerif(){
+ const last=parseInt(localStorage.getItem('lastVerifMail')||'0');
+ const now=Date.now();
+ if((now-last)/1000<60){alert('Esperá 60s');return;}
+ auth.currentUser.sendEmailVerification().then(()=>{
+  localStorage.setItem('lastVerifMail',String(now));
+  alert('Mail reenviado');
+ }).catch(e=>alert(e));
+}
+async function guardarCBU(){
+ const v=document.getElementById('cobCBU').value.trim();
+ const val=validarCBU_CVU_ALIAS(v);
+ document.getElementById('cbuMsg').innerText=val.msg;
+ if(!val.ok)return;
+ try{
+  await db.doc('locales/'+uidLocal).update({cobCBU:v,cobCBU_tipo:val.tipo,cobCBU_validado:true});
+  alert('CBU guardado: '+val.msg);
+ }catch(e){handleQuotaError(e,'CBU ');}
+}
+async function inicializarHorarios(){
+ if(!confirm('Crear 08:00-20:00 cada 30min?'))return;
+ const up={};
+ for(let h=8;h<20;h++)for(let m=0;m<60;m+=30){
+  const hh=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  up['horarios.'+hh]={activo:true,cupoMax:1};
+ }
+ up['horarios.20:00']={activo:true,cupoMax:1};
+ await db.doc('locales/'+uidLocal).update(up);
+}
+async function limpiarPausasViejas(){
+ const hoy=new Date();hoy.setDate(hoy.getDate()-1);
+ const hoyStr=hoy.toISOString().slice(0,10);
+ let arr=[...pausasFechas].filter(d=>d>=hoyStr);
+ await db.doc('locales/'+uidLocal).update({pausasFechas:arr});
+ alert('Pausas limpiadas');
+}
+function renderHoraOptions(){
+ const sel=document.getElementById('resHora');
+ if(!sel)return;sel.innerHTML='';
+ for(let h=8;h<21;h++)for(let m=0;m<60;m+=30){
+  const hh=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  const o=document.createElement('option');o.value=hh;o.textContent=hh;sel.appendChild(o);
+ }
+ const selS=document.getElementById('rServicioSelect');
+ if(!selS)return;selS.innerHTML='';
+ servicios.forEach(s=>{
+  const o=document.createElement('option');
+  o.value=s.id;o.textContent=s.nombre+' $'+(s.precio||0);
+  selS.appendChild(o);
+ });
+}
+function renderHorarios(){
+ const g=document.getElementById('horariosGrid');
+ if(!g)return;g.innerHTML='';
+ const keys=Object.keys(horarios).sort();
+ keys.forEach(h=>{
+  const ho=horarios[h]||{activo:true,cupoMax:1};
+  const div=document.createElement('div');
+  div.className='card';
+  div.innerHTML=`<b>${h}</b><br><input type="checkbox" ${ho.activo!==false?'checked':''} onchange="toggleHora('${h}',this.checked)"> Activo<br>Cupo <input type="number" value="${ho.cupoMax||1}" style="width:60px" onchange="setCupo('${h}',this.value)">`;
+  g.appendChild(div);
+ });
+}
+async function toggleHora(h,activo){
+ const up={};up['horarios.'+h+'.activo']=activo;
+ await db.doc('locales/'+uidLocal).update(up);
+}
+async function setCupo(h,cupo){
+ const up={};up['horarios.'+h+'.cupoMax']=parseInt(cupo)||1;
+ await db.doc('locales/'+uidLocal).update(up);
+}
+function renderCalendario(){
+ const box=document.getElementById('calGrid');
+ if(!box)return;box.innerHTML='';
+ const hoy=new Date();
+ for(let i=0;i<35;i++){
+  const d=new Date();d.setDate(hoy.getDate()+i);
+  const iso=d.toISOString().slice(0,10);
+  const div=document.createElement('div');
+  div.className='card '+(pausasFechas.has(iso)?'rojo':'');
+  div.innerHTML=`${iso}<br>${pausasFechas.has(iso)?'<b>PAUSA</b>':''}<br><button class="btn small ghost" onclick="togglePausa('${iso}')">${pausasFechas.has(iso)?'Quitar':'Pausar'}</button>`;
+  box.appendChild(div);
+ }
+}
+async function togglePausa(iso){
+ let arr=[...pausasFechas];
+ if(arr.includes(iso))arr=arr.filter(x=>x!==iso);else arr.push(iso);
+ await db.doc('locales/'+uidLocal).update({pausasFechas:arr});
+}
+  function renderServicios(){
+ const b=document.getElementById('servBox');
+ if(!b)return;b.innerHTML='';
+ servicios.forEach(s=>{
+  const d=document.createElement('div');
+  d.className='card';
+  d.innerHTML=`${s.foto?`<img loading="lazy" src="${s.foto}" class="thumb"><br>`:''}<b>${s.nombre}</b><br>$${s.precio||0} - ${s.duracion||30}min<br><button class="btn small ghost" onclick="borrarServ('${s.id}')">Borrar</button>`;
+  b.appendChild(d);
+ });
+}
+async function addServ(){
+ const nom=document.getElementById('svcName').value.trim();
+ const prec=document.getElementById('svcPrice').value;
+ const dur=document.getElementById('svcDur').value;
+ const file=document.getElementById('sFoto').files[0];
+ const msg=document.getElementById('sMsg');
+ if(!nom){msg.innerText='Falta nombre';return;}
+ let foto='';
+ if(file){foto=await compressImage(file,600,0.6,150);}
+ await db.collection('locales/'+uidLocal+'/servicios').add({nombre:nom,precio:parseInt(prec)||0,duracion:parseInt(dur)||30,foto:foto,fotoHash:foto?betterHash(foto):'',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+ document.getElementById('svcName').value='';document.getElementById('svcPrice').value='';document.getElementById('sFoto').value='';
+}
+async function borrarServ(id){if(!confirm('Borrar?'))return;await db.doc('locales/'+uidLocal+'/servicios/'+id).delete();}
 let editId=null;
-function resetPagYListen(){paginaReservas=1;const t=document.getElementById('pagTxt');if(t)t.innerText=paginaReservas;listenReservas();}
-function cambiarPagina(dir){paginaReservas=Math.max(1,paginaReservas+dir);const t=document.getElementById('pagTxt');if(t)t.innerText=paginaReservas;listenReservas();}
-function listenReservas(){if(!uidLocal)return;const fechaF=document.getElementById('filtroFecha')?.value||'';const celuF=normCeluAR(document.getElementById('filtroCelu')?.value||'');const estadoF=document.getElementById('filtroEstado')?.value||'';let q=db.collection('locales/'+uidLocal+'/reservas');if(fechaF)q=q.where('fechaSolo','==',fechaF);else q=q.orderBy('fechaSolo','desc');if(estadoF&&estadoF!=='todas')q=q.where('estado','==',estadoF);q.limit(porPagina*8).onSnapshot(s=>{let docs=s.docs;if(celuF){docs=docs.filter(d=>{const r=d.data();return normCeluAR(r.celu||r.telefono||r.whatsapp||'')===celuF;});}if(fechaF){docs.sort((a,b)=>{const ra=a.data().hora||'',rb=b.data().hora||'';return ra.localeCompare(rb);});}const total=docs.length;const start=(paginaReservas-1)*porPagina;const pagDocs=docs.slice(start,start+porPagina);const box=document.getElementById('listaReservas');if(!box)return;box.innerHTML='';const porCelu={};const hoyBox=document.getElementById('turnosHoy');if(hoyBox)hoyBox.innerHTML='';pagDocs.forEach(doc=>{const r=doc.data();const id=doc.id;const c=normCeluAR(r.celu||r.telefono||r.whatsapp||'');if(c){if(!porCelu[c])porCelu[c]=[];porCelu[c].push(r);}const div=document.createElement('li');div.className='item';div.innerHTML=`<div><span class="pill ${r.estado==='confirmada'?'ok':r.estado==='cancelada'?'bad':'warn'}">${r.estado||'pendiente'}</span> <b>${r.fechaSolo}</b> ${r.hora} dur:${r.duracion||30} ${r.servicioNombre||r.servicio||''} $${r.servicioPrecio||r.precio||0} | ${r.nombreCliente||r.cliente||''} Celu:${r.celu||r.telefono} WA:${r.whatsapp||''} norm:${r.normCelu||''} DNI:${r.dni||'-'} anioMes:${r.anioMes||''}<br><span class="muted">fechaHora:${r.fechaHora?.toDate?r.fechaHora.toDate().toLocaleString():''} serverCreated:${r.createdAt?.toDate?r.createdAt.toDate().toLocaleString():''}</span></div><div><select onchange="cambiarEstado('${id}',this.value)"><option value="pendiente" ${r.estado==='pendiente'?'selected':''}>pendiente</option><option value="confirmada" ${r.estado==='confirmada'?'selected':''}>confirmada</option><option value="cancelada" ${r.estado==='cancelada'?'selected':''}>cancelada</option></select> <button class="btn small ghost" onclick="editarReserva('${id}')">Editar</button> <button class="btn small ghost" onclick="cancelarReserva('${id}','${r.anioMes||''}')">Cancelar -100 casa</button></div>`;box.appendChild(div);});const rc=document.getElementById('reservasCount');if(rc)rc.innerText=`Mostrando ${pagDocs.length} de ${total} - página ${paginaReservas}`;},err=>{if(!handleQuotaError(err,'Reservas ')){const b=document.getElementById('listaReservas');if(b)b.innerText='Error: '+err;}});}
-async function cambiarEstado(id,estado){try{await db.doc('locales/'+uidLocal+'/reservas/'+id).update({estado,estadoSyncCliente:true});}catch(e){handleQuotaError(e,'Estado ');}}
-function editarReserva(id){db.doc('locales/'+uidLocal+'/reservas/'+id).get().then(s=>{if(!s.exists)return;const r=s.data();editId=id;document.getElementById('rCliente').value=r.nombreCliente||r.cliente||'';document.getElementById('rClienteTel').value=r.celu||r.telefono||'';document.getElementById('resWhat').value=r.whatsapp||'';document.getElementById('rClienteDNI').value=r.dni||'';document.getElementById('resFecha').value=r.fechaSolo||'';document.getElementById('resHora').value=r.hora||'';document.getElementById('rFechaHora').value=(r.fechaSolo||'')+'T'+(r.hora||'');document.getElementById('rEstado').value=r.estado||'pendiente';document.getElementById('tituloReserva').innerText='Editando reserva '+id;document.getElementById('btnCancelarEdicion').classList.remove('hidden');showTab('reservas');});}
-document.getElementById('btnCancelarEdicion')?.addEventListener('click',()=>{editId=null;document.getElementById('tituloReserva').innerText='Nueva reserva - FIX 3 4 6 8 transaction real';document.getElementById('btnCancelarEdicion').classList.add('hidden');document.getElementById('reservaForm').reset();});
-async function crearReservaTransaccion(e){e.preventDefault();const fecha=document.getElementById('resFecha').value||document.getElementById('rFechaHora').value.slice(0,10);const hora=document.getElementById('resHora').value||document.getElementById('rFechaHora').value.slice(11,16);const servId=document.getElementById('rServicioSelect').value;const celu=document.getElementById('rClienteTel').value;const whatsapp=document.getElementById('resWhat').value;const dni=document.getElementById('rClienteDNI').value;const nomCli=document.getElementById('rCliente').value;const msg=document.getElementById('resMsg');const msgLong=document.getElementById('resMsgLong');if(!fecha||!hora||!celu){msg.innerText='Falta fecha/hora/celu';return;}const hoyStr=new Date().toISOString().slice(0,10);if(fecha<hoyStr){msg.innerText='No se puede reservar fecha pasada - FIX 6';return;}const serv=servicios.find(s=>s.id===servId);const duracion=parseInt(document.getElementById('rDur').value)||serv?.duracion||30;const servicioNombre=serv?.nombre||'';const servicioPrecio=parseInt(document.getElementById('rPrecio').value)||serv?.precio||0;const servicioFoto=serv?.foto||'';const normC=normCeluAR(celu);const normW=normCeluAR(whatsapp);if(pausasFechas.has(fecha)){msg.innerText='Fecha en pausa';return;}const horCfg=horarios[hora];if(horCfg&&horCfg.activo===false){msg.innerText='Hora bloqueada';return;}const anioMesActual=getAnioMes();const anioMesReserva=fecha.slice(0,7); try{await db.runTransaction(async t=>{const localRef=db.doc('locales/'+uidLocal);const localSnap=await t.get(localRef);if(!localSnap.exists)throw 'Local no existe';const l=localSnap.data();if(l.bloqueado)throw 'ADM bloqueado=true - transaction bloquea';if(l.visible===false)throw 'ADM visible=false - oculto';if(l.plan!=='casa'){const vence=l.planVence?.toDate?l.planVence.toDate():null;if(vence){const diffHs=(new Date()-vence)/1000/3600;const gracia=l.horasPlan||horasPlan||48;if(!l.planActivo&&diffHs>gracia)throw `Plan vencido ${diffHs.toFixed(1)}hs > gracia ${gracia}hs - BLOQUEADO`;} }const qCel=await db.collection('locales/'+uidLocal+'/reservas').where('fechaSolo','==',fecha).get();let cntCelu=0;qCel.forEach(d=>{const r=d.data();if(r.estado==='cancelada')return;const c1=normCeluAR(r.celu||r.telefono||'');const c2=normCeluAR(r.whatsapp||'');if(c1===normC||c2===normC||(normW&&(c1===normW||c2===normW))||c1===normW)cntCelu++;});if(cntCelu>=2&&!editId)throw 'Limite 2 por celu por dia - '+cntCelu+'/2 - FIX 8';let ocupados=0;qCel.docs.forEach(doc=>{if(editId&&doc.id===editId)return;const r=doc.data();if(r.estado==='cancelada')return;if(checkSolapamiento(hora,duracion,r.hora,r.duracion||30))ocupados++;});const cupoMax=(horCfg?.cupoMax)||(l.horarios?.[hora]?.cupoMax)||1;if(ocupados>=cupoMax)throw 'Cupo lleno '+ocupados+'/'+cupoMax;const usosMesAnioMes=l.usosMesAnioMes||'';let usosMes=l.usosMes||0;if(usosMesAnioMes!==anioMesActual)usosMes=0;let deudaCasa=l.deudaCasa||0,totalCasa=l.totalReservasCasa||0;const esCasa=(l.plan==='casa');if(esCasa&&!editId){deudaCasa+=100;totalCasa+=1;}const fechaHoraDate=new Date(fecha+'T'+hora+':00');const fechaHoraTS=firebase.firestore.Timestamp.fromDate(fechaHoraDate);
-if(editId){const resRef=db.doc('locales/'+uidLocal+'/reservas/'+editId);t.update(resRef,{fechaSolo:fecha,hora:hora,fechaHora:fechaHoraTS,duracion:duracion,servicioId:servId,servicioNombre:servicioNombre,servicioPrecio:servicioPrecio,servicioFoto:servicioFoto,nombreCliente:nomCli||'',cliente:nomCli||'',celu:celu,telefono:celu,whatsapp:whatsapp,normCelu:normC,normWhat:normW,dni:dni||'',estado:document.getElementById('rEstado').value||'pendiente',anioMes:anioMesReserva,syncCliente:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});}else{const resRef=db.collection('locales/'+uidLocal+'/reservas').doc();t.set(resRef,{fechaSolo:fecha,hora:hora,fechaHora:fechaHoraTS,duracion:duracion,servicioId:servId,servicioNombre:servicioNombre,servicioPrecio:servicioPrecio,servicioFoto:servicioFoto,nombreCliente:nomCli||'',cliente:nomCli||'',celu:celu,telefono:celu,whatsapp:whatsapp,normCelu:normC,normWhat:normW,dni:dni||'',estado:document.getElementById('rEstado').value||'confirmada',anioMes:anioMesReserva,uidLocal:uidLocal,syncCliente:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});const up={usosMes:usosMes+1,usosMesAnioMes:anioMesActual};if(esCasa){up.deudaCasa=deudaCasa;up.totalReservasCasa=totalCasa;}t.update(localRef,up);}});msg.innerText=editId?'Reserva editada OK transaction':'Reserva creada OK transaction';editId=null;document.getElementById('tituloReserva').innerText='Nueva reserva - FIX 3 4 6 8 transaction real';document.getElementById('btnCancelarEdicion').classList.add('hidden');e.target.reset();}catch(err){if(!handleQuotaError(err,'Reserva ')){msg.innerText='Error: '+err;}}}
+function resetPagYListen(){paginaReservas=1;document.getElementById('pagTxt').innerText=paginaReservas;listenReservas();}
+function cambiarPagina(dir){paginaReservas=Math.max(1,paginaReservas+dir);document.getElementById('pagTxt').innerText=paginaReservas;listenReservas();}
+function listenReservas(){
+ if(!uidLocal)return;
+ const fechaF=document.getElementById('filtroFecha')?.value||'';
+ const celuF=normCeluAR(document.getElementById('filtroCelu')?.value||'');
+ const estadoF=document.getElementById('filtroEstado')?.value||'';
+ let q=db.collection('locales/'+uidLocal+'/reservas');
+ if(fechaF)q=q.where('fechaSolo','==',fechaF);else q=q.orderBy('fechaSolo','desc');
+ if(estadoF&&estadoF!=='todas')q=q.where('estado','==',estadoF);
+ q.limit(porPagina*8).onSnapshot(s=>{
+  let docs=s.docs;
+  if(celuF){docs=docs.filter(d=>normCeluAR(d.data().celu||'')===celuF);}
+  const total=docs.length;
+  const start=(paginaReservas-1)*porPagina;
+  const pagDocs=docs.slice(start,start+porPagina);
+  const box=document.getElementById('listaReservas');if(!box)return;box.innerHTML='';
+  pagDocs.forEach(doc=>{
+   const r=doc.data();const id=doc.id;
+   const li=document.createElement('li');li.className='item';
+   li.innerHTML=`<div><span class="pill ${r.estado==='confirmada'?'ok':'bad'}">${r.estado}</span> <b>${r.fechaSolo}</b> ${r.hora} ${r.servicioNombre||''} $${r.servicioPrecio||0} | ${r.nombreCliente||''} ${r.celu||''}</div><div><select onchange="cambiarEstado('${id}',this.value)"><option value="pendiente" ${r.estado==='pendiente'?'selected':''}>pendiente</option><option value="confirmada" ${r.estado==='confirmada'?'selected':''}>confirmada</option><option value="cancelada" ${r.estado==='cancelada'?'selected':''}>cancelada</option></select> <button class="btn small ghost" onclick="editarReserva('${id}')">Editar</button> <button class="btn small ghost" onclick="cancelarReserva('${id}','${r.anioMes||''}')">Cancelar</button></div>`;
+   box.appendChild(li);
+  });
+  document.getElementById('reservasCount').innerText=`Mostrando ${pagDocs.length} de ${total}`;
+ },err=>{document.getElementById('listaReservas').innerText='Error: '+err;});
+}
+async function cambiarEstado(id,estado){await db.doc('locales/'+uidLocal+'/reservas/'+id).update({estado});}
+function editarReserva(id){
+ db.doc('locales/'+uidLocal+'/reservas/'+id).get().then(s=>{
+  if(!s.exists)return;const r=s.data();editId=id;
+  document.getElementById('rCliente').value=r.nombreCliente||'';
+  document.getElementById('rClienteTel').value=r.celu||'';
+  document.getElementById('resWhat').value=r.whatsapp||'';
+  document.getElementById('resFecha').value=r.fechaSolo||'';
+  document.getElementById('resHora').value=r.hora||'';
+  document.getElementById('rFechaHora').value=(r.fechaSolo||'')+'T'+(r.hora||'');
+  document.getElementById('rEstado').value=r.estado||'pendiente';
+  document.getElementById('tituloReserva').innerText='Editando reserva';
+  document.getElementById('btnCancelarEdicion').classList.remove('hidden');
+  showTab('reservas');
+ });
+}
+document.getElementById('btnCancelarEdicion')?.addEventListener('click',()=>{
+ editId=null;
+ document.getElementById('tituloReserva').innerText='Nueva reserva';
+ document.getElementById('btnCancelarEdicion').classList.add('hidden');
+ document.getElementById('reservaForm').reset();
+});
+  async function crearReservaTransaccion(e){
+ e.preventDefault();
+ const fecha=document.getElementById('resFecha').value||document.getElementById('rFechaHora').value.slice(0,10);
+ const hora=document.getElementById('resHora').value||document.getElementById('rFechaHora').value.slice(11,16);
+ const servId=document.getElementById('rServicioSelect').value;
+ const celu=document.getElementById('rClienteTel').value;
+ const whatsapp=document.getElementById('resWhat').value;
+ const nomCli=document.getElementById('rCliente').value;
+ const msg=document.getElementById('resMsg');
+ if(!fecha||!hora||!celu){msg.innerText='Falta fecha/hora/celu';return;}
+ const hoyStr=new Date().toISOString().slice(0,10);
+ if(fecha<hoyStr){msg.innerText='No fecha pasada';return;}
+ const serv=servicios.find(s=>s.id===servId);
+ const duracion=parseInt(document.getElementById('rDur').value)||serv?.duracion||30;
+ const servicioNombre=serv?.nombre||'';
+ const servicioPrecio=parseInt(document.getElementById('rPrecio').value)||serv?.precio||0;
+ const normC=normCeluAR(celu);const normW=normCeluAR(whatsapp);
+ if(pausasFechas.has(fecha)){msg.innerText='Fecha en pausa';return;}
+ const anioMesActual=getAnioMes();
+ try{
+  await db.runTransaction(async t=>{
+   const localRef=db.doc('locales/'+uidLocal);
+   const localSnap=await t.get(localRef);
+   if(!localSnap.exists)throw 'Local no existe';
+   const l=localSnap.data();
+   if(l.bloqueado)throw 'Bloqueado ADM';
+   const qCel=await db.collection('locales/'+uidLocal+'/reservas').where('fechaSolo','==',fecha).get();
+   let cntCelu=0;
+   qCel.forEach(d=>{
+    const r=d.data();if(r.estado==='cancelada')return;
+    const c1=normCeluAR(r.celu||'');const c2=normCeluAR(r.whatsapp||'');
+    if(c1===normC||c2===normC)cntCelu++;
+   });
+   if(cntCelu>=2&&!editId)throw 'Limite 2 por celu por dia';
+   let ocupados=0;
+   qCel.docs.forEach(doc=>{
+    if(editId&&doc.id===editId)return;
+    const r=doc.data();if(r.estado==='cancelada')return;
+    if(checkSolapamiento(hora,duracion,r.hora,r.duracion||30))ocupados++;
+   });
+   const horCfg=horarios[hora];
+   const cupoMax=(horCfg?.cupoMax)||1;
+   if(ocupados>=cupoMax)throw 'Cupo lleno';
+   const fechaHoraDate=new Date(fecha+'T'+hora+':00');
+   const fechaHoraTS=firebase.firestore.Timestamp.fromDate(fechaHoraDate);
+   if(editId){
+    const resRef=db.doc('locales/'+uidLocal+'/reservas/'+editId);
+    t.update(resRef,{fechaSolo:fecha,hora:hora,fechaHora:fechaHoraTS,duracion:duracion,servicioId:servId,servicioNombre:servicioNombre,servicioPrecio:servicioPrecio,nombreCliente:nomCli,celu:celu,whatsapp:whatsapp,normCelu:normC,estado:document.getElementById('rEstado').value||'pendiente',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+   }else{
+    const resRef=db.collection('locales/'+uidLocal+'/reservas').doc();
+    t.set(resRef,{fechaSolo:fecha,hora:hora,fechaHora:fechaHoraTS,duracion:duracion,servicioId:servId,servicioNombre:servicioNombre,servicioPrecio:servicioPrecio,nombreCliente:nomCli,celu:celu,whatsapp:whatsapp,normCelu:normC,estado:'confirmada',anioMes:fecha.slice(0,7),uidLocal:uidLocal,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    t.update(localRef,{usosMes:(l.usosMes||0)+1,usosMesAnioMes:anioMesActual});
+   }
+  });
+  msg.innerText=editId?'Editada OK':'Creada OK';
+  editId=null;e.target.reset();
+ }catch(err){msg.innerText='Error: '+err;}
+}
 document.getElementById('reservaForm')?.addEventListener('submit',crearReservaTransaccion);
-async function cancelarReserva(id,anioMesRes){if(!confirm('Cancelar reserva? Si es plan casa resta $100'))return;try{await db.runTransaction(async t=>{const resRef=db.doc('locales/'+uidLocal+'/reservas/'+id);const resSnap=await t.get(resRef);if(!resSnap.exists)throw 'No existe';const r=resSnap.data();if(r.estado==='cancelada')throw 'Ya cancelada';const localRef=db.doc('locales/'+uidLocal);const localSnap=await t.get(localRef);const l=localSnap.data();const anioMesActual=getAnioMes();let up={};if(anioMesRes===anioMesActual&&(l.usosMes||0)>0){up.usosMes=(l.usosMes||1)-1;}if(l.plan==='casa'&&r.estado!=='cancelada'){up.deudaCasa=Math.max(0,(l.deudaCasa||100)-100);up.totalReservasCasa=Math.max(0,(l.totalReservasCasa||1)-1);}t.update(resRef,{estado:'cancelada',canceladaAt:firebase.firestore.FieldValue.serverTimestamp(),syncCliente:true});if(Object.keys(up).length)t.update(localRef,up);});}catch(e){if(!handleQuotaError(e,'Cancelar '))alert('Error cancelar: '+e);}}
-async function enviarComprobante(){const f=document.getElementById('compFile').files[0];const ref=document.getElementById('compRef').value.trim();if(!f||!ref){alert('falta file/ref');return;}let b64;try{b64=await compressImage(f,600,0.6,150);}catch(e){if(!handleQuotaError(e,'Comprobante '))alert('Error foto 150KB: '+e);return;}const hash=betterHash(b64);const hoyStr=new Date().toISOString().slice(0,10);try{const dupRef=await db.collection('solicitudes').where('uidLocal','==',uidLocal).where('ref','==',ref).get();if(!dupRef.empty){alert('REF duplicado');return;}const dupHash=await db.collection('solicitudes').where('uidLocal','==',uidLocal).where('fotoHash','==',hash).get();if(!dupHash.empty){alert('Foto hash duplicado betterHash');return;}await db.runTransaction(async t=>{const localRef=db.doc('locales/'+uidLocal);const localSnap=await t.get(localRef);const l=localSnap.data();const ultimoFecha=l.ultimoComprobanteFecha||'';if(ultimoFecha===hoyStr)throw 'Ya enviaste hoy '+hoyStr+' - 1 por día max';const solRef=db.collection('solicitudes').doc();t.set(solRef,{uidLocal,ref,comprobante:b64,comprobanteSize:b64.length,fotoHash:hash,estado:'pendiente',tipo:'casa',monto:100,fechaSolo:hoyStr,createdAt:firebase.firestore.FieldValue.serverTimestamp(),transactionFix:true});t.update(localRef,{ultimoComprobanteFecha:hoyStr,ultimoComprobanteRef:ref,ultimoComprobanteHash:hash,ultimoComprobanteAt:firebase.firestore.FieldValue.serverTimestamp()});});alert('Comprobante enviado TRANSACTION 150KB OK');renderComprobantes();}catch(e){if(!handleQuotaError(e,'Comprobante '))alert('Error comprobante: '+e);}}
-async function renderComprobantes(){try{const q=await db.collection('solicitudes').where('uidLocal','==',uidLocal).orderBy('createdAt','desc').limit(5).get();const box=document.getElementById('compList');if(!box)return;box.innerHTML='';q.forEach(d=>{const r=d.data();const div=document.createElement('div');div.className='muted card';div.innerHTML=`${r.fechaSolo||''} Ref:${r.ref} $${r.monto} ${r.estado} ${Math.round((r.comprobanteSize||0)/1024)}KB`;box.appendChild(div);});}catch(e){handleQuotaError(e,'List comp ');}}
-async function renderGaleriaSubcoleccion(){try{const snap=await db.collection('locales/'+uidLocal+'/galeria').orderBy('createdAt','desc').get();const gc=document.getElementById('galCount');if(gc)gc.innerText=snap.size+'/4';const gct=document.getElementById('galeriaCountTxt');if(gct)gct.innerText=snap.size;const box=document.getElementById('galBox');if(!box)return;box.innerHTML='';snap.forEach(doc=>{const g=doc.data();const d=document.createElement('div');d.className='card';d.innerHTML=`<img loading="lazy" src="${g.b64||''}" class="thumb"><br><span class="muted">${Math.round((g.size||0)/1024)}KB</span><br><button class="btn small ghost" onclick="borrarGaleriaDoc('${doc.id}')">Borrar</button>`;box.appendChild(d);});}catch(e){handleQuotaError(e,'Galeria list ');}}
-document.getElementById('galFile')?.addEventListener('change',async e=>{const files=[...e.target.files];if(!files.length)return;try{let toUpload=[];for(let f of files){const b64=await compressImage(f,600,0.6,150);const hash=betterHash(b64);const dup=await db.collection('locales/'+uidLocal+'/galeria').where('fotoHash','==',hash).get();if(!dup.empty){alert('Foto duplicada '+hash.slice(0,20));continue;}toUpload.push({b64,hash,size:b64.length});}if(toUpload.length===0){alert('Nada - duplicadas');return;}await db.runTransaction(async t=>{const localRef=db.doc('locales/'+uidLocal);const localSnap=await t.get(localRef);const l=localSnap.data();const currentCount=l.galeriaCount||0;if(currentCount+toUpload.length>4)throw 'Galería llena '+currentCount+'/4';toUpload.forEach(item=>{const galRef=db.collection('locales/'+uidLocal+'/galeria').doc();t.set(galRef,{b64:item.b64,size:item.size,fotoHash:item.hash,createdAt:firebase.firestore.FieldValue.serverTimestamp(),transactionFix:true});});t.update(localRef,{galeriaCount:currentCount+toUpload.length});});renderGaleriaSubcoleccion();alert('Galería subida TRANSACTION anti race');}catch(err){if(!handleQuotaError(err,'Galeria up '))alert('Error galería: '+err);}});
-async function borrarGaleriaDoc(id){if(!confirm('Borrar foto galería?'))return;try{await db.runTransaction(async t=>{const localRef=db.doc('locales/'+uidLocal);const localSnap=await t.get(localRef);const l=localSnap.data();const galRef=db.doc('locales/'+uidLocal+'/galeria/'+id);t.delete(galRef);t.update(localRef,{galeriaCount:Math.max(0,(l.galeriaCount||1)-1)});});renderGaleriaSubcoleccion();}catch(e){if(!handleQuotaError(e,'Borrar gal '))alert('Error borrar: '+e);}}
-document.getElementById('perfilFile')?.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{let b64=await compressImage(f,600,0.6,150);await db.doc('locales/'+uidLocal).update({fotoPerfil:b64,fotoPerfilSize:b64.length,fotoPerfilHash:betterHash(b64),fotoPerfilSyncCliente:true});alert('Foto perfil 150KB OK');renderPerfil();}catch(err){if(!handleQuotaError(err,'Perfil '))alert('Error perfil: '+err);}});
-async function borrarFotoPerfil(){if(!confirm('Borrar foto perfil?'))return;try{await db.doc('locales/'+uidLocal).update({fotoPerfil:firebase.firestore.FieldValue.delete(),fotoPerfilSize:firebase.firestore.FieldValue.delete(),fotoPerfilHash:firebase.firestore.FieldValue.delete()});const b=document.getElementById('perfilBox');if(b)b.innerHTML='';}catch(e){handleQuotaError(e,'Borrar perfil ');}}
-function renderPerfil(){if(!localData.fotoPerfil)return;const box=document.getElementById('perfilBox');if(!box)return;box.innerHTML=`<img loading="lazy" src="${localData.fotoPerfil}" class="thumb" style="max-width:160px"><br><button class="btn small ghost" onclick="borrarFotoPerfil()">Borrar perfil</button>`;}
+
+async function cancelarReserva(id,anioMesRes){
+ if(!confirm('Cancelar?'))return;
+ try{
+  await db.runTransaction(async t=>{
+   const resRef=db.doc('locales/'+uidLocal+'/reservas/'+id);
+   const resSnap=await t.get(resRef);
+   if(!resSnap.exists)throw 'No existe';
+   const r=resSnap.data();if(r.estado==='cancelada')throw 'Ya cancelada';
+   const localRef=db.doc('locales/'+uidLocal);
+   const localSnap=await t.get(localRef);const l=localSnap.data();
+   let up={};
+   if((l.usosMes||0)>0)up.usosMes=(l.usosMes||1)-1;
+   t.update(resRef,{estado:'cancelada',canceladaAt:firebase.firestore.FieldValue.serverTimestamp()});
+   if(Object.keys(up).length)t.update(localRef,up);
+  });
+ }catch(e){alert('Error cancelar: '+e);}
+}
+async function enviarComprobante(){
+ const f=document.getElementById('compFile').files[0];
+ const ref=document.getElementById('compRef').value.trim();
+ if(!f||!ref){alert('falta file/ref');return;}
+ let b64=await compressImage(f,600,0.6,150);
+ const hash=betterHash(b64);
+ const hoyStr=new Date().toISOString().slice(0,10);
+ try{
+  const dupRef=await db.collection('solicitudes').where('uidLocal','==',uidLocal).where('ref','==',ref).get();
+  if(!dupRef.empty){alert('REF duplicado');return;}
+  await db.runTransaction(async t=>{
+   const localRef=db.doc('locales/'+uidLocal);
+   const localSnap=await t.get(localRef);
+   const l=localSnap.data();
+   if(l.ultimoComprobanteFecha===hoyStr)throw 'Ya enviaste hoy';
+   const solRef=db.collection('solicitudes').doc();
+   t.set(solRef,{uidLocal,ref,comprobante:b64,fotoHash:hash,estado:'pendiente',fechaSolo:hoyStr,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+   t.update(localRef,{ultimoComprobanteFecha:hoyStr,ultimoComprobanteRef:ref});
+  });
+  alert('Comprobante enviado OK');renderComprobantes();
+ }catch(e){alert('Error: '+e);}
+}
+async function renderComprobantes(){
+ try{
+  const q=await db.collection('solicitudes').where('uidLocal','==',uidLocal).orderBy('createdAt','desc').limit(5).get();
+  const box=document.getElementById('compList');if(!box)return;box.innerHTML='';
+  q.forEach(d=>{const r=d.data();const div=document.createElement('div');div.className='muted card';div.innerHTML=`${r.fechaSolo} Ref:${r.ref} ${r.estado}`;box.appendChild(div);});
+ }catch(e){}
+}
+  async function renderGaleriaSubcoleccion(){
+ try{
+  const snap=await db.collection('locales/'+uidLocal+'/galeria').orderBy('createdAt','desc').get();
+  document.getElementById('galCount').innerText=snap.size+'/4';
+  const box=document.getElementById('galBox');if(!box)return;box.innerHTML='';
+  snap.forEach(doc=>{
+   const g=doc.data();
+   const d=document.createElement('div');d.className='card';
+   d.innerHTML=`<img loading="lazy" src="${g.b64||''}" class="thumb"><br><button class="btn small ghost" onclick="borrarGaleriaDoc('${doc.id}')">Borrar</button>`;
+   box.appendChild(d);
+  });
+ }catch(e){}
+}
+document.getElementById('galFile')?.addEventListener('change',async e=>{
+ const files=[...e.target.files];if(!files.length)return;
+ let toUpload=[];
+ for(let f of files){
+  const b64=await compressImage(f,600,0.6,150);
+  const hash=betterHash(b64);
+  const dup=await db.collection('locales/'+uidLocal+'/galeria').where('fotoHash','==',hash).get();
+  if(!dup.empty){alert('Duplicada');continue;}
+  toUpload.push({b64,hash});
+ }
+ if(!toUpload.length)return;
+ await db.runTransaction(async t=>{
+  const localRef=db.doc('locales/'+uidLocal);
+  const localSnap=await t.get(localRef);
+  const l=localSnap.data();
+  if((l.galeriaCount||0)+toUpload.length>4)throw 'Galeria llena';
+  toUpload.forEach(item=>{
+   const galRef=db.collection('locales/'+uidLocal+'/galeria').doc();
+   t.set(galRef,{b64:item.b64,fotoHash:item.hash,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+  });
+  t.update(localRef,{galeriaCount:(l.galeriaCount||0)+toUpload.length});
+ });
+ renderGaleriaSubcoleccion();
+ alert('Galería subida OK');
+});
+async function borrarGaleriaDoc(id){
+ if(!confirm('Borrar foto?'))return;
+ await db.runTransaction(async t=>{
+  const localRef=db.doc('locales/'+uidLocal);
+  const localSnap=await t.get(localRef);
+  const galRef=db.doc('locales/'+uidLocal+'/galeria/'+id);
+  t.delete(galRef);
+  t.update(localRef,{galeriaCount:Math.max(0,(localSnap.data().galeriaCount||1)-1)});
+ });
+ renderGaleriaSubcoleccion();
+}
+document.getElementById('perfilFile')?.addEventListener('change',async e=>{
+ const f=e.target.files[0];if(!f)return;
+ let b64=await compressImage(f,600,0.6,150);
+ await db.doc('locales/'+uidLocal).update({fotoPerfil:b64});
+ alert('Foto perfil OK');renderPerfil();
+});
+async function borrarFotoPerfil(){
+ if(!confirm('Borrar perfil?'))return;
+ await db.doc('locales/'+uidLocal).update({fotoPerfil:firebase.firestore.FieldValue.delete()});
+}
+function renderPerfil(){
+ if(!localData.fotoPerfil)return;
+ const box=document.getElementById('perfilBox');if(!box)return;
+ box.innerHTML=`<img loading="lazy" src="${localData.fotoPerfil}" class="thumb" style="max-width:160px"><br><button class="btn small ghost" onclick="borrarFotoPerfil()">Borrar</button>`;
+}
 document.getElementById('goRegister')?.addEventListener('click',e=>{e.preventDefault();show('register');});
 document.getElementById('goLogin')?.addEventListener('click',e=>{e.preventDefault();show('auth');});
 document.getElementById('goLogin2')?.addEventListener('click',e=>{e.preventDefault();show('auth');});
 document.getElementById('goForgot')?.addEventListener('click',e=>{e.preventDefault();show('forgot');});
-document.getElementById('loginBtn')?.addEventListener('click',()=>{const email=document.getElementById('email').value,pass=document.getElementById('password').value;const msg=document.getElementById('loginMsg');auth.signInWithEmailAndPassword(email,pass).then(u=>{msg.innerText='';}).catch(err=>{if(!handleQuotaError(err,'Login '))msg.innerText=err.message;});});
-document.getElementById('registerBtn')?.addEventListener('click',()=>{const nombre=document.getElementById('regNombre').value,apellido=document.getElementById('regApellido').value,local=document.getElementById('regLocal').value,email=document.getElementById('regEmail').value,pass=document.getElementById('regPass').value,pass2=document.getElementById('regPass2').value,term=document.getElementById('regTerminos').checked,msg=document.getElementById('regMsg');if(!local||!email||!pass){msg.innerText='Faltan campos';return;}if(pass!==pass2){msg.innerText='No coinciden';return;}if(!term){msg.innerText='Acepta terminos';return;}auth.createUserWithEmailAndPassword(email,pass).then(async cred=>{await db.doc('locales/'+cred.user.uid).set({nombreLocal:local,nombre:nombre,apellido:apellido,email:email,plan:'gratis',planActivo:true,planVence:firebase.firestore.Timestamp.fromDate(new Date(Date.now()+7*24*60*60*1000)),usosMes:0,usosMesAnioMes:getAnioMes(),deudaCasa:0,totalReservasCasa:0,galeriaCount:0,horasPlan:48,visible:true,bloqueado:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});await cred.user.sendEmailVerification();alert('Cuenta creada - verifica mail');show('auth');}).catch(err=>{if(!handleQuotaError(err,'Registro '))msg.innerText=err.message;});});
-document.getElementById('btnForgotSend')?.addEventListener('click',()=>{const email=document.getElementById('forgotEmail').value;const msg=document.getElementById('forgotMsg');const ok=document.getElementById('forgotOk');if(!email){msg.innerText='Pone correo';return;}auth.sendPasswordResetEmail(email).then(()=>{ok.innerText='Mail enviado';msg.innerText='';}).catch(err=>{if(!handleQuotaError(err,'Forgot '))msg.innerText=err.message;});});
+document.getElementById('loginBtn')?.addEventListener('click',()=>{
+ const email=document.getElementById('email').value,pass=document.getElementById('password').value;
+ const msg=document.getElementById('loginMsg');
+ auth.signInWithEmailAndPassword(email,pass).then(u=>{msg.innerText='';}).catch(err=>{msg.innerText=err.message;});
+});
+document.getElementById('registerBtn')?.addEventListener('click',()=>{
+ const nombre=document.getElementById('regNombre').value,apellido=document.getElementById('regApellido').value,local=document.getElementById('regLocal').value,email=document.getElementById('regEmail').value,pass=document.getElementById('regPass').value,pass2=document.getElementById('regPass2').value,term=document.getElementById('regTerminos').checked,msg=document.getElementById('regMsg');
+ if(!local||!email||!pass){msg.innerText='Faltan campos';return;}
+ if(pass!==pass2){msg.innerText='No coinciden';return;}
+ if(!term){msg.innerText='Acepta terminos';return;}
+ auth.createUserWithEmailAndPassword(email,pass).then(async cred=>{
+  await db.doc('locales/'+cred.user.uid).set({nombreLocal:local,nombre:nombre,apellido:apellido,email:email,plan:'gratis',planActivo:true,planVence:firebase.firestore.Timestamp.fromDate(new Date(Date.now()+7*24*60*60*1000)),usosMes:0,usosMesAnioMes:getAnioMes(),deudaCasa:0,totalReservasCasa:0,galeriaCount:0,horasPlan:48,visible:true,bloqueado:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+  await cred.user.sendEmailVerification();alert('Cuenta creada - verifica mail');show('auth');
+ }).catch(err=>{msg.innerText=err.message;});
+});
+document.getElementById('btnForgotSend')?.addEventListener('click',()=>{
+ const email=document.getElementById('forgotEmail').value;
+ const msg=document.getElementById('forgotMsg');const ok=document.getElementById('forgotOk');
+ if(!email){msg.innerText='Pone correo';return;}
+ auth.sendPasswordResetEmail(email).then(()=>{ok.innerText='Mail enviado';msg.innerText='';}).catch(err=>{msg.innerText=err.message;});
+});
 document.getElementById('btnLogout')?.addEventListener('click',()=>auth.signOut());
-document.getElementById('btnToggleEstado')?.addEventListener('click',async()=>{try{const activo=localData.activo!==true;await db.doc('locales/'+uidLocal).update({activo:activo,activoSyncCliente:true});}catch(e){handleQuotaError(e,'Toggle activo ');}});
-document.getElementById('btnCopiarLink')?.addEventListener('click',()=>{const link=location.origin+'/reservar.html?uid='+uidLocal;navigator.clipboard.writeText(link).then(()=>alert('Link copiado: '+link));});
+document.getElementById('btnToggleEstado')?.addEventListener('click',async()=>{
+ try{const activo=localData.activo!==true;await db.doc('locales/'+uidLocal).update({activo:activo});}catch(e){}
+});
+document.getElementById('btnCopiarLink')?.addEventListener('click',()=>{
+ const link=location.origin+'/reservar.html?uid='+uidLocal;
+ navigator.clipboard.writeText(link).then(()=>alert('Link copiado: '+link));
+});
 document.getElementById('btnNuevaReserva')?.addEventListener('click',()=>showTab('reservas'));
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{showTab(t.dataset.screen);}));
-async function init(){auth.onAuthStateChanged(async u=>{if(!u){show('auth');return;}uidLocal=u.uid;document.getElementById('uidTxt').innerText=uidLocal;document.getElementById('mailTxt').innerText=u.email||'';await u.reload();if(!u.emailVerified){document.getElementById('verifyBox').classList.remove('hidden');document.getElementById('status').innerText='MAIL NO VERIFICADO - BLOQUEADO';document.getElementById('status').className='card rojo';show('auth');return;}else{document.getElementById('verifyBox').classList.add('hidden');}show('app');showTab('dashboard');document.getElementById('saludo').innerText='Hola '+(u.email||'');db.doc('config/adm').onSnapshot(s=>{if(s.exists){horasPlan=s.data().horasPlan||48;document.getElementById('graciaTxt').innerText=horasPlan;checkActivo();}});db.doc('locales/'+uidLocal).onSnapshot(s=>{if(!s.exists)return;localData=s.data();horarios=localData.horarios||{};pausasFechas=new Set(localData.pausasFechas||[]);document.getElementById('planTxt').innerText=localData.plan||'-';document.getElementById('deudaTxt').innerText=localData.deudaCasa||0;document.getElementById('totalCasaTxt').innerText=localData.totalReservasCasa||0;document.getElementById('galeriaCountTxt').innerText=localData.galeriaCount||0;document.getElementById('cobCBU').value=localData.cobCBU||'';document.getElementById('venceTxt').innerText=localData.planVence?.toDate?localData.planVence.toDate().toLocaleDateString():'-';const ep=document.getElementById('estadoPill');if(ep){ep.innerText=localData.activo?'Reservas online: activas':'Reservas online: pausadas';ep.className='pill '+(localData.activo?'ok':'bad');}document.getElementById('btnToggleEstado').innerText=localData.activo?'Pausar':'Activar';renderPerfil();renderHorarios();renderCalendario();renderGaleriaSubcoleccion();renderComprobantes();checkActivo();});db.collection('locales/'+uidLocal+'/servicios').onSnapshot(s=>{servicios=[];s.forEach(d=>servicios.push({id:d.id,...d.data()}));renderServicios();renderHoraOptions();});resetPagYListen();});}
+async function init(){
+ auth.onAuthStateChanged(async u=>{
+  if(!u){show('auth');return;}
+  uidLocal=u.uid;
+  document.getElementById('uidTxt').innerText=uidLocal;
+  document.getElementById('mailTxt').innerText=u.email||'';
+  await u.reload();
+  if(!u.emailVerified){
+   document.getElementById('verifyBox').classList.remove('hidden');
+   show('auth');return;
+  }else{document.getElementById('verifyBox').classList.add('hidden');}
+  show('app');showTab('dashboard');
+  document.getElementById('saludo').innerText='Hola '+(u.email||'');
+  db.doc('locales/'+uidLocal).onSnapshot(s=>{
+   if(!s.exists)return;localData=s.data();
+   horarios=localData.horarios||{};
+   pausasFechas=new Set(localData.pausasFechas||[]);
+   document.getElementById('cobCBU').value=localData.cobCBU||'';
+   const ep=document.getElementById('estadoPill');
+   if(ep){ep.innerText=localData.activo?'Reservas online: activas':'Reservas online: pausadas';ep.className='pill '+(localData.activo?'ok':'bad');}
+   document.getElementById('btnToggleEstado').innerText=localData.activo?'Pausar':'Activar';
+   renderPerfil();renderHorarios();renderCalendario();renderGaleriaSubcoleccion();renderComprobantes();
+  });
+  db.collection('locales/'+uidLocal+'/servicios').onSnapshot(s=>{
+   servicios=[];s.forEach(d=>servicios.push({id:d.id,...d.data()}));
+   renderServicios();renderHoraOptions();
+  });
+  resetPagYListen();
+ });
+}
 init();
 </script></body></html>
