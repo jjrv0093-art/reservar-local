@@ -180,8 +180,16 @@ input,select,textarea{width:100%;padding:.6rem.7rem;border-radius:10px;border:1p
 <section id="soporte" class="screen"><div class="card" style="border-color:#a855f7"><h3 style="color:#a855f7">Soporte (sincroniza con ADM)</h3><div class="formgrid"><div><label>Cliente relacionado</label><select id="sopClienteSelect"></select></div><div><label>Fecha del problema</label><input id="sopFecha" type="date"></div><div><label>Hora</label><input id="sopHora" type="time"></div><div><label>Reserva relacionada</label><select id="sopReservaSelect"></select></div><div class="full"><label>Tipo</label><select id="sopTipoLocal"><option value="consulta">Consulta</option><option value="problema">Problema técnico</option><option value="otro">Otro</option></select></div><div class="full"><label>Comentario para ADM</label><textarea id="sopComentarioLocal"></textarea></div><div class="full"><label style="color:#a855f7;font-weight:700">Archivo / Captura</label><input id="sopArchivoLocal" type="file" accept="image/*" class="file-input"><label for="sopArchivoLocal" class="file-btn">Subir captura</label><div id="sopPrev"></div></div></div><button id="btnEnviarSoporteLocal" class="btn full" style="margin-top:8px">Enviar a soporte ADM</button><p id="sopLocalMsg" style="color:#86efac"></p><ul id="listaSoporte" class="list"></ul></div></section>
 </div></section><div id="toast" class="toast hidden"></div>
 <script>
-const fb={apiKey:"AIzaSyB8eB8XjK8p3U1K5hJ8Q7vXwYdZzQ1kL9m0",authDomain:"reservar-3a4d8.firebaseapp.com",projectId:"reservar-3a4d8",appId:"1:987654321:web:abc123"};
-firebase.initializeApp(fb);
+const firebaseConfig = {
+  apiKey: "AIzaSyC57wshaJ2EuIBoBdXv18opL4u_Vuw2bAQ",
+  authDomain: "reservar-cb70d.firebaseapp.com",
+  projectId: "reservar-cb70d",
+  storageBucket: "reservar-cb70d.firebasestorage.app",
+  messagingSenderId: "630908928696",
+  appId: "1:630908928696:web:5e89f5f2b1cc2b240e6a4d",
+  measurementId: "G-2HMNZ69E4G"
+};
+firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.firestore();
 const $=id=>document.getElementById(id);
